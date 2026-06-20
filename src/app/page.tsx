@@ -19,7 +19,7 @@ export default function Home() {
     <>
       <Header activeTab={activeTab} onTabChange={handleTabChange} />
 
-      <main className="min-h-[70vh] bg-white flex flex-col items-center">
+      <main className="w-full min-h-[70vh] bg-white flex flex-col items-center">
         <AnimatePresence mode="wait">
           {/* 1. PROJECT DETAIL VIEW */}
           {activeProject ? (
@@ -97,7 +97,7 @@ export default function Home() {
                   </div>
 
                   {/* 3-Column Unified Grid - Balanced aspect ratio and equal gutters */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl px-6 md:px-12 mb-20">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl px-6 md:px-12 mb-20 mx-auto">
                     {projectsData.map((project) => (
                       <ProjectCard 
                         key={project.id} 
@@ -115,18 +115,20 @@ export default function Home() {
                   </div>
                 </>
               )}
-
               {/* OUR STORY TAB */}
               {activeTab === 'our-story' && (
                 <div 
-                  className="max-w-2xl mx-auto px-6 text-center"
+                  className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  <div className="space-y-4" style={{ marginBottom: '32px' }}> {/* 32px gap below title */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block">Philosophy</span>
-                    <h2 className="text-3xl font-cormorant font-light text-primary italic">Restraint & Harmony</h2>
+                  {/* Heading Section */}
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '40px' }}> {/* 40px gap below title */}
+                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Philosophy</span></span>
+                    <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Restraint & Harmony</h2>
                   </div>
-                  <div className="text-xs text-secondary font-light leading-[1.8] space-y-6 max-w-lg mx-auto">
+
+                  {/* Paragraph Section - matching the home page paragraph width & centering style */}
+                  <div className="max-w-[700px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
                     <p>
                       Founded with a dedication to spatial purity, AD Efffects focuses on modern minimalism, tactile materiality, and silent luxury. We reject excess to design enduring, peaceful sanctuaries.
                     </p>
@@ -134,20 +136,22 @@ export default function Home() {
                       Our projects range from high-end residential estates to curated workspace branding. In every commission, we seek architectural restraint, optimizing raw wood, travertine stone, and natural illumination.
                     </p>
                   </div>
+
+                  {/* Image Row Section - matching the home page project grid width and padding bounds */}
                   <div 
-                    className="grid grid-cols-2 gap-8 max-w-xl mx-auto"
+                    className="grid grid-cols-2 gap-8 w-full max-w-7xl px-6 md:px-12 mx-auto"
                     style={{ marginTop: '64px' }} // Exact 64px gap below text
                   >
-                    <div className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[3/4]">
+                    <div className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[3/4] w-full">
                       <img 
-                        src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=600&q=80" 
+                        src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80" 
                         alt="Stone texture" 
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-[1.2s] ease-out"
                       />
                     </div>
-                    <div className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[3/4]">
+                    <div className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[3/4] w-full">
                       <img 
-                        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80" 
+                        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" 
                         alt="Interior architecture" 
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-[1.2s] ease-out"
                       />
@@ -159,14 +163,14 @@ export default function Home() {
               {/* FEATURED PRESS TAB */}
               {activeTab === 'featured' && (
                 <div 
-                  className="max-w-2xl mx-auto px-6 text-center"
+                  className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  <div className="space-y-4" style={{ marginBottom: '48px' }}> {/* Exact 48px gap to press items */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block">Recognition</span>
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '48px' }}> {/* Exact 48px gap to press items */}
+                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block"><span className="mr-[-0.35em]">Recognition</span></span>
                     <h2 className="text-3xl font-cormorant font-light text-primary italic">Featured Press</h2>
                   </div>
-                  <ul className="space-y-6 max-w-md mx-auto text-[10px] uppercase tracking-[0.25em] text-secondary font-light">
+                  <ul className="space-y-6 max-w-md w-full text-[10px] uppercase tracking-[0.25em] text-secondary font-light mx-auto">
                     <li className="pb-6 border-b border-border-custom/60 flex justify-between items-center">
                       <span className="text-primary hover:text-accent transition-colors duration-300 cursor-pointer">Architectural Digest</span>
                       <span className="text-[9px] text-accent">2024</span>
@@ -190,18 +194,18 @@ export default function Home() {
               {/* OUR INFLUENCE TAB */}
               {activeTab === 'our-influence' && (
                 <div 
-                  className="max-w-2xl mx-auto px-6 text-center"
+                  className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  <div className="space-y-4" style={{ marginBottom: '32px' }}> {/* 32px gap below title */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block">Inspiration</span>
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '32px' }}> {/* 32px gap below title */}
+                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Inspiration</span></span>
                     <h2 className="text-3xl font-cormorant font-light text-primary italic">Spatial Influences</h2>
                   </div>
-                  <p className="text-xs text-secondary font-light leading-[1.8] max-w-lg mx-auto">
+                  <p className="text-xs md:text-sm text-secondary font-light leading-[1.8] max-w-[700px] px-6 text-center mx-auto">
                     We draw inspiration from Japandi design principles, organic Wabi-Sabi textures, and mid-century architectural structuralism. We design with a deep reverence for local craft, raw wood structures, and passive light integration.
                   </p>
                   <div 
-                    className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[16/10] max-w-2xl w-full mx-auto"
+                    className="overflow-hidden bg-[#fafafa] border border-border-custom aspect-[16/10] w-full max-w-7xl px-6 md:px-12 mx-auto"
                     style={{ marginTop: '64px' }} // Exact 64px gap below text
                   >
                     <img 
@@ -216,29 +220,33 @@ export default function Home() {
               {/* BLOG TAB */}
               {activeTab === 'blog' && (
                 <div 
-                  className="max-w-2xl mx-auto px-6 text-center"
+                  className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  <div className="space-y-4" style={{ marginBottom: '64px' }}> {/* Exact 64px gap to articles */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block">Journal</span>
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '64px' }}> {/* Exact 64px gap to articles */}
+                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Journal</span></span>
                     <h2 className="text-3xl font-cormorant font-light text-primary italic">Latest Readings</h2>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-left max-w-xl mx-auto">
-                    <div className="space-y-4 border-b border-border-custom/60 pb-6 md:border-b-0 md:pb-0">
-                      <span className="text-[9px] uppercase tracking-[0.2em] text-accent font-semibold">June 2026</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-16 text-center w-full max-w-3xl px-6 mx-auto">
+                    <div className="space-y-4 border-b border-border-custom/60 pb-6 md:border-b-0 md:pb-0 flex flex-col items-center">
+                      <span className="text-[9px] uppercase tracking-[0.2em] text-accent font-semibold">
+                        <span className="mr-[-0.2em]">June 2026</span>
+                      </span>
                       <h3 className="text-lg font-cormorant font-light text-primary hover:text-accent transition-colors duration-500 cursor-pointer">
                         The Art of Travertine Detailing
                       </h3>
-                      <p className="text-xs text-secondary font-light leading-[1.7]">
+                      <p className="text-xs text-secondary font-light leading-[1.7] max-w-[320px] mx-auto">
                         Understanding the natural texture, scaling, and finishing of classic travertine stone elements in spatial design.
                       </p>
                     </div>
-                    <div className="space-y-4">
-                      <span className="text-[9px] uppercase tracking-[0.2em] text-accent font-semibold">May 2026</span>
+                    <div className="space-y-4 flex flex-col items-center">
+                      <span className="text-[9px] uppercase tracking-[0.2em] text-accent font-semibold">
+                        <span className="mr-[-0.2em]">May 2026</span>
+                      </span>
                       <h3 className="text-lg font-cormorant font-light text-primary hover:text-accent transition-colors duration-500 cursor-pointer">
                         Light, Void, and Proportion
                       </h3>
-                      <p className="text-xs text-secondary font-light leading-[1.7]">
+                      <p className="text-xs text-secondary font-light leading-[1.7] max-w-[320px] mx-auto">
                         A study on shadow projection and minimalist window spacing in Scandinavian and Japanese architecture.
                       </p>
                     </div>
@@ -249,23 +257,27 @@ export default function Home() {
               {/* CONTACT TAB */}
               {activeTab === 'contact' && (
                 <div 
-                  className="max-w-xl mx-auto px-6 text-center"
+                  className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  <div className="space-y-4" style={{ marginBottom: '48px' }}> {/* Exact 48px gap to coordinates */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block">Reach Us</span>
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '48px' }}> {/* Exact 48px gap to coordinates */}
+                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block"><span className="mr-[-0.35em]">Reach Us</span></span>
                     <h2 className="text-3xl font-cormorant font-light text-primary italic">Coordinates</h2>
                   </div>
-                  <div className="space-y-12 font-light">
-                    <div className="space-y-2">
-                      <span className="text-[9px] uppercase tracking-[0.3em] text-accent block font-semibold">Studio Address</span>
+                  <div className="space-y-12 font-light text-center w-full flex flex-col items-center mx-auto">
+                    <div className="space-y-2 flex flex-col items-center">
+                      <span className="text-[9px] uppercase tracking-[0.3em] text-accent block font-semibold">
+                        <span className="mr-[-0.3em]">Studio Address</span>
+                      </span>
                       <p className="text-xs text-secondary leading-relaxed">
                         14 Strandgade, 1401<br />
                         Copenhagen, Denmark
                       </p>
                     </div>
-                    <div className="space-y-2">
-                      <span className="text-[9px] uppercase tracking-[0.3em] text-accent block font-semibold">General Inquiries</span>
+                    <div className="space-y-2 flex flex-col items-center">
+                      <span className="text-[9px] uppercase tracking-[0.3em] text-accent block font-semibold">
+                        <span className="mr-[-0.3em]">General Inquiries</span>
+                      </span>
                       <a href="mailto:hello@adefffects.com" className="text-xs text-secondary hover:text-accent transition-colors block">
                         hello@adefffects.com
                       </a>

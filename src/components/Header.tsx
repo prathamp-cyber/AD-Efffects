@@ -38,7 +38,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             onClick={() => handleTabClick('portfolio')}
             className="text-sm font-cormorant font-light tracking-[0.25em] text-primary focus:outline-none"
           >
-            AD Efffects
+            <span className="mr-[-0.25em]">AD Efffects</span>
           </button>
           <button 
             onClick={() => setMobileMenuOpen(true)}
@@ -54,7 +54,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           
           {/* Logo: Brand name cursive logo with capital/small letter combo */}
           <div 
-            className="flex flex-col items-center relative select-none"
+            className="flex flex-col items-center w-full relative select-none"
             style={{ marginBottom: '32px' }} // Exact 32px gap to socials
           >
             <button 
@@ -111,18 +111,25 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           </div>
 
           {/* Navigation Bar - Uppercase, letter-spaced, spaced 40px (gap-x-10) */}
-          <nav className="flex items-center justify-center gap-x-10 px-6 pb-4 w-[90%] max-w-4xl">
+          <nav className="flex items-center justify-center gap-x-10 px-6 pb-4 w-[90%] max-w-4xl mx-auto flex-wrap">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`text-[12px] md:text-[13px] uppercase tracking-[0.28em] font-light transition-all duration-300 hover:text-accent cursor-pointer ${
+                className={`text-[12px] md:text-[13px] uppercase tracking-[0.28em] font-light transition-all duration-300 hover:text-accent cursor-pointer relative pb-2 ${
                   activeTab === tab.id 
-                    ? 'text-accent font-semibold scale-105' 
+                    ? 'text-accent' 
                     : 'text-primary/70'
                 }`}
               >
-                {tab.label}
+                <span className="mr-[-0.28em]">{tab.label}</span>
+                {activeTab === tab.id && (
+                  <motion.div 
+                    layoutId="activeTabUnderline"
+                    className="absolute left-0 right-0 bottom-0 h-[1.5px] bg-accent"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
               </button>
             ))}
           </nav>
