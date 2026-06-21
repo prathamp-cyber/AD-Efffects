@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, Pinyon_Script } from "next/font/google";
 import "./globals.css";
 import ClientWrapper from "@/components/ClientWrapper";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -39,9 +40,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable} ${pinyon.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.style.colorScheme = 'light';
+              })()
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased selection:bg-accent selection:text-white">
         <ClientWrapper>
           {children}
+          <ThemeToggle />
         </ClientWrapper>
       </body>
     </html>

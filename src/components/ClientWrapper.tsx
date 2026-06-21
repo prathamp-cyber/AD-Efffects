@@ -11,12 +11,11 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
     <>
       <LoadingScreen onComplete={() => setIsLoading(false)} />
       <SmoothScroll>
-        <div 
-          className="transition-opacity duration-1000 ease-out" 
-          style={{ opacity: isLoading ? 0 : 1 }}
-        >
-          {children}
-        </div>
+        {!isLoading && (
+          <div className="w-full">
+            {children}
+          </div>
+        )}
       </SmoothScroll>
     </>
   );

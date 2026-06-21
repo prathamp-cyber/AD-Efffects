@@ -17,7 +17,6 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
     { id: 'our-story', label: 'OUR STORY' },
     { id: 'featured', label: 'FEATURED' },
     { id: 'our-influence', label: 'OUR INFLUENCE' },
-    { id: 'blog', label: 'BLOG' },
     { id: 'contact', label: 'CONTACT' },
   ];
 
@@ -26,14 +25,101 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
     setMobileMenuOpen(false);
   };
 
+  // Animation Variants for Desktop Header Entrance
+  const logoVariants = {
+    hidden: { opacity: 0, y: 25 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.9,
+        ease: [0.25, 1, 0.5, 1] as const, // Premium easeOut
+      }
+    }
+  };
+
+  const lineVariants = {
+    hidden: { scaleX: 0, opacity: 0 },
+    visible: {
+      scaleX: 1,
+      opacity: 1,
+      transition: {
+        delay: 0.5,
+        duration: 0.8,
+        ease: [0.25, 1, 0.5, 1] as const,
+      }
+    }
+  };
+
+  const socialsContainerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.6,
+      }
+    }
+  };
+
+  const socialIconVariants = {
+    hidden: { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut" as const,
+      }
+    }
+  };
+
+  const navContainerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.08,
+        delayChildren: 0.8,
+      }
+    }
+  };
+
+  const navItemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut" as const,
+      }
+    }
+  };
+
+  const mobileHeaderVariants = {
+    hidden: { opacity: 0, y: -15 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.7,
+        ease: [0.25, 1, 0.5, 1] as const,
+      }
+    }
+  };
+
   return (
     <>
       <header 
-        className="w-full flex flex-col items-center bg-white relative"
+        className="w-full flex flex-col items-center bg-background relative transition-colors duration-300"
         style={{ paddingTop: '80px' }} // Exact 80px top padding
       >
         {/* Mobile Header Bar */}
-        <div className="md:hidden w-full flex justify-between items-center px-6 py-5">
+        <motion.div 
+          variants={mobileHeaderVariants}
+          initial="hidden"
+          animate="visible"
+          className="md:hidden w-full flex justify-between items-center px-6 py-5 header-logo-container"
+        >
           <button 
             onClick={() => handleTabClick('portfolio')}
             className="text-sm font-cormorant font-light tracking-[0.25em] text-primary focus:outline-none"
@@ -47,36 +133,48 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           >
             <Menu className="w-5 h-5 stroke-[1.25]" />
           </button>
-        </div>
+        </motion.div>
 
         {/* Desktop Header Layout */}
         <div className="hidden md:flex flex-col items-center w-full">
           
           {/* Logo: Brand name cursive logo with capital/small letter combo */}
           <div 
-            className="flex flex-col items-center w-full relative select-none"
+            className="flex flex-col items-center w-full relative select-none header-logo-container"
             style={{ marginBottom: '32px' }} // Exact 32px gap to socials
           >
-            <button 
+            <motion.button 
+              variants={logoVariants}
+              initial="hidden"
+              animate="visible"
               onClick={() => handleTabClick('portfolio')}
               className="font-script text-[64px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
             >
               AD Efffects
-            </button>
+            </motion.button>
             {/* Centered horizontal underline (approx 60% of script width) */}
-            <div className="w-[180px] h-[1px] bg-primary mt-3" />
+            <motion.div 
+              variants={lineVariants}
+              initial="hidden"
+              animate="visible"
+              className="w-[180px] h-[1px] bg-primary mt-3 origin-center" 
+            />
           </div>
 
           {/* Social Icons Row - ~40px diameter, 16px spaced, 32px gap below socials */}
-          <div 
-            className="flex space-x-4 items-center"
+          <motion.div 
+            variants={socialsContainerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex space-x-4 items-center header-socials-container"
             style={{ marginBottom: '32px' }} // Exact 32px gap to nav
           >
-            <a 
+            <motion.a 
+              variants={socialIconVariants}
               href="https://instagram.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#f4f4f4] hover:bg-[#e8e8e8] flex items-center justify-center text-[#111111] hover:scale-105 transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
               aria-label="Instagram"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
@@ -84,36 +182,44 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                 <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
               </svg>
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
+              variants={socialIconVariants}
               href="https://facebook.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#f4f4f4] hover:bg-[#e8e8e8] flex items-center justify-center text-[#111111] hover:scale-105 transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
               aria-label="Facebook"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
               </svg>
-            </a>
-            <a 
+            </motion.a>
+            <motion.a 
+              variants={socialIconVariants}
               href="https://youtube.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-[#f4f4f4] hover:bg-[#e8e8e8] flex items-center justify-center text-[#111111] hover:scale-105 transition-all duration-300"
+              className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
               aria-label="YouTube"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z" />
                 <polygon points="10 15 15 12 10 9" fill="currentColor" />
               </svg>
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
 
           {/* Navigation Bar - Uppercase, letter-spaced, spaced 40px (gap-x-10) */}
-          <nav className="flex items-center justify-center gap-x-10 px-6 pb-4 w-[90%] max-w-4xl mx-auto flex-wrap">
+          <motion.nav 
+            variants={navContainerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex items-center justify-center gap-x-10 px-6 pb-4 w-[90%] max-w-4xl mx-auto flex-wrap header-nav-container"
+          >
             {tabs.map((tab) => (
-              <button
+              <motion.button
+                variants={navItemVariants}
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
                 className={`text-[12px] md:text-[13px] uppercase tracking-[0.28em] font-light transition-all duration-300 hover:text-accent cursor-pointer relative pb-2 ${
@@ -130,9 +236,9 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-              </button>
+              </motion.button>
             ))}
-          </nav>
+          </motion.nav>
         </div>
       </header>
 
@@ -144,7 +250,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[100] bg-white flex flex-col justify-between p-8"
+            className="fixed inset-0 z-[100] bg-background flex flex-col justify-between p-8 transition-colors duration-300"
           >
             <div className="flex justify-between items-center">
               <span className="text-sm font-cormorant font-light tracking-[0.25em] text-primary">

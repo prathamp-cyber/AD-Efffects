@@ -9,7 +9,7 @@ export default function Footer({ onTabChange }: FooterProps) {
 
   return (
     <footer 
-      className="w-full bg-white flex flex-col items-center border-t border-[#111111]/20"
+      className="w-full bg-background flex flex-col items-center border-t border-border-custom transition-colors duration-300"
       style={{ paddingTop: '80px', paddingBottom: '60px' }}
     >
       
@@ -25,7 +25,7 @@ export default function Footer({ onTabChange }: FooterProps) {
           AD Efffects
         </button>
         {/* Centered horizontal underline */}
-        <div className="w-[180px] h-[1px] bg-primary mt-3" />
+        <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
       </div>
 
       {/* Brand Paragraph: Relevant, elegant, centered spatial statement */}
