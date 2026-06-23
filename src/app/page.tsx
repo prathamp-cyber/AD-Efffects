@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { projectsData, Project } from '@/data';
-import { MapPin, Mail, Clock, Phone, RefreshCw } from 'lucide-react';
+import { MapPin, Mail, Phone, RefreshCw, User, Pencil, MessageSquare, Shield } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -23,14 +23,10 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Math Captcha state
-  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0 });
+  // Math Captcha state (initialize to 4 + 9 to match screenshot on load)
+  const [captcha, setCaptcha] = useState({ num1: 4, num2: 9, answer: 13 });
   const [userCaptcha, setUserCaptcha] = useState('');
   const [captchaError, setCaptchaError] = useState('');
-
-  // Gandhidham live time state
-  const [gandhidhamTime, setGandhidhamTime] = useState('');
-  const [isStudioOpen, setIsStudioOpen] = useState(true);
 
   // Generate captcha
   const generateCaptcha = () => {
@@ -43,39 +39,6 @@ export default function Home() {
 
   useEffect(() => {
     generateCaptcha();
-  }, []);
-
-  // Update Gandhidham local time (IST)
-  useEffect(() => {
-    const updateTime = () => {
-      try {
-        const options: Intl.DateTimeFormatOptions = {
-          timeZone: 'Asia/Kolkata',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-        };
-        const formatter = new Intl.DateTimeFormat([], options);
-        setGandhidhamTime(formatter.format(new Date()));
-        
-        const indiaDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-        const hours = indiaDate.getHours();
-        const mins = indiaDate.getMinutes();
-        const day = indiaDate.getDay(); // 0 Sunday, 6 Saturday
-        
-        // Studio is open Mon-Sat 9:30 AM (9.5) to 6:30 PM (18.5)
-        const timeDecimal = hours + mins / 60;
-        const isOpen = day >= 1 && day <= 6 && timeDecimal >= 9.5 && timeDecimal < 18.5;
-        setIsStudioOpen(isOpen);
-      } catch (err) {
-        console.error('Failed to compute time:', err);
-      }
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
   }, []);
 
   const handleTabChange = (tabId: string) => {
@@ -360,246 +323,381 @@ export default function Home() {
               {/* CONTACT TAB */}
               {activeTab === 'contact' && (
                 <div 
-                  className="w-full flex flex-col items-center"
-                  style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
+                  className="w-full bg-[#f8f6f3] text-[#111111] transition-colors duration-500 relative overflow-hidden"
+                  style={{ marginTop: '0px' }}
                 >
-                  {/* Page Title Header */}
-                  <div className="space-y-3 text-center w-full" style={{ marginBottom: '56px' }}>
-                    <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-semibold block font-sans"><span className="mr-[-0.4em]">CONNECT</span></span>
-                    <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Contact the Studio</h2>
-                  </div>
+                  {/* Subtle Noise Texture Overlay */}
+                  <div className="absolute inset-0 pointer-events-none opacity-[0.025] mix-blend-overlay bg-[url('data:image/svg+xml;utf8,<svg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22><filter id=%22noise%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/></filter><rect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noise)%22/></svg>')]"></div>
 
-                  {/* Symmetrical Centralized Form Container (Max-W-4xl) */}
-                  <div className="w-full max-w-4xl px-6 mx-auto">
-                    <AnimatePresence mode="wait">
-                      {!isSubmitted ? (
-                        <motion.form
-                          key="contact-form"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{ duration: 0.5 }}
-                          onSubmit={handleSubmit}
-                          className="flex flex-col gap-12"
-                        >
-                          {/* Row 1: Name and Email */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                            <div className="flex flex-col gap-2">
-                              <div className={`relative group flex items-center border ${
-                                errors.name ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
-                                <input
-                                  type="text"
-                                  name="name"
-                                  value={formData.name}
-                                  onChange={handleInputChange}
-                                  placeholder="YOUR NAME *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
-                                />
-                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
-                              </div>
-                              {errors.name && (
-                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.name}</span>
-                              )}
-                            </div>
+                  <div className="max-w-[1400px] w-full mx-auto py-[120px] px-6 md:px-12 lg:px-20">
+                    <div className="grid grid-cols-1 lg:grid-cols-[35%_65%] gap-20 items-start">
+                      
+                      {/* Left Column (35%) */}
+                      <div className="flex flex-col relative">
+                        {/* Main Image with floating badge and console detail overlap */}
+                        <div className="relative w-full aspect-[3/4] max-w-sm lg:max-w-none">
+                          <img
+                            src="/chair.png"
+                            alt="Luxury studio interior"
+                            className="w-full h-full object-cover shadow-[0_15px_40px_rgba(0,0,0,0.06)]"
+                          />
 
-                            <div className="flex flex-col gap-2">
-                              <div className={`relative group flex items-center border ${
-                                errors.email ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
-                                <input
-                                  type="email"
-                                  name="email"
-                                  value={formData.email}
-                                  onChange={handleInputChange}
-                                  placeholder="YOUR EMAIL *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                          {/* Circular Rotating Badge */}
+                          <div className="absolute -top-12 -right-12 z-20 w-[110px] h-[110px] md:w-[120px] md:h-[120px] bg-[#f8f6f3] rounded-full border border-[#e5ded6] shadow-md flex items-center justify-center">
+                            <motion.div 
+                              className="absolute inset-0 w-full h-full"
+                              animate={{ rotate: 360 }}
+                              transition={{ repeat: Infinity, duration: 25, ease: "linear" }}
+                            >
+                              <svg viewBox="0 0 100 100" className="w-full h-full">
+                                <path
+                                  id="badgePath"
+                                  d="M 50, 50 m -38, 0 a 38,38 0 1,1 76,0 a 38,38 0 1,1 -76,0"
+                                  fill="none"
                                 />
-                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
-                              </div>
-                              {errors.email && (
-                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.email}</span>
-                              )}
+                                <text className="text-[7.2px] font-sans font-bold tracking-[0.22em] fill-[#b89b74] uppercase">
+                                  <textPath href="#badgePath" startOffset="0%">
+                                    {"WE'D LOVE TO • HEAR FROM YOU • "}
+                                  </textPath>
+                                </text>
+                              </svg>
+                            </motion.div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="font-cormorant text-2xl text-[#b89b74] font-medium tracking-wide">A</span>
                             </div>
                           </div>
 
-                          {/* Row 2: Phone and Subject */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
-                            <div className="flex flex-col gap-2">
-                              <div className={`relative group flex items-center border ${
-                                errors.phone ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
-                                <input
-                                  type="text"
-                                  name="phone"
-                                  value={formData.phone}
-                                  onChange={handleInputChange}
-                                  placeholder="PHONE NUMBER *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
-                                />
-                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
-                              </div>
-                              {errors.phone && (
-                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.phone}</span>
-                              )}
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                              <div className={`relative group flex items-center border ${
-                                errors.subject ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
-                                <input
-                                  type="text"
-                                  name="subject"
-                                  value={formData.subject}
-                                  onChange={handleInputChange}
-                                  placeholder="SUBJECT *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
-                                />
-                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
-                              </div>
-                              {errors.subject && (
-                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.subject}</span>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Row 3: Message Textarea */}
-                          <div className="flex flex-col gap-2">
-                            <div className={`relative group flex flex-col border ${
-                              errors.message ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                            } px-[30px] py-[22px] min-h-[260px] rounded-none bg-transparent w-full transition-all duration-300`}>
-                              <textarea
-                                name="message"
-                                value={formData.message}
-                                onChange={handleInputChange}
-                                placeholder="WRITE MESSAGE *"
-                                className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
+                          {/* Overlapping console cabinet image with double border frame */}
+                          <div className="absolute -right-8 -bottom-10 z-20 w-[150px] h-[150px] md:w-[170px] md:h-[170px] bg-[#f8f6f3] p-1.5 shadow-[0_15px_35px_rgba(0,0,0,0.08)] border border-[#e5ded6]">
+                            <div className="w-full h-full overflow-hidden border border-[#e5ded6]">
+                              <img
+                                src="/detail.png"
+                                alt="Studio details console"
+                                className="w-full h-full object-cover"
                               />
-                              <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                             </div>
-                            {errors.message && (
-                              <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.message}</span>
-                            )}
                           </div>
+                        </div>
 
-                          {/* Math Captcha and Submit Section */}
-                          <div className="flex flex-col gap-10 pt-4">
-                            {/* Captcha Card Widget */}
-                            <div className="bg-card-bg/40 border border-border-custom p-5 flex flex-col gap-4 w-full max-w-[300px] transition-colors duration-300 backdrop-blur-sm">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-sans font-bold tracking-[0.15em] text-primary uppercase select-none">
-                                  What is {captcha.num1} + {captcha.num2} ?
-                                </span>
+                        {/* Title and botanical section below the image */}
+                        <div className="relative mt-24 pl-2 pr-8 select-none">
+                          {/* Botanical fine line sketch */}
+                          <svg
+                            viewBox="0 0 200 300"
+                            className="absolute bottom-[-20px] right-[-20px] w-[200px] h-[300px] pointer-events-none opacity-[0.2] text-[#b89b74] fill-none stroke-current stroke-[0.75]"
+                          >
+                            <path d="M60,290 C70,220 90,160 120,80" />
+                            <path d="M78,210 C50,190 35,210 25,230 C45,225 65,220 78,210" />
+                            <path d="M25,230 C40,205 60,205 78,210" />
+                            <path d="M85,190 C110,180 125,195 135,210 C120,195 100,190 85,190" />
+                            <path d="M135,210 C115,185 100,180 85,190" />
+                            <path d="M96,140 C75,120 60,135 50,150 C70,145 85,140 96,140" />
+                            <path d="M50,150 C65,130 80,130 96,140" />
+                            <path d="M102,125 C130,120 145,135 155,150 C140,135 120,130 102,125" />
+                            <path d="M155,150 C135,130 120,125 102,125" />
+                            <path d="M110,95 C95,80 85,90 80,100 C90,95 100,95 110,95" />
+                            <path d="M115,85 C135,80 145,90 150,100 C140,90 128,88 115,85" />
+                          </svg>
+
+                          <div className="relative z-10">
+                            <h3 className="text-3xl font-cormorant text-[#111111] leading-none">Let&apos;s Create</h3>
+                            <h3 className="text-3xl font-cormorant italic text-[#b89b74] leading-none mt-1">Something Beautiful</h3>
+                            <div className="w-12 h-[1px] bg-[#b89b74]/40 my-6" />
+                            <p className="text-[12px] font-sans text-[#666666] tracking-wide leading-relaxed max-w-[280px]">
+                              Have a project in mind or just want to say hello? Fill out the form and we&apos;ll get back to you soon.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right Column (65%) */}
+                      <div className="flex flex-col">
+                        {/* Heading */}
+                        <div className="flex flex-col items-center text-center lg:items-start lg:text-left mb-10">
+                          <div className="flex items-center gap-3 text-[11px] font-sans tracking-[0.3em] text-[#b89b74] font-bold uppercase">
+                            <span className="w-8 h-[1px] bg-[#b89b74]/40" />
+                            Contact
+                            <span className="w-8 h-[1px] bg-[#b89b74]/40 lg:hidden" />
+                          </div>
+                          <h2 className="text-4xl md:text-5xl lg:text-[56px] font-cormorant font-light text-[#111111] leading-tight mt-3 mb-4">
+                            Contact the Studio
+                          </h2>
+                          <p className="text-[11px] font-sans tracking-[0.25em] text-[#666666] font-bold uppercase">
+                            We&apos;re here to bring your vision to life
+                          </p>
+                        </div>
+
+                        {/* Form */}
+                        <AnimatePresence mode="wait">
+                          {!isSubmitted ? (
+                            <motion.form
+                              key="studio-contact-form"
+                              initial={{ opacity: 0, y: 15 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -15 }}
+                              transition={{ duration: 0.5, ease: "easeOut" }}
+                              onSubmit={handleSubmit}
+                              className="flex flex-col gap-6"
+                            >
+                              {/* Row 1: Name and Email */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="relative flex items-center w-full">
+                                    <div className="absolute left-5 text-[#b89b74]">
+                                      <User className="w-[18px] h-[18px] stroke-[1.5]" />
+                                    </div>
+                                    <input
+                                      type="text"
+                                      name="name"
+                                      value={formData.name}
+                                      onChange={handleInputChange}
+                                      placeholder="YOUR NAME *"
+                                      className={`w-full h-[72px] bg-white border ${
+                                        errors.name ? 'border-red-500' : 'border-[#e5ded6] focus:border-[#b89b74]'
+                                      } rounded-[10px] pl-14 pr-5 text-xs font-sans tracking-[0.2em] font-bold text-[#111111] placeholder:text-[#b89b74] outline-none transition-colors uppercase`}
+                                    />
+                                  </div>
+                                  {errors.name && (
+                                    <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pl-2">{errors.name}</span>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="relative flex items-center w-full">
+                                    <div className="absolute left-5 text-[#b89b74]">
+                                      <Mail className="w-[18px] h-[18px] stroke-[1.5]" />
+                                    </div>
+                                    <input
+                                      type="email"
+                                      name="email"
+                                      value={formData.email}
+                                      onChange={handleInputChange}
+                                      placeholder="YOUR EMAIL *"
+                                      className={`w-full h-[72px] bg-white border ${
+                                        errors.email ? 'border-red-500' : 'border-[#e5ded6] focus:border-[#b89b74]'
+                                      } rounded-[10px] pl-14 pr-5 text-xs font-sans tracking-[0.2em] font-bold text-[#111111] placeholder:text-[#b89b74] outline-none transition-colors uppercase`}
+                                    />
+                                  </div>
+                                  {errors.email && (
+                                    <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pl-2">{errors.email}</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Row 2: Phone and Subject */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="relative flex items-center w-full">
+                                    <div className="absolute left-5 text-[#b89b74]">
+                                      <Phone className="w-[18px] h-[18px] stroke-[1.5]" />
+                                    </div>
+                                    <input
+                                      type="text"
+                                      name="phone"
+                                      value={formData.phone}
+                                      onChange={handleInputChange}
+                                      placeholder="PHONE NUMBER *"
+                                      className={`w-full h-[72px] bg-white border ${
+                                        errors.phone ? 'border-red-500' : 'border-[#e5ded6] focus:border-[#b89b74]'
+                                      } rounded-[10px] pl-14 pr-5 text-xs font-sans tracking-[0.2em] font-bold text-[#111111] placeholder:text-[#b89b74] outline-none transition-colors uppercase`}
+                                    />
+                                  </div>
+                                  {errors.phone && (
+                                    <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pl-2">{errors.phone}</span>
+                                  )}
+                                </div>
+
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="relative flex items-center w-full">
+                                    <div className="absolute left-5 text-[#b89b74]">
+                                      <Pencil className="w-[18px] h-[18px] stroke-[1.5]" />
+                                    </div>
+                                    <input
+                                      type="text"
+                                      name="subject"
+                                      value={formData.subject}
+                                      onChange={handleInputChange}
+                                      placeholder="SUBJECT *"
+                                      className={`w-full h-[72px] bg-white border ${
+                                        errors.subject ? 'border-red-500' : 'border-[#e5ded6] focus:border-[#b89b74]'
+                                      } rounded-[10px] pl-14 pr-5 text-xs font-sans tracking-[0.2em] font-bold text-[#111111] placeholder:text-[#b89b74] outline-none transition-colors uppercase`}
+                                    />
+                                  </div>
+                                  {errors.subject && (
+                                    <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pl-2">{errors.subject}</span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Row 3: Message Textarea */}
+                              <div className="flex flex-col gap-1.5">
+                                <div className="relative flex w-full">
+                                  <div className="absolute left-5 top-[26px] text-[#b89b74]">
+                                    <MessageSquare className="w-[18px] h-[18px] stroke-[1.5]" />
+                                  </div>
+                                  <textarea
+                                    name="message"
+                                    value={formData.message}
+                                    onChange={handleInputChange}
+                                    placeholder="WRITE MESSAGE *"
+                                    className={`w-full h-[220px] bg-white border ${
+                                      errors.message ? 'border-red-500' : 'border-[#e5ded6] focus:border-[#b89b74]'
+                                    } rounded-[10px] pl-14 pr-5 pt-6 text-xs font-sans tracking-[0.2em] font-bold text-[#111111] placeholder:text-[#b89b74] outline-none transition-colors resize-none uppercase leading-relaxed`}
+                                  />
+                                </div>
+                                {errors.message && (
+                                  <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pl-2">{errors.message}</span>
+                                )}
+                              </div>
+
+                              {/* Math Captcha and Submit Button Row */}
+                              <div className="flex flex-col md:flex-row items-stretch gap-6 mt-2">
+                                {/* Captcha Card */}
+                                <div className="relative flex items-center px-6 h-[72px] bg-white border border-[#e5ded6] rounded-[10px] w-full md:w-[340px] gap-4">
+                                  <div className="text-[#b89b74] flex-shrink-0">
+                                    <Shield className="w-5 h-5 stroke-[1.5]" />
+                                  </div>
+                                  <div className="flex flex-col flex-grow min-w-0">
+                                    <span className="text-[9px] font-sans font-bold tracking-[0.15em] text-[#b89b74] uppercase select-none">
+                                      WHAT IS {captcha.num1} + {captcha.num2} ?
+                                    </span>
+                                    <input
+                                      type="text"
+                                      value={userCaptcha}
+                                      onChange={(e) => {
+                                        setUserCaptcha(e.target.value);
+                                        if (captchaError) setCaptchaError('');
+                                      }}
+                                      placeholder="Your answer"
+                                      className="w-full bg-transparent border-none outline-none text-xs font-sans tracking-[0.05em] text-[#111111] placeholder:text-[#b89b74]/60 p-0 h-6 font-bold"
+                                    />
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={generateCaptcha}
+                                    className="text-[#b89b74] hover:text-[#111111] transition-all p-1 cursor-pointer flex items-center justify-center hover:rotate-180 duration-500 flex-shrink-0"
+                                    title="Refresh Captcha"
+                                  >
+                                    <RefreshCw className="w-3.5 h-3.5 stroke-[1.5]" />
+                                  </button>
+                                  {captchaError && (
+                                    <span className="absolute -bottom-5 left-2 text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase">
+                                      {captchaError}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Send Message Button */}
                                 <button
-                                  type="button"
-                                  onClick={generateCaptcha}
-                                  className="text-secondary hover:text-accent transition-all p-1 cursor-pointer flex items-center justify-center hover:rotate-180 duration-500"
-                                  title="Refresh Captcha"
+                                  type="submit"
+                                  disabled={isSubmitting}
+                                  className="group relative flex items-center justify-between px-8 h-[72px] bg-[#1a1a1a] rounded-[10px] text-white hover:bg-[#2a2a2a] transition-all cursor-pointer w-full md:flex-grow md:w-auto disabled:opacity-50 select-none"
                                 >
-                                  <RefreshCw className="w-3.5 h-3.5 stroke-[1.5]" />
+                                  <span className="text-xs font-sans tracking-[0.2em] font-bold text-[#b89b74] uppercase">
+                                    {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
+                                  </span>
+                                  <svg className="w-6 h-6 stroke-[1.5] text-[#b89b74] transform group-hover:translate-x-2 transition-transform duration-300 fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                                  </svg>
                                 </button>
                               </div>
-                              
-                              <div className="relative group w-full border border-primary/45 focus-within:border-primary px-4 py-2.5 flex items-center h-[46px] transition-all duration-300">
-                                <input
-                                  type="text"
-                                  value={userCaptcha}
-                                  onChange={(e) => {
-                                    setUserCaptcha(e.target.value);
-                                    if (captchaError) setCaptchaError('');
-                                  }}
-                                  placeholder="TYPE YOUR ANSWER"
-                                  className="w-full bg-transparent border-none outline-none text-xs text-primary placeholder:text-primary/30 placeholder:opacity-100 placeholder:font-bold font-bold tracking-[0.15em] rounded-none uppercase p-0"
-                                />
-                                <div className="absolute bottom-0 left-0 w-full h-[1.5px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-left" />
-                              </div>
-                              {captchaError && (
-                                <span className="text-[9px] text-red-500 font-sans tracking-[0.08em] uppercase block pt-0.5">{captchaError}</span>
-                              )}
-                              <span className="text-[9px] font-sans text-secondary/50 tracking-[0.08em] uppercase block">
-                                Spam prevention verification
-                              </span>
-                            </div>
-
-                            {/* Submit Button */}
-                            <div className="group relative w-fit">
-                              <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="bg-primary border border-primary text-background hover:bg-transparent hover:text-primary px-14 py-4 text-xs md:text-sm font-bold tracking-[0.2em] font-sans rounded-none transition-all duration-300 cursor-pointer disabled:opacity-50 select-none uppercase flex items-center gap-3"
-                              >
-                                <span>SUBMIT</span>
-                                <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300 stroke-[2] fill-none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                            </motion.form>
+                          ) : (
+                            <motion.div
+                              key="studio-success-message"
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="text-center py-16 px-8 flex flex-col items-center justify-center bg-white border border-[#e5ded6] rounded-[10px] shadow-sm max-w-xl mx-auto"
+                            >
+                              <div className="w-14 h-14 rounded-full border border-[#b89b74] flex items-center justify-center text-[#b89b74] mb-6">
+                                <svg className="w-6 h-6 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                                 </svg>
+                              </div>
+                              <h3 className="text-3xl font-cormorant font-light text-[#111111] italic mb-4">Inquiry Received</h3>
+                              <p className="text-xs font-sans text-[#666666] leading-relaxed max-w-[380px] mx-auto tracking-wide">
+                                Thank you for reaching out to The AD Efffects. Your message has been sent to our curation team. We will review your details and respond within 48 business hours.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => setIsSubmitted(false)}
+                                className="text-[11px] uppercase tracking-[0.2em] text-[#b89b74] hover:text-[#111111] transition-colors pt-6 border-b border-[#b89b74] pb-0.5 hover:border-[#111111] cursor-pointer font-bold mt-4"
+                              >
+                                Send another message
                               </button>
-                            </div>
-                          </div>
-                        </motion.form>
-                      ) : (
-                        <motion.div
-                          key="success-message"
-                          initial={{ opacity: 0, scale: 0.98 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.5, ease: "easeOut" }}
-                          className="text-center py-16 px-4 space-y-6 flex flex-col items-center justify-center border border-border-custom bg-card-bg/25"
-                        >
-                          <div className="w-12 h-12 rounded-none border border-accent flex items-center justify-center text-accent mb-2">
-                            <svg className="w-5 h-5 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+
+                    </div>
+
+                    {/* Bottom coordinates bar */}
+                    <div className="w-full h-[1px] bg-[#e5ded6] mt-24 mb-10" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 w-full">
+                      {/* Studio Location */}
+                      <div className="flex items-start gap-4">
+                        <MapPin className="w-[18px] h-[18px] text-[#b89b74] stroke-[1.5] mt-0.5 flex-shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-sans tracking-[0.1em] text-[#b89b74] font-semibold uppercase">Studio Location</span>
+                          <span className="text-[11px] font-sans text-[#666666] mt-1 leading-normal">
+                            123 Design Street<br />New York, NY 10001
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Email Us */}
+                      <div className="flex items-start gap-4">
+                        <Mail className="w-[18px] h-[18px] text-[#b89b74] stroke-[1.5] mt-0.5 flex-shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-sans tracking-[0.1em] text-[#b89b74] font-semibold uppercase">Email Us</span>
+                          <a href="mailto:hello@thestudio.com" className="text-[11px] font-sans text-[#666666] mt-1 hover:text-[#b89b74] transition-colors leading-normal">
+                            hello@thestudio.com
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Call Us */}
+                      <div className="flex items-start gap-4">
+                        <Phone className="w-[18px] h-[18px] text-[#b89b74] stroke-[1.5] mt-0.5 flex-shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-sans tracking-[0.1em] text-[#b89b74] font-semibold uppercase">Call Us</span>
+                          <a href="tel:+12125550199" className="text-[11px] font-sans text-[#666666] mt-1 hover:text-[#b89b74] transition-colors leading-normal font-sans">
+                            +1 (212) 555-0199
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Follow Us */}
+                      <div className="flex flex-col">
+                        <span className="text-[11px] font-sans tracking-[0.1em] text-[#111111] font-semibold uppercase">Follow Us</span>
+                        <div className="flex items-center gap-4 mt-2 text-[#666666]">
+                          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#b89b74] transition-colors">
+                            <svg className="w-5 h-5 fill-none stroke-[1.5]" stroke="currentColor" viewBox="0 0 24 24">
+                              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                             </svg>
-                          </div>
-                          <h3 className="text-2xl font-cormorant font-light text-primary italic">Inquiry Received</h3>
-                          <p className="text-xs text-secondary leading-relaxed max-w-[360px] mx-auto font-light tracking-wide">
-                            Thank you for reaching out to The AD Efffects. Your message has been sent to our curation team. We will review your details and respond within 48 business hours.
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => setIsSubmitted(false)}
-                            className="text-[10px] uppercase tracking-[0.2em] text-accent hover:text-primary transition-colors pt-4 border-b border-accent pb-0.5 hover:border-primary cursor-pointer font-semibold"
-                          >
-                            Send another message
-                          </button>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Horizontal Separator Line */}
-                  <div className="w-full max-w-4xl px-6 mt-16 mb-8">
-                    <div className="w-full h-[1px] bg-primary/10 transition-colors duration-300" />
-                  </div>
-
-                  {/* Symmetrical Coordinates Info (Tidy Row Format) */}
-                  <div className="w-full max-w-4xl px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-sans tracking-[0.18em] text-secondary/70 uppercase">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <span>Gandhidham, Gujarat, India</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="mailto:hello@adefffects.com" className="hover:text-primary transition-colors">
-                        hello@adefffects.com
-                      </a>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="tel:+919825012345" className="hover:text-primary transition-colors">
-                        +91 98250 12345
-                      </a>
+                          </a>
+                          <a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#b89b74] transition-colors">
+                            <svg className="w-5 h-5 fill-none stroke-[1.5]" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a10 10 0 0 0-3.32 19.44c-.02-.93-.04-2.08.18-3.05l1.45-6.13s-.36-.72-.36-1.78c0-1.67.97-2.92 2.18-2.92 1.03 0 1.53.77 1.53 1.7 0 1.03-.66 2.58-1 4.02-.29 1.21.6 2.2 1.8 2.2 2.16 0 3.82-2.28 3.82-5.57 0-2.9-2.09-4.94-5.08-4.94-3.46 0-5.5 2.59-5.5 5.28 0 1.04.4 2.16.9 2.77.1.12.11.23.08.35l-.34 1.38c-.06.22-.19.3-.43.19-1.57-.73-2.55-3.03-2.55-4.88 0-3.98 2.89-7.63 8.33-7.63 4.37 0 7.78 3.12 7.78 7.29 0 4.35-2.74 7.85-6.55 7.85-1.28 0-2.48-.67-2.9-1.46l-.78 2.99c-.28 1.09-.9 2.45-1.37 3.22A10 10 0 1 0 12 2z" />
+                            </svg>
+                          </a>
+                          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#b89b74] transition-colors">
+                            <svg className="w-5 h-5 fill-none stroke-[1.5]" stroke="currentColor" viewBox="0 0 24 24">
+                              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                              <rect x="2" y="9" width="4" height="12" />
+                              <circle cx="4" cy="4" r="2" />
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Live IST Time Display */}
-                  <div className="mt-6 text-[9px] font-sans tracking-[0.2em] text-accent font-medium uppercase flex items-center gap-2">
-                    <Clock className="w-3 h-3 stroke-[1.5]" />
-                    <span>GANDHIDHAM IST: {gandhidhamTime}</span>
-                    <span className="ml-1 font-semibold text-secondary">
-                      {isStudioOpen ? '[ STUDIO OPEN ]' : '[ STUDIO CLOSED ]'}
-                    </span>
-                  </div>
                 </div>
               )}
             </motion.div>
