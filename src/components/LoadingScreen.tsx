@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const nameChars = Array.from("AD Efffects");
+  const nameChars = Array.from("The AD Efffects");
 
   const containerVariants = {
     hidden: {},

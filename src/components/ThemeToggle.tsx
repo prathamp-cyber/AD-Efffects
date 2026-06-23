@@ -56,7 +56,11 @@ export default function ThemeToggle() {
   return (
     <button 
       onClick={toggleTheme}
-      className="fixed bottom-6 right-6 z-[9999] w-12 h-12 rounded-full flex items-center justify-center bg-background/80 backdrop-blur-md border border-border-custom text-primary shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:scale-105 transition-all duration-300 cursor-pointer select-none outline-none"
+      className={`fixed bottom-6 right-6 z-[9999] w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:scale-105 transition-all duration-300 cursor-pointer select-none outline-none ${
+        theme === 'light' 
+          ? 'bg-card-bg border border-primary/60 text-primary' 
+          : 'bg-background/80 border border-border-custom text-primary'
+      }`}
       aria-label="Toggle theme"
     >
       <AnimatePresence mode="wait" initial={false}>
@@ -68,7 +72,7 @@ export default function ThemeToggle() {
             exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <Moon className="w-5 h-5 stroke-[1.25]" />
+            <Moon className="w-5 h-5 stroke-[2.5]" />
           </motion.div>
         ) : (
           <motion.div

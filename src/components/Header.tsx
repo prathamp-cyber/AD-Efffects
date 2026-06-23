@@ -124,7 +124,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             onClick={() => handleTabClick('portfolio')}
             className="text-sm font-cormorant font-light tracking-[0.25em] text-primary focus:outline-none"
           >
-            <span className="mr-[-0.25em]">AD Efffects</span>
+            <span className="mr-[-0.25em]">The AD Efffects</span>
           </button>
           <button 
             onClick={() => setMobileMenuOpen(true)}
@@ -150,7 +150,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
               onClick={() => handleTabClick('portfolio')}
               className="font-script text-[64px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
             >
-              AD Efffects
+              The AD Efffects
             </motion.button>
             {/* Centered horizontal underline (approx 60% of script width) */}
             <motion.div 
@@ -222,19 +222,21 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                 variants={navItemVariants}
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`text-[12px] md:text-[13px] uppercase tracking-[0.28em] font-light transition-all duration-300 hover:text-accent cursor-pointer relative pb-2 ${
+                className={`text-[12px] md:text-[13px] uppercase tracking-[0.28em] font-bold transition-all duration-300 cursor-pointer relative pb-2 group ${
                   activeTab === tab.id 
-                    ? 'text-accent' 
-                    : 'text-primary/70'
+                    ? 'text-primary' 
+                    : 'text-primary/70 hover:text-primary'
                 }`}
               >
                 <span className="mr-[-0.28em]">{tab.label}</span>
-                {activeTab === tab.id && (
+                {activeTab === tab.id ? (
                   <motion.div 
                     layoutId="activeTabUnderline"
-                    className="absolute left-0 right-0 bottom-0 h-[1.5px] bg-accent"
+                    className="absolute left-0 right-0 bottom-0 h-[1.5px] bg-primary"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
+                ) : (
+                  <span className="absolute left-0 right-0 bottom-0 h-[1.5px] bg-primary scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                 )}
               </motion.button>
             ))}
@@ -254,7 +256,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           >
             <div className="flex justify-between items-center">
               <span className="text-sm font-cormorant font-light tracking-[0.25em] text-primary">
-                AD Efffects
+                The AD Efffects
               </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
@@ -275,8 +277,8 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                 >
                   <button
                     onClick={() => handleTabClick(tab.id)}
-                    className={`text-2xl font-cormorant font-light tracking-[0.2em] uppercase text-left w-full cursor-pointer hover:text-accent ${
-                      activeTab === tab.id ? 'text-accent font-normal' : 'text-primary'
+                    className={`text-2xl font-cormorant font-bold tracking-[0.2em] uppercase text-left w-full cursor-pointer transition-colors duration-300 ${
+                      activeTab === tab.id ? 'text-primary border-b border-primary/20 pb-1' : 'text-primary/70 hover:text-primary'
                     }`}
                   >
                     {tab.label}
@@ -287,7 +289,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
 
             <div className="flex flex-col space-y-3 pl-4 text-[9px] uppercase tracking-[0.25em] text-secondary font-light">
               <p>hello@adefffects.com</p>
-              <p>© 2026 AD Efffects. All rights reserved.</p>
+              <p>© 2026 The AD Efffects. All rights reserved.</p>
             </div>
           </motion.div>
         )}

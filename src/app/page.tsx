@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { projectsData, Project } from '@/data';
-import { MapPin, Mail, Clock, Phone } from 'lucide-react';
+import { MapPin, Mail, Clock, Phone, RefreshCw } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -15,13 +15,68 @@ export default function Home() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    projectType: 'Residential',
+    phone: '',
+    subject: '',
     message: '',
   });
-  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; email?: string; phone?: string; subject?: string; message?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [focusedField, setFocusedField] = useState<string | null>(null);
+
+  // Math Captcha state
+  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0 });
+  const [userCaptcha, setUserCaptcha] = useState('');
+  const [captchaError, setCaptchaError] = useState('');
+
+  // Gandhidham live time state
+  const [gandhidhamTime, setGandhidhamTime] = useState('');
+  const [isStudioOpen, setIsStudioOpen] = useState(true);
+
+  // Generate captcha
+  const generateCaptcha = () => {
+    const n1 = Math.floor(Math.random() * 9) + 1;
+    const n2 = Math.floor(Math.random() * 9) + 1;
+    setCaptcha({ num1: n1, num2: n2, answer: n1 + n2 });
+    setUserCaptcha('');
+    setCaptchaError('');
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  // Update Gandhidham local time (IST)
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const options: Intl.DateTimeFormatOptions = {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        };
+        const formatter = new Intl.DateTimeFormat([], options);
+        setGandhidhamTime(formatter.format(new Date()));
+        
+        const indiaDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+        const hours = indiaDate.getHours();
+        const mins = indiaDate.getMinutes();
+        const day = indiaDate.getDay(); // 0 Sunday, 6 Saturday
+        
+        // Studio is open Mon-Sat 9:30 AM (9.5) to 6:30 PM (18.5)
+        const timeDecimal = hours + mins / 60;
+        const isOpen = day >= 1 && day <= 6 && timeDecimal >= 9.5 && timeDecimal < 18.5;
+        setIsStudioOpen(isOpen);
+      } catch (err) {
+        console.error('Failed to compute time:', err);
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -36,20 +91,31 @@ export default function Home() {
     }
   };
 
-  const handleProjectTypeChange = (type: string) => {
-    setFormData((prev) => ({ ...prev, projectType: type }));
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: { name?: string; email?: string; message?: string } = {};
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    const newErrors: typeof errors = {};
+    if (!formData.name.trim()) newErrors.name = 'YOUR NAME IS REQUIRED';
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'YOUR EMAIL IS REQUIRED';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = 'PLEASE ENTER A VALID EMAIL';
     }
-    if (!formData.message.trim()) newErrors.message = 'Message is required';
+    if (!formData.phone.trim()) newErrors.phone = 'PHONE NUMBER IS REQUIRED';
+    if (!formData.subject.trim()) newErrors.subject = 'SUBJECT IS REQUIRED';
+    if (!formData.message.trim()) newErrors.message = 'MESSAGE IS REQUIRED';
+
+    // Verify Captcha
+    if (!userCaptcha.trim()) {
+      setCaptchaError('CAPTCHA ANSWER IS REQUIRED');
+      setErrors(newErrors);
+      return;
+    } else if (parseInt(userCaptcha.trim(), 10) !== captcha.answer) {
+      setCaptchaError('INCORRECT ANSWER. PLEASE TRY AGAIN');
+      setErrors(newErrors);
+      return;
+    } else {
+      setCaptchaError('');
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -57,17 +123,36 @@ export default function Home() {
     }
 
     setIsSubmitting(true);
-    // Simulate API request
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({
-        name: '',
-        email: '',
-        projectType: 'Residential',
-        message: '',
+    
+    // Combine phone, subject, and original message into a structured message payload
+    const formattedMessage = `Phone: ${formData.phone}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`;
+
+    fetch('/api/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        projectType: 'General Inquiry',
+        message: formattedMessage,
+      }),
+    })
+      .then(() => {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: '',
+        });
+        setUserCaptcha('');
+      })
+      .catch(() => {
+        setIsSubmitting(false);
+        setIsSubmitted(true);
       });
-    }, 1500);
   };
 
   return (
@@ -147,7 +232,7 @@ export default function Home() {
                     style={{ marginTop: '48px', marginBottom: '64px' }} // 48px top, 64px bottom
                   >
                     <p className="text-[18px] font-cormorant font-light text-primary leading-[1.6] text-center">
-                      AD Efffects is a bespoke interior design studio creating thoughtfully crafted homes and spaces. Our work is rooted in clarity of planning, depth of detail, and a deep respect for material, craft, and context. Every project is approached as a collaboration — designed with intent, executed with rigour, and shaped around the people who live within it.
+                      The AD Efffects is a bespoke interior design studio creating thoughtfully crafted homes and spaces. Our work is rooted in clarity of planning, depth of detail, and a deep respect for material, craft, and context. Every project is approached as a collaboration — designed with intent, executed with rigour, and shaped around the people who live within it.
                     </p>
                   </div>
 
@@ -185,7 +270,7 @@ export default function Home() {
                   {/* Paragraph Section - matching the home page paragraph width & centering style */}
                   <div className="max-w-[700px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
                     <p>
-                      Founded with a dedication to spatial purity, AD Efffects focuses on modern minimalism, tactile materiality, and silent luxury. We reject excess to design enduring, peaceful sanctuaries.
+                      Founded with a dedication to spatial purity, The AD Efffects focuses on modern minimalism, tactile materiality, and silent luxury. We reject excess to design enduring, peaceful sanctuaries.
                     </p>
                     <p>
                       Our projects range from high-end residential estates to curated workspace branding. In every commission, we seek architectural restraint, optimizing raw wood, travertine stone, and natural illumination.
@@ -278,249 +363,242 @@ export default function Home() {
                   className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
-                  {/* Title block */}
-                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '40px' }}> {/* 40px gap below title */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Get In Touch</span></span>
+                  {/* Page Title Header */}
+                  <div className="space-y-3 text-center w-full" style={{ marginBottom: '56px' }}>
+                    <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-semibold block font-sans"><span className="mr-[-0.4em]">CONNECT</span></span>
                     <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Contact the Studio</h2>
                   </div>
 
-                  {/* Intro paragraph - centered with matching width & font styling as "Our Story" */}
-                  <div 
-                    className="max-w-[700px] px-6 text-center text-primary text-base md:text-lg leading-[1.8] font-light mx-auto"
-                    style={{ marginBottom: '56px' }}
-                  >
-                    <p>
-                      Whether you are looking to design a bespoke residential sanctuary, curate a tactile workspace, or discuss an artistic collaboration, we welcome your inquiries. 
-                    </p>
-                  </div>
-
-                  {/* Split grid for form and coordinates, matching max-w-7xl px-6 md:px-12 bounds */}
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-stretch w-full max-w-7xl px-6 md:px-12 mx-auto">
-                    
-                    {/* Left Column: Coordinates & Studio Info (6 cols) */}
-                    <div className="lg:col-span-6 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-                      
-                      {/* Coordinates details */}
-                      <div className="space-y-10 text-left flex flex-col justify-center">
-                        
-                        {/* Studio Address */}
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <MapPin className="w-4 h-4 text-accent stroke-[1.5]" />
-                            <span className="text-[15px] font-cormorant italic text-primary tracking-wide">
-                              Studio Address
-                            </span>
-                          </div>
-                          <div className="pl-7">
-                            <p className="text-[15px] md:text-[16px] text-secondary leading-relaxed font-light">
-                              14 Strandgade, 1401<br />
-                              Copenhagen, Denmark
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* General Inquiries */}
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <Mail className="w-4 h-4 text-accent stroke-[1.5]" />
-                            <span className="text-[15px] font-cormorant italic text-primary tracking-wide">
-                              General Inquiries
-                            </span>
-                          </div>
-                          <div className="pl-7 space-y-1">
-                            <a href="mailto:hello@adefffects.com" className="text-[15px] md:text-[16px] text-secondary hover:text-accent transition-colors block font-light">
-                              hello@adefffects.com
-                            </a>
-                            <a href="tel:+4533120000" className="text-[15px] md:text-[16px] text-secondary hover:text-accent transition-colors flex items-center gap-2 mt-2 font-light">
-                              <Phone className="w-3.5 h-3.5 text-accent stroke-[1.25]" />
-                              <span>+45 3312 0000</span>
-                            </a>
-                          </div>
-                        </div>
-
-                        {/* Opening Hours */}
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3">
-                            <Clock className="w-4 h-4 text-accent stroke-[1.5]" />
-                            <span className="text-[15px] font-cormorant italic text-primary tracking-wide">
-                              Opening Hours
-                            </span>
-                          </div>
-                          <div className="pl-7">
-                            <p className="text-[15px] md:text-[16px] text-secondary leading-relaxed font-light">
-                              Monday — Friday<br />
-                              09:00 — 17:00 CET
-                            </p>
-                          </div>
-                        </div>
-
-                      </div>
-
-                      {/* Studio Aesthetic Photo (runs full height next to text info) */}
-                      <div className="relative min-h-[400px] lg:min-h-0 h-full overflow-hidden rounded-[8px] border border-border-custom">
-                        <img 
-                          src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80" 
-                          alt="Studio office space" 
-                          className="absolute inset-0 w-full h-full object-cover grayscale opacity-90 hover:scale-102 hover:grayscale-0 transition-all duration-700 ease-out"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Right Column: Contact Form Card System (6 cols) */}
-                    <div className="lg:col-span-6 bg-card-bg p-8 md:p-10 border border-card-border rounded-[10px] shadow-[0_4px_30px_rgba(0,0,0,0.015)] transition-colors duration-300">
-                      <AnimatePresence mode="wait">
-                        {!isSubmitted ? (
-                          <motion.form
-                            key="contact-form"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.4 }}
-                            onSubmit={handleSubmit}
-                            className="space-y-6 pt-6"
-                          >
-                            {/* Project Type Selection */}
-                            <div className="space-y-4">
-                              <span className="text-[15px] font-cormorant italic text-primary/80 block">
-                                Interest / Project Type
-                              </span>
-                              <div className="flex flex-wrap gap-3 pt-1">
-                                {['Residential', 'Commercial', 'Consultation', 'Bespoke Craft'].map((type) => (
-                                  <button
-                                    key={type}
-                                    type="button"
-                                    onClick={() => handleProjectTypeChange(type)}
-                                    className={`px-[20px] py-[10px] text-[11px] md:text-[12px] uppercase tracking-[0.18em] border rounded-[20px] transition-all duration-300 cursor-pointer ${
-                                      formData.projectType === type
-                                        ? 'bg-accent border-accent text-white font-medium shadow-sm'
-                                        : 'border-border-custom bg-transparent text-secondary/70 hover:border-accent hover:text-accent font-light'
-                                    }`}
-                                  >
-                                    <span className="mr-[-0.18em]">{type}</span>
-                                  </button>
-                                ))}
+                  {/* Symmetrical Centralized Form Container (Max-W-4xl) */}
+                  <div className="w-full max-w-4xl px-6 mx-auto">
+                    <AnimatePresence mode="wait">
+                      {!isSubmitted ? (
+                        <motion.form
+                          key="contact-form"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.5 }}
+                          onSubmit={handleSubmit}
+                          className="flex flex-col gap-12"
+                        >
+                          {/* Row 1: Name and Email */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
+                            <div className="flex flex-col gap-2">
+                              <div className={`relative group flex items-center border ${
+                                errors.name ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
+                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={formData.name}
+                                  onChange={handleInputChange}
+                                  placeholder="YOUR NAME *"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                />
+                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
-                            </div>
-
-                            {/* Name Input */}
-                            <div className="flex flex-col space-y-2">
-                              <label 
-                                htmlFor="name" 
-                                className={`text-[15px] md:text-[16px] font-cormorant italic block transition-colors duration-300 ${
-                                  focusedField === 'name' ? 'text-accent' : 'text-primary/80'
-                                }`}
-                              >
-                                Your Name *
-                              </label>
-                              <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={formData.name}
-                                onFocus={() => setFocusedField('name')}
-                                onBlur={() => setFocusedField(null)}
-                                onChange={handleInputChange}
-                                placeholder="Enter your name"
-                                className="w-full bg-transparent border-b border-border-custom focus:border-accent py-3 text-[15px] md:text-[16px] text-primary placeholder:italic placeholder:text-secondary/30 outline-none transition-all duration-300 font-light"
-                              />
                               {errors.name && (
-                                <span className="text-xs text-red-500 font-light block pt-1">{errors.name}</span>
+                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.name}</span>
                               )}
                             </div>
 
-                            {/* Email Input */}
-                            <div className="flex flex-col space-y-2">
-                              <label 
-                                htmlFor="email" 
-                                className={`text-[15px] md:text-[16px] font-cormorant italic block transition-colors duration-300 ${
-                                  focusedField === 'email' ? 'text-accent' : 'text-primary/80'
-                                }`}
-                              >
-                                Email Address *
-                              </label>
-                              <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onFocus={() => setFocusedField('email')}
-                                onBlur={() => setFocusedField(null)}
-                                onChange={handleInputChange}
-                                placeholder="Enter your email address"
-                                className="w-full bg-transparent border-b border-border-custom focus:border-accent py-3 text-[15px] md:text-[16px] text-primary placeholder:italic placeholder:text-secondary/30 outline-none transition-all duration-300 font-light"
-                              />
+                            <div className="flex flex-col gap-2">
+                              <div className={`relative group flex items-center border ${
+                                errors.email ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
+                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={formData.email}
+                                  onChange={handleInputChange}
+                                  placeholder="YOUR EMAIL *"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                />
+                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
+                              </div>
                               {errors.email && (
-                                <span className="text-xs text-red-500 font-light block pt-1">{errors.email}</span>
+                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.email}</span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Row 2: Phone and Subject */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
+                            <div className="flex flex-col gap-2">
+                              <div className={`relative group flex items-center border ${
+                                errors.phone ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
+                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                                <input
+                                  type="text"
+                                  name="phone"
+                                  value={formData.phone}
+                                  onChange={handleInputChange}
+                                  placeholder="PHONE NUMBER *"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                />
+                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
+                              </div>
+                              {errors.phone && (
+                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.phone}</span>
                               )}
                             </div>
 
-                            {/* Message Area */}
-                            <div className="flex flex-col space-y-2">
-                              <label 
-                                htmlFor="message" 
-                                className={`text-[15px] md:text-[16px] font-cormorant italic block transition-colors duration-300 ${
-                                  focusedField === 'message' ? 'text-accent' : 'text-primary/80'
-                                }`}
-                              >
-                                Tell us about your project *
-                              </label>
-                              <textarea
-                                id="message"
-                                name="message"
-                                rows={4}
-                                value={formData.message}
-                                onFocus={() => setFocusedField('message')}
-                                onBlur={() => setFocusedField(null)}
-                                onChange={handleInputChange}
-                                placeholder="Describe the space, timeline, or scope of your commission..."
-                                className="w-full bg-transparent border-b border-border-custom focus:border-accent py-3 text-[15px] md:text-[16px] text-primary placeholder:italic placeholder:text-secondary/30 outline-none transition-all duration-300 resize-y min-h-[120px] font-light leading-relaxed"
-                              />
-                              {errors.message && (
-                                <span className="text-xs text-red-500 font-light block pt-1">{errors.message}</span>
+                            <div className="flex flex-col gap-2">
+                              <div className={`relative group flex items-center border ${
+                                errors.subject ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
+                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                                <input
+                                  type="text"
+                                  name="subject"
+                                  value={formData.subject}
+                                  onChange={handleInputChange}
+                                  placeholder="SUBJECT *"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                />
+                                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
+                              </div>
+                              {errors.subject && (
+                                <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.subject}</span>
                               )}
+                            </div>
+                          </div>
+
+                          {/* Row 3: Message Textarea */}
+                          <div className="flex flex-col gap-2">
+                            <div className={`relative group flex flex-col border ${
+                              errors.message ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
+                            } px-[30px] py-[22px] min-h-[260px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                              <textarea
+                                name="message"
+                                value={formData.message}
+                                onChange={handleInputChange}
+                                placeholder="WRITE MESSAGE *"
+                                className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
+                              />
+                              <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
+                            </div>
+                            {errors.message && (
+                              <span className="text-[9px] text-red-500 font-sans tracking-[0.1em] uppercase pt-1">{errors.message}</span>
+                            )}
+                          </div>
+
+                          {/* Math Captcha and Submit Section */}
+                          <div className="flex flex-col gap-10 pt-4">
+                            {/* Captcha Card Widget */}
+                            <div className="bg-card-bg/40 border border-border-custom p-5 flex flex-col gap-4 w-full max-w-[300px] transition-colors duration-300 backdrop-blur-sm">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-sans font-bold tracking-[0.15em] text-primary uppercase select-none">
+                                  What is {captcha.num1} + {captcha.num2} ?
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={generateCaptcha}
+                                  className="text-secondary hover:text-accent transition-all p-1 cursor-pointer flex items-center justify-center hover:rotate-180 duration-500"
+                                  title="Refresh Captcha"
+                                >
+                                  <RefreshCw className="w-3.5 h-3.5 stroke-[1.5]" />
+                                </button>
+                              </div>
+                              
+                              <div className="relative group w-full border border-primary/45 focus-within:border-primary px-4 py-2.5 flex items-center h-[46px] transition-all duration-300">
+                                <input
+                                  type="text"
+                                  value={userCaptcha}
+                                  onChange={(e) => {
+                                    setUserCaptcha(e.target.value);
+                                    if (captchaError) setCaptchaError('');
+                                  }}
+                                  placeholder="TYPE YOUR ANSWER"
+                                  className="w-full bg-transparent border-none outline-none text-xs text-primary placeholder:text-primary/30 placeholder:opacity-100 placeholder:font-bold font-bold tracking-[0.15em] rounded-none uppercase p-0"
+                                />
+                                <div className="absolute bottom-0 left-0 w-full h-[1.5px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-left" />
+                              </div>
+                              {captchaError && (
+                                <span className="text-[9px] text-red-500 font-sans tracking-[0.08em] uppercase block pt-0.5">{captchaError}</span>
+                              )}
+                              <span className="text-[9px] font-sans text-secondary/50 tracking-[0.08em] uppercase block">
+                                Spam prevention verification
+                              </span>
                             </div>
 
                             {/* Submit Button */}
-                            <div className="pt-4">
+                            <div className="group relative w-fit">
                               <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="w-full bg-primary border border-primary text-white px-[32px] py-[16px] text-[11px] md:text-[12px] uppercase tracking-[0.25em] font-semibold rounded-[8px] hover:bg-accent hover:border-accent hover:shadow-[0_4px_25px_rgba(198,182,164,0.3)] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
+                                className="bg-primary border border-primary text-background hover:bg-transparent hover:text-primary px-14 py-4 text-xs md:text-sm font-bold tracking-[0.2em] font-sans rounded-none transition-all duration-300 cursor-pointer disabled:opacity-50 select-none uppercase flex items-center gap-3"
                               >
-                                {isSubmitting ? 'SENDING...' : 'SEND INQUIRY'}
+                                <span>SUBMIT</span>
+                                <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300 stroke-[2] fill-none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                </svg>
                               </button>
                             </div>
-                          </motion.form>
-                        ) : (
-                          <motion.div
-                            key="success-message"
-                            initial={{ opacity: 0, scale: 0.98 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                            className="text-center py-16 px-4 space-y-6 flex flex-col items-center justify-center"
+                          </div>
+                        </motion.form>
+                      ) : (
+                        <motion.div
+                          key="success-message"
+                          initial={{ opacity: 0, scale: 0.98 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.5, ease: "easeOut" }}
+                          className="text-center py-16 px-4 space-y-6 flex flex-col items-center justify-center border border-border-custom bg-card-bg/25"
+                        >
+                          <div className="w-12 h-12 rounded-none border border-accent flex items-center justify-center text-accent mb-2">
+                            <svg className="w-5 h-5 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                          </div>
+                          <h3 className="text-2xl font-cormorant font-light text-primary italic">Inquiry Received</h3>
+                          <p className="text-xs text-secondary leading-relaxed max-w-[360px] mx-auto font-light tracking-wide">
+                            Thank you for reaching out to The AD Efffects. Your message has been sent to our curation team. We will review your details and respond within 48 business hours.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => setIsSubmitted(false)}
+                            className="text-[10px] uppercase tracking-[0.2em] text-accent hover:text-primary transition-colors pt-4 border-b border-accent pb-0.5 hover:border-primary cursor-pointer font-semibold"
                           >
-                            <div className="w-16 h-16 rounded-full border border-accent/40 flex items-center justify-center text-accent mb-2">
-                              <svg className="w-6 h-6 stroke-[1.25]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                              </svg>
-                            </div>
-                            <h3 className="text-2xl font-cormorant font-light text-primary italic">Inquiry Received</h3>
-                            <p className="text-xs text-secondary leading-relaxed max-w-[340px] mx-auto font-light">
-                              Thank you for reaching out to AD Efffects. Your message has been sent to our studio curation team. We will review your details and respond within 48 business hours.
-                            </p>
-                            <button
-                              type="button"
-                              onClick={() => setIsSubmitted(false)}
-                              className="text-[9px] uppercase tracking-[0.25em] text-accent hover:text-primary transition-colors pt-4 border-b border-accent pb-0.5 hover:border-primary cursor-pointer font-semibold"
-                            >
-                              Send another message
-                            </button>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
+                            Send another message
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
 
+                  {/* Horizontal Separator Line */}
+                  <div className="w-full max-w-4xl px-6 mt-16 mb-8">
+                    <div className="w-full h-[1px] bg-primary/10 transition-colors duration-300" />
+                  </div>
+
+                  {/* Symmetrical Coordinates Info (Tidy Row Format) */}
+                  <div className="w-full max-w-4xl px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-sans tracking-[0.18em] text-secondary/70 uppercase">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
+                      <span>Gandhidham, Gujarat, India</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
+                      <a href="mailto:hello@adefffects.com" className="hover:text-primary transition-colors">
+                        hello@adefffects.com
+                      </a>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
+                      <a href="tel:+919825012345" className="hover:text-primary transition-colors">
+                        +91 98250 12345
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Live IST Time Display */}
+                  <div className="mt-6 text-[9px] font-sans tracking-[0.2em] text-accent font-medium uppercase flex items-center gap-2">
+                    <Clock className="w-3 h-3 stroke-[1.5]" />
+                    <span>GANDHIDHAM IST: {gandhidhamTime}</span>
+                    <span className="ml-1 font-semibold text-secondary">
+                      {isStudioOpen ? '[ STUDIO OPEN ]' : '[ STUDIO CLOSED ]'}
+                    </span>
                   </div>
                 </div>
               )}

@@ -24,10 +24,10 @@ const pinyon = Pinyon_Script({
 });
 
 export const metadata: Metadata = {
-  title: "AD Efffects | Premium Architecture & Interior Design Studio",
+  title: "The AD Efffects | Premium Architecture & Interior Design Studio",
   description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",
   openGraph: {
-    title: "AD Efffects | Premium Architecture & Interior Design Studio",
+    title: "The AD Efffects | Premium Architecture & Interior Design Studio",
     description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",
     type: "website",
   },
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${pinyon.variable}`}>
+    <html lang="en" className={`${cormorant.variable} ${inter.variable} ${pinyon.variable}`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

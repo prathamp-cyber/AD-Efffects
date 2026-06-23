@@ -1,0 +1,17 @@
+[
+  {
+    "id": "1",
+    "name": "Sarah Jenkins",
+    "email": "sarah@jenkinsdesign.co",
+    "projectType": "Residential",
+    "message": "We are looking to renovate our weekend villa in Alibaug. We love your minimal Japandi restraint. Let us know when we can schedule a consultation.",
+    "date": "2026-06-21T10:30:00.000Z"
+  },
+  {
+    "id": "2",
+    "name": "Marcus Aurelius",
+    "email": "marcus@rome.org",
+    "projectType": "Consultation",
+    "message": "Interiors curation query for our new boutique library concept.",
+    "date": "2026-06-22T08:15:00.000Z"
+]
