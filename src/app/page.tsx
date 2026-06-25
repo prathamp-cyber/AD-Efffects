@@ -394,7 +394,7 @@ export default function Home() {
                                   value={formData.name}
                                   onChange={handleInputChange}
                                   placeholder="YOUR NAME *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -413,7 +413,7 @@ export default function Home() {
                                   value={formData.email}
                                   onChange={handleInputChange}
                                   placeholder="YOUR EMAIL *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -435,7 +435,7 @@ export default function Home() {
                                   value={formData.phone}
                                   onChange={handleInputChange}
                                   placeholder="PHONE NUMBER *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -454,7 +454,7 @@ export default function Home() {
                                   value={formData.subject}
                                   onChange={handleInputChange}
                                   placeholder="SUBJECT *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -474,7 +474,7 @@ export default function Home() {
                                 value={formData.message}
                                 onChange={handleInputChange}
                                 placeholder="WRITE MESSAGE *"
-                                className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary placeholder:text-primary placeholder:opacity-100 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
+                                className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
                               />
                               <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                             </div>
@@ -510,7 +510,7 @@ export default function Home() {
                                     if (captchaError) setCaptchaError('');
                                   }}
                                   placeholder="TYPE YOUR ANSWER"
-                                  className="w-full bg-transparent border-none outline-none text-xs text-primary placeholder:text-primary/30 placeholder:opacity-100 placeholder:font-bold font-bold tracking-[0.15em] rounded-none uppercase p-0"
+                                  className="w-full bg-transparent border-none outline-none text-xs text-primary text-center placeholder:text-primary/30 placeholder:font-bold font-bold tracking-[0.15em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[1.5px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-300 origin-left" />
                               </div>
