@@ -495,16 +495,16 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="w-full h-screen bg-[#FAF9F7] text-[#111111] font-sans antialiased selection:bg-accent selection:text-white flex overflow-hidden">
+    <div className="w-full h-screen bg-[#121212] text-[#FAF9F7] font-sans antialiased selection:bg-accent selection:text-white flex overflow-hidden">
       
       {/* 1. AUTHENTICATION LOGIN UI */}
       {!isAuthenticated ? (
-        <div className="w-full h-full flex flex-col items-center justify-center px-6 py-12 relative bg-[#FAF9F7] overflow-y-auto">
+        <div className="w-full h-full flex flex-col items-center justify-center px-6 py-12 relative bg-[#121212] overflow-y-auto">
           {/* Logo header */}
           <div className="flex flex-col items-center select-none mb-10 text-center">
-            <h1 className="font-script text-[64px] text-[#111111] leading-none">The AD Efffects</h1>
-            <div className="w-[180px] h-[1px] bg-[#111111] mt-3" />
-            <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block mt-4 font-sans">
+            <h1 className="font-script text-[64px] text-[#F1EFE8] leading-none">The AD Efffects</h1>
+            <div className="w-[180px] h-[1px] bg-[#FAC775]/25 mt-3" />
+            <span className="text-[9px] uppercase tracking-[0.35em] text-[#FAC775] font-semibold block mt-4 font-sans">
               <span className="mr-[-0.35em]">Studio Administration</span>
             </span>
           </div>
@@ -568,101 +568,105 @@ export default function AdminPage() {
         
         /* 2. AUTHENTICATED ADMIN DASHBOARD PANEL */
         <>
-          {/* Fixed Left Sidebar (240px wide) */}
-          <aside className="w-[240px] h-full bg-[#1A1A1A] text-white flex flex-col justify-between flex-shrink-0 p-6 py-8 gap-8 select-none z-30">
-            <div className="flex flex-col gap-6">
-              {/* Logo / Site Title */}
-              <div className="font-serif text-[20px] text-[#F1EFE8] px-3 pt-2 pb-12 tracking-[0.5px] leading-tight select-none">
-                AD Efffects
-              </div>
-              <div className="text-[11px] text-[#888780] px-3 pb-3 pt-0 tracking-[1px] font-sans font-medium uppercase select-none">
-                ADMIN
+          {/* Fixed Left Sidebar (320px wide) */}
+          <aside className="w-[320px] h-full bg-[#1A1A1A] text-white flex flex-col justify-between flex-shrink-0 select-none z-30 shadow-[4px_0_24px_rgba(0,0,0,0.15)]">
+            <div className="flex flex-col">
+              {/* Logo / Site Title Header Box (aligns with 88px top header bar) */}
+              <div className="h-[88px] w-full border-b border-[#2C2C2C]/60 flex flex-col justify-center items-center bg-[#1A1A1A] select-none px-8">
+                <span className="font-script text-[40px] text-[#F1EFE8] leading-none mb-1 hover:opacity-85 transition-opacity">
+                  The AD Efffects
+                </span>
+                <span className="text-[8.5px] uppercase tracking-[0.4em] text-[#888780] font-sans font-semibold">
+                  <span className="mr-[-0.4em]">ADMINISTRATION</span>
+                </span>
               </div>
 
-              {/* Navigation list */}
-              <nav className="flex flex-col gap-[2vh]">
-                {[
-                  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                  { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
-                  { id: 'story', label: 'Our story', icon: BookOpen },
-                  { id: 'featured', label: 'Featured', icon: Award },
-                  { id: 'blogs', label: 'Blog posts', icon: PenSquare },
-                  { id: 'inquiries', label: 'Inquiries', icon: Mail, badge: inquiries.length }
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => { 
-                        setEditingProject(null); 
-                        setEditingBlog(null); 
-                        setActiveTab(item.id as typeof activeTab); 
-                      }}
-                      className={`w-full flex items-center justify-between px-[16px] py-[15px] rounded-[6px] text-[16px] font-sans transition-all duration-200 cursor-pointer ${
-                        isActive
-                          ? 'bg-[#2A2A28] border-l-2 border-[#BA7517] text-[#F1EFE8]'
-                          : 'border-l-2 border-transparent text-[#B4B2A9] hover:bg-white/5 hover:text-[#F1EFE8]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-[12px]">
-                        <Icon className={`w-[20px] h-[20px] stroke-[1.5] ${isActive ? 'text-[#FAC775]' : 'text-[#888780]'}`} />
-                        <span>{item.label}</span>
-                      </div>
-                      {item.badge && item.badge > 0 ? (
-                        <span className="bg-[#BA7517]/25 text-[#FAC775] text-[9.5px] px-1.5 py-0.5 rounded font-mono font-medium">
-                          {item.badge}
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </nav>
+              {/* Navigation list with full-width click targets & viewport scale spacing */}
+              <div className="w-full pt-[6vh]">
+                <nav className="flex flex-col gap-[2.5vh]">
+                  {[
+                    { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard },
+                    { id: 'portfolio', label: 'PORTFOLIO', icon: Briefcase },
+                    { id: 'story', label: 'OUR STORY', icon: BookOpen },
+                    { id: 'featured', label: 'FEATURED', icon: Award },
+                    { id: 'blogs', label: 'BLOG POSTS', icon: PenSquare },
+                    { id: 'inquiries', label: 'INQUIRIES', icon: Mail, badge: inquiries.length }
+                  ].map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => { 
+                          setEditingProject(null); 
+                          setEditingBlog(null); 
+                          setActiveTab(item.id as typeof activeTab); 
+                        }}
+                        className={`w-full flex items-center justify-between px-8 py-[2.2vh] text-[15px] font-sans uppercase tracking-[0.25em] font-semibold transition-all duration-300 border-l-[4px] cursor-pointer ${
+                          isActive
+                            ? 'bg-[#2A2A28] border-[#BA7517] text-[#F1EFE8]'
+                            : 'border-transparent text-[#888780] hover:bg-white/5 hover:text-[#F1EFE8] hover:pl-10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-[14px]">
+                          <Icon className={`w-[24px] h-[24px] stroke-[1.25] ${isActive ? 'text-[#FAC775]' : 'text-[#888780]'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        {item.badge && item.badge > 0 ? (
+                          <span className="bg-[#FAC775]/10 text-[#FAC775] border border-[#FAC775]/20 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-medium">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
             </div>
 
-            {/* Sidebar Footer (Settings and Logout) */}
-            <div className="flex flex-col gap-[2vh] pt-8 border-t border-[#2C2C2C]">
+            {/* Sidebar Footer (Settings and Logout) with viewport scale spacing */}
+            <div className="w-full pb-[4vh] pt-6 flex flex-col gap-[1.5vh] border-t border-[#2C2C2C]/60">
               <button
                 onClick={() => { 
                   setEditingProject(null); 
                   setEditingBlog(null); 
                   setActiveTab('settings'); 
                 }}
-                className={`w-full flex items-center gap-[12px] px-[16px] py-[15px] rounded-[6px] text-[16px] font-sans transition-all duration-200 cursor-pointer ${
+                className={`w-full flex items-center gap-[14px] px-8 py-[2.2vh] text-[15px] font-sans uppercase tracking-[0.25em] font-semibold transition-all duration-300 border-l-[4px] cursor-pointer ${
                   activeTab === 'settings'
-                    ? 'bg-[#2A2A28] border-l-2 border-[#BA7517] text-[#F1EFE8]'
-                    : 'border-l-2 border-transparent text-[#B4B2A9] hover:bg-white/5 hover:text-[#F1EFE8]'
+                    ? 'bg-[#2A2A28] border-[#BA7517] text-[#F1EFE8]'
+                    : 'border-transparent text-[#888780] hover:bg-white/5 hover:text-[#F1EFE8] hover:pl-10'
                 }`}
               >
-                <Settings className={`w-[20px] h-[20px] stroke-[1.5] ${activeTab === 'settings' ? 'text-[#FAC775]' : 'text-[#888780]'}`} />
+                <Settings className={`w-[24px] h-[24px] stroke-[1.25] ${activeTab === 'settings' ? 'text-[#FAC775]' : 'text-[#888780]'}`} />
                 <span>Settings</span>
               </button>
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-[12px] px-[16px] py-[15px] rounded-[6px] text-[16px] font-sans text-red-400 hover:text-red-300 hover:bg-white/5 border-l-2 border-transparent transition-all cursor-pointer"
+                className="w-full flex items-center gap-[14px] px-8 py-[2.2vh] text-[15px] font-sans uppercase tracking-[0.25em] font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 hover:pl-10 border-l-[4px] border-transparent transition-all duration-300 cursor-pointer"
               >
-                <LogOut className="w-[20px] h-[20px] stroke-[1.5]" /> 
+                <LogOut className="w-[24px] h-[24px] stroke-[1.25]" /> 
                 <span>Logout</span>
               </button>
             </div>
           </aside>
 
           {/* Right Main Content Area Container */}
-          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#FAF9F7]">
+          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#121212]">
             
-            {/* Top Header Bar (72px height) */}
-            <div className="h-[72px] bg-[#1A1A1A] border-b border-[#2C2C2C] flex justify-between items-center px-10 flex-shrink-0 z-20 select-none">
-              <span className="text-[14px] font-sans font-medium text-[#FAF9F7]">
+            {/* Top Header Bar (88px height) */}
+            <div className="h-[88px] bg-[#1A1A1A] border-b border-[#2C2C2C]/60 flex justify-between items-center px-10 flex-shrink-0 z-20 select-none">
+              <span className="text-[12px] font-sans font-semibold uppercase tracking-[0.25em] text-[#FAF9F7]/90">
                 {getTabLabel()}
               </span>
 
               {/* Profile Block */}
-              <div className="flex items-center gap-[10px]">
+              <div className="flex items-center gap-[14px]">
                 <a 
                   href="/" 
                   target="_blank" 
-                  className="text-[11px] uppercase tracking-[0.2em] text-[#B4B2A9] hover:text-[#FAC775] font-medium transition-all flex items-center gap-1.5 mr-4"
+                  className="text-[10px] uppercase tracking-[0.2em] text-[#B4B2A9] hover:text-[#FAC775] font-semibold transition-all flex items-center gap-1.5 mr-4 hover:scale-105"
                 >
                   <Eye className="w-3.5 h-3.5 stroke-[1.25]" /> View Live
                 </a>
@@ -809,7 +813,7 @@ export default function AdminPage() {
                     <div>
                       {editingProject ? (
                         /* Portfolio Edit/Add Form */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 max-w-4xl mx-auto text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
                           <div className="flex items-center justify-between pb-4 border-b border-[#4A4A48]/45">
                             <h3 className="font-serif font-light text-2xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewProject ? 'Add portfolio item' : `Edit project: ${projectForm.title}`}
@@ -1100,7 +1104,7 @@ export default function AdminPage() {
 
                   {/* VIEW 3: OUR STORY TAB */}
                   {activeTab === 'story' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 max-w-4xl mx-auto text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
                       <div className="pb-4 border-b border-[#4A4A48]/40">
                         <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           Story Philosophy copy
@@ -1252,7 +1256,7 @@ export default function AdminPage() {
 
                   {/* VIEW 4: FEATURED TAB */}
                   {activeTab === 'featured' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 max-w-3xl mx-auto text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
                       <div className="flex justify-between items-center pb-6 border-b border-[#4A4A48]/40 mb-2">
                         <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           Featured Press entries
@@ -1320,7 +1324,7 @@ export default function AdminPage() {
                     <div>
                       {editingBlog ? (
                         /* Add/Edit Blog Post Form */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 max-w-4xl mx-auto text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8]">
                           <div className="flex items-center justify-between pb-4 border-b border-[#4A4A48]/40">
                             <h3 className="font-serif font-light text-2xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewBlog ? 'New Editorial Article' : `Edit Article: ${blogForm.title}`}
@@ -1536,7 +1540,7 @@ export default function AdminPage() {
 
                   {/* VIEW 7: SETTINGS TAB */}
                   {activeTab === 'settings' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 max-w-3xl mx-auto text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8]">
                       <div className="pb-4 border-b border-[#4A4A48]/40">
                         <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           CRM Settings
