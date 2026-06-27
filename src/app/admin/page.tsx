@@ -518,7 +518,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="w-full h-screen bg-[#121212] text-[#FAF9F7] font-sans antialiased selection:bg-accent selection:text-white flex overflow-hidden">
+    <div className="w-full h-screen bg-[#121212] text-[#FAF9F7] font-sans antialiased selection:bg-accent selection:text-white flex gap-[12px] pr-[12px] overflow-hidden">
       
       {/* 1. AUTHENTICATION LOGIN UI */}
       {!isAuthenticated ? (
@@ -980,10 +980,10 @@ export default function AdminPage() {
                             </button>
                           </div>
 
-                          <div className="space-y-8">
+                          <div className="space-y-12">
                             {/* Title & Category */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Project Title *</label>
                                 <input
                                   type="text"
@@ -995,7 +995,7 @@ export default function AdminPage() {
                                 />
                               </div>
 
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Category *</label>
                                 <input
                                   type="text"
@@ -1010,7 +1010,7 @@ export default function AdminPage() {
 
                             {/* Location, Year, Size */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Location</label>
                                 <input
                                   type="text"
@@ -1021,7 +1021,7 @@ export default function AdminPage() {
                                 />
                               </div>
 
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Year</label>
                                 <input
                                   type="text"
@@ -1032,7 +1032,7 @@ export default function AdminPage() {
                                 />
                               </div>
 
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Size</label>
                                 <input
                                   type="text"
@@ -1045,7 +1045,7 @@ export default function AdminPage() {
                             </div>
 
                             {/* Cover Photo */}
-                            <div className="space-y-6 pt-8 border-t border-[#4A4A48]/40">
+                            <div className="space-y-8 pt-10 border-t border-[#4A4A48]/40">
                               <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Cover Photo Image</label>
                               <div className="flex flex-col sm:flex-row gap-6 items-end">
                                 <div className="flex-1 w-full">
@@ -1084,7 +1084,7 @@ export default function AdminPage() {
                             </div>
 
                             {/* Gallery Details */}
-                            <div className="space-y-8 pt-8 border-t border-[#4A4A48]/40">
+                            <div className="space-y-10 pt-10 border-t border-[#4A4A48]/40">
                               <div className="flex justify-between items-center">
                                 <div>
                                   <h4 className="text-[13px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
@@ -1162,7 +1162,7 @@ export default function AdminPage() {
 
                           </div>
 
-                          <div className="flex justify-end gap-6 border-t border-[#4A4A48]/45 pt-8 mt-8">
+                          <div className="flex justify-end gap-6 border-t border-[#4A4A48]/45 pt-10 mt-12">
                             <button
                               type="button"
                               onClick={() => setEditingProject(null)}
@@ -1522,8 +1522,8 @@ export default function AdminPage() {
                             </button>
                           </div>
 
-                          <div className="space-y-8">
-                            <div className="space-y-3">
+                          <div className="space-y-12">
+                            <div className="space-y-4">
                               <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Blog Title *</label>
                               <input
                                 type="text"
@@ -1536,7 +1536,7 @@ export default function AdminPage() {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Publish Date</label>
                                 <input
                                   type="date"
@@ -1545,7 +1545,7 @@ export default function AdminPage() {
                                   className="w-full bg-transparent border-b border-[#BA7517]/25 focus:border-[#FAC775] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light"
                                 />
                               </div>
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Author</label>
                                 <input
                                   type="text"
@@ -1556,7 +1556,7 @@ export default function AdminPage() {
                               </div>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                               <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Article Excerpt / Content Snippet *</label>
                               <textarea
                                 rows={6}
@@ -1568,7 +1568,7 @@ export default function AdminPage() {
                             </div>
                           </div>
 
-                          <div className="flex justify-end gap-6 border-t border-[#BA7517]/15 pt-8 mt-8">
+                          <div className="flex justify-end gap-6 border-t border-[#BA7517]/15 pt-10 mt-12">
                             <button
                               type="button"
                               onClick={() => setEditingBlog(null)}
