@@ -504,7 +504,7 @@ export default function AdminPage() {
           <div className="flex flex-col items-center select-none mb-10 text-center">
             <h1 className="font-script text-[64px] text-[#F1EFE8] leading-none">The AD Efffects</h1>
             <div className="w-[180px] h-[1px] bg-[#FAC775]/25 mt-3" />
-            <span className="text-[9px] uppercase tracking-[0.35em] text-[#FAC775] font-semibold block mt-4 font-sans">
+            <span className="text-[12px] uppercase tracking-[0.3em] text-[#FAC775] font-semibold block mt-4 font-sans">
               <span className="mr-[-0.35em]">Studio Administration</span>
             </span>
           </div>
@@ -516,7 +516,7 @@ export default function AdminPage() {
           >
             <form onSubmit={handleLogin} className="space-y-6">
               {loginError && (
-                <div className="p-4 bg-red-500/5 border border-red-500/20 text-red-400 text-xs font-light rounded-[6px] flex items-center gap-3">
+                <div className="p-4 bg-red-500/5 border border-red-500/20 text-red-400 text-sm font-light rounded-[6px] flex items-center gap-3">
                   <AlertCircle className="w-4 h-4 flex-shrink-0" />
                   <span>{loginError}</span>
                 </div>
@@ -556,7 +556,7 @@ export default function AdminPage() {
                 <button
                   type="submit"
                   disabled={isSubmittingLogin}
-                  className="w-full bg-[#BA7517] border border-[#BA7517] text-white py-4 text-[11px] md:text-[12px] uppercase tracking-[0.25em] font-semibold rounded-[8px] hover:bg-[#FAC775] hover:border-[#FAC775] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
+                  className="w-full bg-[#BA7517] border border-[#BA7517] text-white py-4 text-[13px] md:text-[14px] uppercase tracking-[0.25em] font-semibold rounded-[8px] hover:bg-[#FAC775] hover:border-[#FAC775] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
                 >
                   {isSubmittingLogin ? 'VERIFYING...' : 'ENTER DASHBOARD'}
                 </button>
@@ -576,7 +576,7 @@ export default function AdminPage() {
                 <span className="font-script text-[40px] text-[#F1EFE8] leading-none mb-1 hover:opacity-85 transition-opacity">
                   The AD Efffects
                 </span>
-                <span className="text-[8.5px] uppercase tracking-[0.4em] text-[#888780] font-sans font-semibold">
+                <span className="text-[12px] uppercase tracking-[0.3em] text-[#888780] font-sans font-semibold">
                   <span className="mr-[-0.4em]">ADMINISTRATION</span>
                 </span>
               </div>
@@ -613,7 +613,7 @@ export default function AdminPage() {
                           <span>{item.label}</span>
                         </div>
                         {item.badge && item.badge > 0 ? (
-                          <span className="bg-[#FAC775]/10 text-[#FAC775] border border-[#FAC775]/20 text-[11px] px-2.5 py-0.5 rounded-full font-mono font-medium">
+                          <span className="bg-[#FAC775]/10 text-[#FAC775] border border-[#FAC775]/20 text-[13px] px-2.5 py-0.5 rounded-full font-mono font-medium">
                             {item.badge}
                           </span>
                         ) : null}
@@ -657,7 +657,7 @@ export default function AdminPage() {
             
             {/* Top Header Bar (88px height) */}
             <div className="h-[88px] bg-[#1A1A1A] border-b border-[#2C2C2C]/60 flex justify-between items-center px-10 flex-shrink-0 z-20 select-none">
-              <span className="text-[12px] font-sans font-semibold uppercase tracking-[0.25em] text-[#FAF9F7]/90">
+              <span className="text-[14px] font-sans font-semibold uppercase tracking-[0.25em] text-[#FAF9F7]/90">
                 {getTabLabel()}
               </span>
 
@@ -666,12 +666,12 @@ export default function AdminPage() {
                 <a 
                   href="/" 
                   target="_blank" 
-                  className="text-[10px] uppercase tracking-[0.2em] text-[#B4B2A9] hover:text-[#FAC775] font-semibold transition-all flex items-center gap-1.5 mr-4 hover:scale-105"
+                  className="text-[12px] uppercase tracking-[0.2em] text-[#B4B2A9] hover:text-[#FAC775] font-semibold transition-all flex items-center gap-1.5 mr-4 hover:scale-105"
                 >
                   <Eye className="w-3.5 h-3.5 stroke-[1.25]" /> View Live
                 </a>
-                <span className="text-[13.5px] text-[#F1EFE8] font-sans">Pratham</span>
-                <div className="w-[30px] h-[30px] rounded-full bg-[#FAEEDA] flex items-center justify-center text-[12px] text-[#633806] font-medium select-none text-center">
+                <span className="text-[15px] text-[#F1EFE8] font-sans">Pratham</span>
+                <div className="w-[36px] h-[36px] rounded-full bg-[#FAEEDA] flex items-center justify-center text-[14px] text-[#633806] font-medium select-none text-center">
                   P
                 </div>
               </div>
@@ -701,19 +701,19 @@ export default function AdminPage() {
                       ) : (
                         <AlertCircle className="w-4 h-4 flex-shrink-0" />
                       )}
-                      <span className="text-[13px] font-sans font-light leading-relaxed">{alert.message}</span>
+                      <span className="text-[15px] font-sans font-light leading-relaxed">{alert.message}</span>
                     </div>
                     {alert.type === 'warning' && (
                       <div className="flex gap-2 w-full sm:w-auto">
                         <button
                           onClick={handleDownloadConfig}
-                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white text-[10px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-[4px] flex items-center gap-1.5 shadow-sm transition-all"
+                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-[4px] flex items-center gap-1.5 shadow-sm transition-all"
                         >
                           <Download className="w-3.5 h-3.5" /> Download siteConfig.json
                         </button>
                         <button
                           onClick={() => setAlert(null)}
-                          className="border border-[#4A4A48] hover:bg-white/5 text-[#F1EFE8] text-[10px] uppercase tracking-[0.2em] font-semibold px-3 py-2 rounded-[4px] transition-all"
+                          className="border border-[#4A4A48] hover:bg-white/5 text-[#F1EFE8] text-[12px] uppercase tracking-[0.2em] font-semibold px-3 py-2 rounded-[4px] transition-all"
                         >
                           Dismiss
                         </button>
@@ -738,10 +738,10 @@ export default function AdminPage() {
                           { label: 'Blog drafts', value: blogs.length }
                         ].map((stat, idx) => (
                           <div key={idx} className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 text-[#F1EFE8]">
-                            <p className="text-[13px] text-[#B4B2A9] m-0 mb-4 font-sans">
+                            <p className="text-[15px] text-[#B4B2A9] m-0 mb-4 font-sans">
                               {stat.label}
                             </p>
-                            <p className="text-[28px] font-medium text-[#F1EFE8] m-0 font-sans">
+                            <p className="text-[32px] font-medium text-[#F1EFE8] m-0 font-sans">
                               {stat.value}
                             </p>
                           </div>
@@ -751,25 +751,25 @@ export default function AdminPage() {
                       {/* Recent Inquiries List Widget Card */}
                       <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 text-[#F1EFE8]">
                         <div className="flex items-center justify-between mb-8">
-                          <span className="text-[12px] tracking-[0.5px] text-[#B4B2A9] uppercase font-sans font-medium">
+                          <span className="text-[14px] tracking-[0.5px] text-[#B4B2A9] uppercase font-sans font-medium">
                             RECENT INQUIRIES
                           </span>
                           <button 
                             onClick={() => setActiveTab('inquiries')}
-                            className="text-[12px] text-[#F1EFE8] border border-[#4A4A48]/60 px-[12px] py-[5px] rounded-[4px] hover:bg-white/5 transition-all cursor-pointer font-sans"
+                            className="text-[14px] text-[#F1EFE8] border border-[#4A4A48]/60 px-[14px] py-[6px] rounded-[4px] hover:bg-white/5 transition-all cursor-pointer font-sans"
                           >
                             View all
                           </button>
                         </div>
 
                         <div className="overflow-x-auto w-full">
-                          <table className="w-full text-[13.5px] border-collapse">
+                          <table className="w-full text-sm border-collapse">
                             <thead>
                               <tr className="border-b-[0.5px] border-[#4A4A48]/55">
-                                <td className="py-3.5 text-[#B4B2A9] text-[12px] font-sans font-normal uppercase">NAME</td>
-                                <td className="py-3.5 text-[#B4B2A9] text-[12px] font-sans font-normal uppercase">TYPE</td>
-                                <td className="py-3.5 text-[#B4B2A9] text-[12px] font-sans font-normal uppercase">DATE</td>
-                                <td className="py-3.5 text-[#B4B2A9] text-[12px] font-sans font-normal uppercase text-right">ACTION</td>
+                                <td className="py-3.5 text-[#B4B2A9] text-sm font-sans font-normal uppercase">NAME</td>
+                                <td className="py-3.5 text-[#B4B2A9] text-sm font-sans font-normal uppercase">TYPE</td>
+                                <td className="py-3.5 text-[#B4B2A9] text-sm font-sans font-normal uppercase">DATE</td>
+                                <td className="py-3.5 text-[#B4B2A9] text-sm font-sans font-normal uppercase text-right">ACTION</td>
                               </tr>
                             </thead>
                             <tbody>
@@ -796,7 +796,7 @@ export default function AdminPage() {
 
                               {inquiries.length === 0 && (
                                 <tr>
-                                  <td colSpan={4} className="py-8 text-center text-xs text-[#B4B2A9]/50 font-sans font-light">
+                                  <td colSpan={4} className="py-8 text-center text-sm text-[#B4B2A9]/50 font-sans font-light">
                                     Inbox is clean. No inquiries submitted yet.
                                   </td>
                                 </tr>
@@ -813,14 +813,14 @@ export default function AdminPage() {
                     <div>
                       {editingProject ? (
                         /* Portfolio Edit/Add Form */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8] min-h-[600px]">
                           <div className="flex items-center justify-between pb-4 border-b border-[#4A4A48]/45">
                             <h3 className="font-serif font-light text-2xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewProject ? 'Add portfolio item' : `Edit project: ${projectForm.title}`}
                             </h3>
                             <button
                               onClick={() => setEditingProject(null)}
-                              className="text-[9px] uppercase tracking-[0.25em] text-[#B4B2A9] hover:text-[#FAC775] flex items-center gap-1.5 font-semibold transition-all cursor-pointer"
+                              className="text-[12px] uppercase tracking-[0.25em] text-[#B4B2A9] hover:text-[#FAC775] flex items-center gap-1.5 font-semibold transition-all cursor-pointer"
                             >
                               <ArrowLeft className="w-4 h-4" /> Back to list
                             </button>
@@ -914,7 +914,7 @@ export default function AdminPage() {
                                   />
                                   <label 
                                     htmlFor="upload-cover"
-                                    className="w-full sm:w-auto border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[9px] uppercase tracking-[0.2em] font-semibold px-5 py-3.5 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[#2E2D2B] select-none"
+                                    className="w-full sm:w-auto border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-5 py-3.5 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[#2E2D2B] select-none"
                                   >
                                     <Upload className="w-3.5 h-3.5" /> 
                                     {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
@@ -933,8 +933,8 @@ export default function AdminPage() {
                             <div className="space-y-8 pt-8 border-t border-[#4A4A48]/40">
                               <div className="flex justify-between items-center">
                                 <div>
-                                  <h4 className="text-[10px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
-                                  <p className="text-[11px] text-[#B4B2A9]/75 font-light mt-0.5">Upload gallery photos or add links below.</p>
+                                  <h4 className="text-[13px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
+                                  <p className="text-[13px] text-[#B4B2A9]/75 font-light mt-0.5">Upload gallery photos or add links below.</p>
                                 </div>
                                 <div className="relative">
                                   <input
@@ -947,7 +947,7 @@ export default function AdminPage() {
                                   />
                                   <label 
                                     htmlFor="upload-detail"
-                                    className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[9px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none"
+                                    className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none"
                                   >
                                     <Plus className="w-3.5 h-3.5" /> 
                                     {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload File'}
@@ -960,7 +960,7 @@ export default function AdminPage() {
                                   type="text"
                                   id="manual-detail-url"
                                   placeholder="Or paste external detail image URL link and click add..."
-                                  className="flex-1 bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-[13px] outline-none font-light transition-all text-[#F1EFE8]"
+                                  className="flex-1 bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-[15px] outline-none font-light transition-all text-[#F1EFE8]"
                                 />
                                 <button
                                   type="button"
@@ -974,7 +974,7 @@ export default function AdminPage() {
                                       input.value = '';
                                     }
                                   }}
-                                  className="border border-[#F1EFE8] hover:bg-[#F1EFE8] hover:text-[#1A1A1A] text-[#F1EFE8] text-[9px] uppercase tracking-[0.15em] font-semibold px-4 py-2.5 rounded-[4px] transition-all cursor-pointer"
+                                  className="border border-[#F1EFE8] hover:bg-[#F1EFE8] hover:text-[#1A1A1A] text-[#F1EFE8] text-[12px] uppercase tracking-[0.15em] font-semibold px-4 py-2.5 rounded-[4px] transition-all cursor-pointer"
                                 >
                                   Add URL
                                 </button>
@@ -993,13 +993,13 @@ export default function AdminPage() {
                                         <Trash2 className="w-4 h-4" />
                                       </button>
                                     </div>
-                                    <div className="absolute bottom-2 left-2 bg-black/60 text-[#F1EFE8] text-[8px] tracking-[0.1em] px-1.5 py-0.5 rounded font-mono">
+                                    <div className="absolute bottom-2 left-2 bg-black/60 text-[#F1EFE8] text-[11px] tracking-[0.1em] px-1.5 py-0.5 rounded font-mono">
                                       #{idx + 1}
                                     </div>
                                   </div>
                                 ))}
                                 {(!projectForm.detailImages || projectForm.detailImages.length === 0) && (
-                                  <div className="col-span-full border border-dashed border-[#4A4A48]/50 py-12 text-center text-[#B4B2A9]/40 font-sans font-light text-xs rounded">
+                                  <div className="col-span-full border border-dashed border-[#4A4A48]/50 py-12 text-center text-[#B4B2A9]/40 font-sans font-light text-sm rounded">
                                     No gallery images added yet.
                                   </div>
                                 )}
@@ -1012,13 +1012,13 @@ export default function AdminPage() {
                             <button
                               type="button"
                               onClick={() => setEditingProject(null)}
-                              className="border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[10px] uppercase tracking-[0.2em] px-6 py-3 rounded-[6px] transition-all cursor-pointer font-semibold"
+                              className="border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[12px] uppercase tracking-[0.2em] px-6 py-3 rounded-[6px] transition-all cursor-pointer font-semibold"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={handleSaveProjectForm}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[10px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all duration-300 cursor-pointer"
+                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all duration-300 cursor-pointer"
                             >
                               Save Project
                             </button>
@@ -1026,14 +1026,14 @@ export default function AdminPage() {
                         </div>
                       ) : (
                         /* Portfolio Items List Table */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 text-[#F1EFE8] min-h-[600px]">
                           <div className="flex justify-between items-center pb-4 border-b border-[#4A4A48]/40">
-                            <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                            <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                               Active Portfolio Items ({config.projects.length})
                             </span>
                             <button
                               onClick={handleStartAddProject}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] border border-[#BA7517] hover:border-[#FAC775] text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all flex items-center gap-1 cursor-pointer"
+                              className="bg-[#BA7517] hover:bg-[#FAC775] border border-[#BA7517] hover:border-[#FAC775] text-white text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all flex items-center gap-1 cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" /> Add Project
                             </button>
@@ -1043,30 +1043,30 @@ export default function AdminPage() {
                             <table className="w-full text-left border-collapse">
                               <thead>
                                 <tr>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-20">Cover</th>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Project Details</th>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Location</th>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-24">Year</th>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-24">Dimensions</th>
-                                  <th className="py-3.5 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-24">Actions</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-20">Cover</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Project Details</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Location</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-24">Year</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-24">Dimensions</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-24">Actions</th>
                                 </tr>
                               </thead>
-                              <tbody className="text-[13.5px] font-light">
+                              <tbody className="text-[15px] font-light">
                                 {config.projects.map((project) => (
                                   <tr key={project.id} className="border-b-[0.5px] border-[#4A4A48]/30 hover:bg-white/5 transition-colors group">
-                                    <td className="py-4.5">
+                                    <td className="py-8">
                                       <div className="w-10 h-14 bg-black/10 border border-[#4A4A48]/45 rounded-[4px] overflow-hidden">
                                         <img src={project.image} className="w-full h-full object-cover" alt="cover" />
                                       </div>
                                     </td>
-                                    <td className="py-4.5 pr-4">
-                                      <h4 className="font-serif font-semibold text-[#F1EFE8] text-[15px]">{project.title}</h4>
-                                      <span className="text-[9px] uppercase tracking-[0.1em] text-accent font-medium">{project.category}</span>
+                                    <td className="py-8 pr-4">
+                                      <h4 className="font-serif font-semibold text-[#F1EFE8] text-[17px]">{project.title}</h4>
+                                      <span className="text-[12px] uppercase tracking-[0.1em] text-accent font-medium">{project.category}</span>
                                     </td>
-                                    <td className="py-4.5 text-[#B4B2A9]">{project.location}</td>
-                                    <td className="py-4.5 text-center font-mono text-xs text-[#B4B2A9]">{project.year}</td>
-                                    <td className="py-4.5 text-center text-[#B4B2A9]">{project.size || 'N/A'}</td>
-                                    <td className="py-4.5 text-right">
+                                    <td className="py-8 text-[#B4B2A9]">{project.location}</td>
+                                    <td className="py-8 text-center font-mono text-sm text-[#B4B2A9]">{project.year}</td>
+                                    <td className="py-8 text-center text-[#B4B2A9]">{project.size || 'N/A'}</td>
+                                    <td className="py-8 text-right">
                                       <div className="flex gap-4 justify-end items-center opacity-60 group-hover:opacity-100 transition-opacity">
                                         <button
                                           onClick={() => handleStartEditProject(project)}
@@ -1089,7 +1089,7 @@ export default function AdminPage() {
 
                                 {config.projects.length === 0 && (
                                   <tr>
-                                    <td colSpan={6} className="py-12 text-center text-[#B4B2A9]/40 font-light">
+                                    <td colSpan={6} className="py-24 text-center text-[#B4B2A9]/40 font-light text-[17px]">
                                       No portfolio items found.
                                     </td>
                                   </tr>
@@ -1104,9 +1104,9 @@ export default function AdminPage() {
 
                   {/* VIEW 3: OUR STORY TAB */}
                   {activeTab === 'story' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8] min-h-[600px]">
                       <div className="pb-4 border-b border-[#4A4A48]/40">
-                        <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                        <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           Story Philosophy copy
                         </span>
                       </div>
@@ -1119,7 +1119,7 @@ export default function AdminPage() {
                             rows={4}
                             value={config.brandStatement}
                             onChange={(e) => setConfig({ ...config, brandStatement: e.target.value })}
-                            className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[14px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[100px]"
+                             className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[100px]"
                           />
                         </div>
 
@@ -1149,7 +1149,7 @@ export default function AdminPage() {
                                 paragraphs[0] = e.target.value;
                                 setConfig({ ...config, story: { ...config.story, paragraphs } });
                               }}
-                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[14px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[120px]"
+                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[120px]"
                             />
                           </div>
 
@@ -1163,7 +1163,7 @@ export default function AdminPage() {
                                 paragraphs[1] = e.target.value;
                                 setConfig({ ...config, story: { ...config.story, paragraphs } });
                               }}
-                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[14px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[120px]"
+                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[120px]"
                             />
                           </div>
                         </div>
@@ -1173,7 +1173,7 @@ export default function AdminPage() {
                           
                           {/* Image Left */}
                           <div className="space-y-4 bg-[#1A1A1A]/30 p-5 rounded-[8px] border border-[#4A4A48]/35">
-                            <span className="text-[10px] uppercase tracking-[0.1em] text-[#FAC775] font-semibold block">Editorial Image Left (Stone Texture)</span>
+                            <span className="text-[12px] uppercase tracking-[0.1em] text-[#FAC775] font-semibold block">Editorial Image Left (Stone Texture)</span>
                             <input
                               type="text"
                               value={config.story.images[0] || ''}
@@ -1182,7 +1182,7 @@ export default function AdminPage() {
                                 images[0] = e.target.value;
                                 setConfig({ ...config, story: { ...config.story, images } });
                               }}
-                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-xs text-[#F1EFE8] outline-none font-light"
+                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-sm text-[#F1EFE8] outline-none font-light"
                             />
                             <div className="flex justify-between items-center gap-4 pt-1">
                               <div className="relative">
@@ -1194,7 +1194,7 @@ export default function AdminPage() {
                                   className="hidden"
                                   disabled={uploadingField !== null}
                                 />
-                                <label htmlFor="story-img-left" className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[9px] uppercase tracking-[0.2em] font-semibold px-3.5 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none">
+                                <label htmlFor="story-img-left" className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-3.5 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none">
                                   <Upload className="w-3.5 h-3.5" /> 
                                   {uploadingField === 'story0' ? 'Uploading...' : 'Upload File'}
                                 </label>
@@ -1207,7 +1207,7 @@ export default function AdminPage() {
 
                           {/* Image Right */}
                           <div className="space-y-4 bg-[#1A1A1A]/30 p-5 rounded-[8px] border border-[#4A4A48]/35">
-                            <span className="text-[10px] uppercase tracking-[0.1em] text-[#FAC775] font-semibold block">Editorial Image Right (Interior Scene)</span>
+                            <span className="text-[12px] uppercase tracking-[0.1em] text-[#FAC775] font-semibold block">Editorial Image Right (Interior Scene)</span>
                             <input
                               type="text"
                               value={config.story.images[1] || ''}
@@ -1216,7 +1216,7 @@ export default function AdminPage() {
                                 images[1] = e.target.value;
                                 setConfig({ ...config, story: { ...config.story, images } });
                               }}
-                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-xs text-[#F1EFE8] outline-none font-light"
+                              className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-sm text-[#F1EFE8] outline-none font-light"
                             />
                             <div className="flex justify-between items-center gap-4 pt-1">
                               <div className="relative">
@@ -1228,7 +1228,7 @@ export default function AdminPage() {
                                   className="hidden"
                                   disabled={uploadingField !== null}
                                 />
-                                <label htmlFor="story-img-right" className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[9px] uppercase tracking-[0.2em] font-semibold px-3.5 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none">
+                                <label htmlFor="story-img-right" className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-3.5 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none">
                                   <Upload className="w-3.5 h-3.5" /> 
                                   {uploadingField === 'story1' ? 'Uploading...' : 'Upload File'}
                                 </label>
@@ -1246,7 +1246,7 @@ export default function AdminPage() {
                         <button
                           onClick={() => handleSaveConfig()}
                           disabled={savingConfig}
-                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[10px] uppercase tracking-[0.2em] font-semibold px-8 py-3.5 rounded-[6px] transition-all duration-300 cursor-pointer disabled:opacity-50"
+                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-8 py-3.5 rounded-[6px] transition-all duration-300 cursor-pointer disabled:opacity-50"
                         >
                           {savingConfig ? 'Applying changes...' : 'Save Story Section'}
                         </button>
@@ -1256,39 +1256,39 @@ export default function AdminPage() {
 
                   {/* VIEW 4: FEATURED TAB */}
                   {activeTab === 'featured' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8]">
-                      <div className="flex justify-between items-center pb-6 border-b border-[#4A4A48]/40 mb-2">
-                        <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-12 md:p-14 space-y-12 w-full min-h-[600px] flex flex-col justify-between text-[#F1EFE8]">
+                      <div className="flex justify-between items-center pb-8 border-b border-[#4A4A48]/40 mb-4">
+                        <span className="text-[14px] md:text-[15px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           Featured Press entries
                         </span>
                         <button
                           onClick={handleAddPressItem}
-                          className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[9px] uppercase tracking-[0.2em] font-semibold px-4 py-2 rounded-[6px] transition-all flex items-center gap-1 cursor-pointer bg-[#2E2D2B] select-none text-[#F1EFE8]"
+                          className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[13px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all flex items-center gap-1.5 cursor-pointer bg-[#2E2D2B] select-none text-[#F1EFE8]"
                         >
-                          <Plus className="w-3.5 h-3.5" /> Add Press
+                          <Plus className="w-4 h-4" /> Add Press
                         </button>
                       </div>
 
-                      <div className="space-y-2">
+                      <div className="space-y-4 flex-grow">
                         {config.press.map((item) => (
                           <div 
                             key={item.id} 
-                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4.5 border-b-[0.5px] border-[#4A4A48]/30 gap-4 group"
+                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 border-b-[0.5px] border-[#4A4A48]/30 gap-6 group"
                           >
                             <input
                               type="text"
                               value={item.source}
                               onChange={(e) => handleUpdatePressItem(item.id, 'source', e.target.value)}
                               placeholder="Press Publication name..."
-                              className="flex-1 bg-transparent border-b border-transparent focus:border-[#BA7517] py-1 text-[15px] font-serif text-[#F1EFE8] outline-none transition-all font-light"
+                              className="flex-1 bg-transparent border-b border-transparent focus:border-[#BA7517] py-3 text-[16px] md:text-[18px] font-serif text-[#F1EFE8] outline-none transition-all font-light"
                             />
-                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
+                            <div className="flex items-center gap-6 w-full sm:w-auto justify-between">
                               <input
                                 type="text"
                                 value={item.year}
                                 onChange={(e) => handleUpdatePressItem(item.id, 'year', e.target.value)}
                                 placeholder="Year"
-                                className="w-20 bg-transparent border-b border-transparent focus:border-[#BA7517] py-1 text-xs text-[#FAC775] font-mono text-center outline-none transition-all font-light"
+                                className="w-28 bg-transparent border-b border-transparent focus:border-[#BA7517] py-3 text-[16px] text-[#FAC775] font-mono text-center outline-none transition-all font-light"
                               />
                               <button
                                 onClick={() => handleDeletePressItem(item.id)}
@@ -1301,17 +1301,17 @@ export default function AdminPage() {
                         ))}
 
                         {config.press.length === 0 && (
-                          <div className="py-12 text-center text-xs text-[#B4B2A9]/40 font-light">
+                          <div className="py-16 text-center text-sm text-[#B4B2A9]/40 font-light">
                             No press entries found. Click Add Press to add.
                           </div>
                         )}
                       </div>
 
-                      <div className="flex justify-end pt-8 border-t border-[#4A4A48]/40 mt-4">
+                      <div className="flex justify-end pt-10 border-t border-[#4A4A48]/40 mt-6">
                         <button
                           onClick={() => handleSaveConfig()}
                           disabled={savingConfig}
-                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[10px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all cursor-pointer disabled:opacity-50"
+                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-8 py-4 rounded-[6px] transition-all cursor-pointer disabled:opacity-50"
                         >
                           {savingConfig ? 'Saving...' : 'Save Press List'}
                         </button>
@@ -1324,14 +1324,14 @@ export default function AdminPage() {
                     <div>
                       {editingBlog ? (
                         /* Add/Edit Blog Post Form */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8] min-h-[600px]">
                           <div className="flex items-center justify-between pb-4 border-b border-[#4A4A48]/40">
                             <h3 className="font-serif font-light text-2xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewBlog ? 'New Editorial Article' : `Edit Article: ${blogForm.title}`}
                             </h3>
                             <button
                               onClick={() => setEditingBlog(null)}
-                              className="text-[9px] uppercase tracking-[0.25em] text-[#B4B2A9] hover:text-[#FAC775] flex items-center gap-1.5 font-semibold transition-all cursor-pointer"
+                              className="text-[12px] uppercase tracking-[0.25em] text-[#B4B2A9] hover:text-[#FAC775] flex items-center gap-1.5 font-semibold transition-all cursor-pointer"
                             >
                               <ArrowLeft className="w-4 h-4" /> Back to list
                             </button>
@@ -1357,7 +1357,7 @@ export default function AdminPage() {
                                   type="date"
                                   value={blogForm.date || ''}
                                   onChange={(e) => setBlogForm({ ...blogForm, date: e.target.value })}
-                                  className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[14px] text-[#F1EFE8] outline-none transition-all duration-300 font-light"
+                                  className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-light"
                                 />
                               </div>
                               <div className="space-y-4">
@@ -1378,7 +1378,7 @@ export default function AdminPage() {
                                 value={blogForm.excerpt || ''}
                                 onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
                                 placeholder="Describe article editorial details or content..."
-                                className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[14px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[140px]"
+                                className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[140px]"
                               />
                             </div>
                           </div>
@@ -1387,13 +1387,13 @@ export default function AdminPage() {
                             <button
                               type="button"
                               onClick={() => setEditingBlog(null)}
-                              className="border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[10px] uppercase tracking-[0.2em] px-6 py-3 rounded-[6px] transition-all cursor-pointer font-semibold"
+                              className="border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[12px] uppercase tracking-[0.2em] px-6 py-3 rounded-[6px] transition-all cursor-pointer font-semibold"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={handleSaveBlogForm}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[10px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all duration-300 cursor-pointer"
+                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all duration-300 cursor-pointer"
                             >
                               Save Article
                             </button>
@@ -1401,14 +1401,14 @@ export default function AdminPage() {
                         </div>
                       ) : (
                         /* Blogs List Table */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 text-[#F1EFE8]">
+                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 text-[#F1EFE8] min-h-[600px]">
                           <div className="flex justify-between items-center pb-4 border-b border-[#4A4A48]/40">
-                            <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                            <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                               Editorial Articles ({blogs.length})
                             </span>
                             <button
                               onClick={handleStartAddBlog}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] border border-[#BA7517] hover:border-[#FAC775] text-white text-[9px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all flex items-center gap-1 cursor-pointer"
+                              className="bg-[#BA7517] hover:bg-[#FAC775] border border-[#BA7517] hover:border-[#FAC775] text-white text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all flex items-center gap-1 cursor-pointer"
                             >
                               <Plus className="w-3.5 h-3.5" /> Write Article
                             </button>
@@ -1418,22 +1418,22 @@ export default function AdminPage() {
                             <table className="w-full text-left border-collapse">
                               <thead>
                                 <tr>
-                                  <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Article Title</th>
-                                  <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-36">Author</th>
-                                  <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-32">Date</th>
-                                  <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-24">Actions</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Article Title</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-36">Author</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-32">Date</th>
+                                  <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-24">Actions</th>
                                 </tr>
                               </thead>
-                              <tbody className="text-[13.5px] font-light">
+                              <tbody className="text-[15px] font-light">
                                 {blogs.map((blog) => (
                                   <tr key={blog.id} className="border-b-[0.5px] border-[#4A4A48]/40 hover:bg-white/5 transition-colors group">
-                                    <td className="py-5 pr-4">
-                                      <h4 className="font-serif font-semibold text-[#F1EFE8] text-[15px]">{blog.title}</h4>
-                                      <p className="text-[11px] text-[#B4B2A9]/70 line-clamp-1 mt-0.5">{blog.excerpt}</p>
+                                    <td className="py-8 pr-4">
+                                      <h4 className="font-serif font-semibold text-[#F1EFE8] text-[17px]">{blog.title}</h4>
+                                      <p className="text-[13px] text-[#B4B2A9]/70 line-clamp-3 mt-1.5 leading-relaxed">{blog.excerpt}</p>
                                     </td>
-                                    <td className="py-5 text-[#B4B2A9]">{blog.author}</td>
-                                    <td className="py-5 text-center font-mono text-xs text-[#B4B2A9]">{blog.date}</td>
-                                    <td className="py-5 text-right">
+                                    <td className="py-8 text-[#B4B2A9]">{blog.author}</td>
+                                    <td className="py-8 text-center font-mono text-sm text-[#B4B2A9]">{blog.date}</td>
+                                    <td className="py-8 text-right">
                                       <div className="flex gap-4 justify-end items-center opacity-60 group-hover:opacity-100 transition-opacity">
                                         <button
                                           onClick={() => handleStartEditBlog(blog)}
@@ -1455,7 +1455,7 @@ export default function AdminPage() {
                                 ))}
                                 {blogs.length === 0 && (
                                   <tr>
-                                    <td colSpan={4} className="py-12 text-center text-[#B4B2A9]/40 font-light">
+                                    <td colSpan={4} className="py-24 text-center text-[#B4B2A9]/40 font-light text-[17px]">
                                       No editorial blog articles found.
                                     </td>
                                   </tr>
@@ -1470,9 +1470,9 @@ export default function AdminPage() {
 
                   {/* VIEW 6: INQUIRIES TAB */}
                   {activeTab === 'inquiries' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 text-[#F1EFE8] min-h-[600px]">
                       <div className="flex justify-between items-center pb-4 border-b border-[#4A4A48]/40">
-                        <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                        <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           Client Inquiries Inbox ({inquiries.length})
                         </span>
                       </div>
@@ -1481,40 +1481,42 @@ export default function AdminPage() {
                         <table className="w-full text-left border-collapse">
                           <thead>
                             <tr>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-40">Client Name</th>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-48">Email Address</th>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-32">Type</th>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Message Preview</th>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-28">Submitted</th>
-                              <th className="py-4 text-[12px] font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-20">Actions</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-40">Client Name</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left w-48">Email Address</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-32">Type</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-left">Message Preview</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-center w-28">Submitted</th>
+                              <th className="py-5 text-sm font-sans font-normal uppercase tracking-[0.5px] text-[#B4B2A9] border-b-[0.5px] border-[#4A4A48]/55 text-right w-20">Actions</th>
                             </tr>
                           </thead>
-                          <tbody className="text-[13.5px] font-light">
+                          <tbody className="text-[15px] font-light">
                             {inquiries.map((inq) => (
                               <tr key={inq.id} className="border-b-[0.5px] border-[#4A4A48]/40 hover:bg-white/5 transition-colors group">
-                                <td className="py-5 font-semibold text-[#F1EFE8]">{inq.name}</td>
-                                <td className="py-5">
+                                <td className="py-8 font-semibold text-[#F1EFE8]">{inq.name}</td>
+                                <td className="py-8">
                                   <a href={`mailto:${inq.email}`} className="text-[#B4B2A9] hover:text-[#FAC775] transition-colors font-light">
                                     {inq.email}
                                   </a>
                                 </td>
-                                <td className="py-5 text-center">
-                                  <span className="text-[9px] uppercase tracking-[0.1em] bg-[#BA7517]/20 text-[#FAC775] px-2 py-0.5 rounded font-mono font-medium inline-block">
+                                <td className="py-8 text-center">
+                                  <span className="text-[11px] uppercase tracking-[0.1em] bg-[#BA7517]/20 text-[#FAC775] px-2 py-0.5 rounded font-mono font-medium inline-block">
                                     {inq.projectType}
                                   </span>
                                 </td>
                                 <td 
-                                  className="py-5 pr-6 text-[#B4B2A9] truncate max-w-[200px] cursor-pointer hover:underline"
+                                  className="py-8 pr-6 text-[#B4B2A9] max-w-[600px] cursor-pointer hover:underline"
                                   onClick={() => setViewingInquiry(inq)}
                                   title="Click to view details"
                                   style={{ verticalAlign: 'middle' }}
                                 >
-                                  {inq.message}
+                                  <div className="line-clamp-3 text-sm leading-relaxed whitespace-pre-wrap">
+                                    {inq.message}
+                                  </div>
                                 </td>
-                                <td className="py-5 text-center font-mono text-[10px] text-[#B4B2A9]/60">
+                                <td className="py-8 text-center font-mono text-[12px] text-[#B4B2A9]/60">
                                   {new Date(inq.date).toLocaleDateString()}
                                 </td>
-                                <td className="py-5 text-right">
+                                <td className="py-8 text-right">
                                   <button
                                     onClick={() => handleDeleteInquiry(inq.id)}
                                     className="text-[#B4B2A9]/60 hover:text-red-500 opacity-60 group-hover:opacity-100 transition-all p-2 cursor-pointer"
@@ -1527,7 +1529,7 @@ export default function AdminPage() {
 
                             {inquiries.length === 0 && (
                               <tr>
-                                <td colSpan={6} className="py-12 text-center text-[#B4B2A9]/40 font-light">
+                                <td colSpan={6} className="py-24 text-center text-[#B4B2A9]/40 font-light text-[17px]">
                                   Inbox is empty. No inquiries submitted yet.
                                 </td>
                               </tr>
@@ -1540,9 +1542,9 @@ export default function AdminPage() {
 
                   {/* VIEW 7: SETTINGS TAB */}
                   {activeTab === 'settings' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8]">
+                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8] min-h-[600px]">
                       <div className="pb-4 border-b border-[#4A4A48]/40">
-                        <span className="text-[10px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
+                        <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
                           CRM Settings
                         </span>
                       </div>
@@ -1550,64 +1552,64 @@ export default function AdminPage() {
                       <div className="space-y-10">
                         {/* Credentials */}
                         <div className="space-y-6">
-                          <h4 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Administrator Access</h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+                          <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Administrator Access</h4>
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
                             <div className="space-y-4">
-                              <label className="font-serif italic text-[14px] text-[#B4B2A9] block">Login Username</label>
+                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Login Username</label>
                               <input
                                 type="text"
                                 disabled
                                 value="AD EFFFECTS"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[14px] text-[#B4B2A9]/70 outline-none font-light select-all"
+                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[15px] text-[#B4B2A9]/70 outline-none font-light select-all"
                               />
                             </div>
                             <div className="space-y-4">
-                              <label className="font-serif italic text-[14px] text-[#B4B2A9] block">Password Secret</label>
+                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Password Secret</label>
                               <input
                                 type="text"
                                 disabled
                                 value="AD12345"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[14px] text-[#B4B2A9]/70 outline-none font-light select-all"
+                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[15px] text-[#B4B2A9]/70 outline-none font-light select-all"
                               />
                             </div>
                           </div>
-                          <span className="text-[9px] text-[#B4B2A9]/50 font-light block">
+                          <span className="text-[11px] text-[#B4B2A9]/50 font-light block">
                             * Note: Admin credentials are set dynamically to hardcoded values as per project parameters.
                           </span>
                         </div>
 
                         {/* Coordinates */}
                         <div className="space-y-6 pt-8 border-t border-[#4A4A48]/30">
-                          <h4 className="text-[11px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Studio Coordinates</h4>
+                          <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Studio Coordinates</h4>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
                             <div className="space-y-4">
-                              <label className="font-serif italic text-[14px] text-[#B4B2A9] block">Studio Email</label>
+                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Studio Email</label>
                               <input
                                 type="text"
                                 disabled
                                 value="hello@adefffects.com"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[13px] text-[#B4B2A9]/70 outline-none font-light"
+                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
                               />
                             </div>
                             <div className="space-y-4">
-                              <label className="font-serif italic text-[14px] text-[#B4B2A9] block">Contact Phone</label>
+                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Contact Phone</label>
                               <input
                                 type="text"
                                 disabled
                                 value="+45 3312 0000"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[13px] text-[#B4B2A9]/70 outline-none font-light"
+                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
                               />
                             </div>
                           </div>
                           
                           <div className="space-y-4 pt-4">
-                            <label className="font-serif italic text-[14px] text-[#B4B2A9] block">Studio Address</label>
+                            <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Studio Address</label>
                             <input
                               type="text"
                               disabled
                               value="14 Strandgade, 1401 Copenhagen, Denmark"
-                              className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[13px] text-[#B4B2A9]/70 outline-none font-light"
+                              className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
                             />
                           </div>
                         </div>
@@ -1628,7 +1630,7 @@ export default function AdminPage() {
           {/* Inquiry Detail Reader Modal */}
             {viewingInquiry && (
               <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6 backdrop-blur-[1px]">
-                <div className="bg-[#2E2D2B] rounded-[10px] shadow-lg border-[0.5px] border-[#4A4A48]/60 max-w-2xl w-full p-10 relative space-y-10 text-[#F1EFE8]">
+                <div className="bg-[#2E2D2B] rounded-[10px] shadow-lg border-[0.5px] border-[#4A4A48]/60 max-w-4xl w-full p-10 relative space-y-10 text-[#F1EFE8]">
                   
                   <button
                     onClick={() => setViewingInquiry(null)}
@@ -1638,18 +1640,18 @@ export default function AdminPage() {
                   </button>
 
                   <div className="space-y-2 pb-4 border-b border-[#4A4A48]/40">
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#FAC775] font-semibold block">Client Inquiry Details</span>
+                    <span className="text-[12px] uppercase tracking-[0.2em] text-[#FAC775] font-semibold block">Client Inquiry Details</span>
                     <h3 className="font-serif text-2xl text-[#F1EFE8] font-semibold">{viewingInquiry.name}</h3>
-                    <a href={`mailto:${viewingInquiry.email}`} className="text-xs text-accent hover:underline font-light">{viewingInquiry.email}</a>
+                    <a href={`mailto:${viewingInquiry.email}`} className="text-sm text-accent hover:underline font-light">{viewingInquiry.email}</a>
                   </div>
 
                   <div className="grid grid-cols-2 gap-8 bg-[#1A1A1A]/40 p-6 rounded-[8px] border border-[#4A4A48]/40 text-xs font-mono">
                     <div>
-                      <span className="text-[#B4B2A9]/60 uppercase tracking-[0.1em] text-[9px] block font-sans">Project Type</span>
+                      <span className="text-[#B4B2A9]/60 uppercase tracking-[0.1em] text-[11px] block font-sans">Project Type</span>
                       <span className="text-[#F1EFE8] font-semibold mt-1 block font-sans">{viewingInquiry.projectType}</span>
                     </div>
                     <div>
-                      <span className="text-[#B4B2A9]/60 uppercase tracking-[0.1em] text-[9px] block font-sans">Received Date</span>
+                      <span className="text-[#B4B2A9]/60 uppercase tracking-[0.1em] text-[11px] block font-sans">Received Date</span>
                       <span className="text-[#F1EFE8] font-semibold mt-1 block font-sans">
                         {new Date(viewingInquiry.date).toLocaleString()}
                       </span>
@@ -1658,7 +1660,7 @@ export default function AdminPage() {
 
                   <div className="space-y-4">
                     <span className="text-[14px] font-serif italic text-[#F1EFE8]/80 block">Message:</span>
-                    <p className="text-xs text-[#F1EFE8] font-light leading-[1.8] bg-[#1A1A1A]/30 p-6 border border-[#4A4A48]/30 rounded-[8px] max-h-48 overflow-y-auto whitespace-pre-wrap">
+                    <p className="text-base text-[#F1EFE8] font-light leading-[1.8] bg-[#1A1A1A]/30 p-6 border border-[#4A4A48]/30 rounded-[8px] max-h-[50vh] overflow-y-auto whitespace-pre-wrap">
                       {viewingInquiry.message}
                     </p>
                   </div>
@@ -1666,13 +1668,13 @@ export default function AdminPage() {
                   <div className="flex gap-6 justify-end pt-6 border-t border-[#4A4A48]/40">
                     <button
                       onClick={() => handleDeleteInquiry(viewingInquiry.id)}
-                      className="border border-red-500/20 hover:bg-red-500/5 text-red-400 text-[10px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all cursor-pointer"
+                      className="border border-red-500/20 hover:bg-red-500/5 text-red-400 text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all cursor-pointer"
                     >
                       Delete Submission
                     </button>
                     <button
                       onClick={() => setViewingInquiry(null)}
-                      className="bg-[#BA7517] hover:bg-[#FAC775] text-white text-[10px] uppercase tracking-[0.2em] font-semibold px-5 py-2.5 rounded-[6px] transition-all cursor-pointer border-none"
+                      className="bg-[#BA7517] hover:bg-[#FAC775] text-white text-[12px] uppercase tracking-[0.2em] font-semibold px-5 py-2.5 rounded-[6px] transition-all cursor-pointer border-none"
                     >
                       Done Reading
                     </button>
