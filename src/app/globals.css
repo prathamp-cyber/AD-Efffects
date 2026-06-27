@@ -187,4 +187,92 @@ html.lenis, html.lenis body {
   scrollbar-width: none;  /* Firefox */
 }
 
+/* Premium Admin Dashboard Extensions */
+.glass-panel {
+  background: rgba(30, 29, 27, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(186, 117, 23, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-panel-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(38, 37, 34, 0.85);
+  border-color: rgba(250, 199, 117, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(186, 117, 23, 0.1), 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.gold-border-glow {
+  position: relative;
+  transition: all 0.4s ease;
+}
+.gold-border-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(186, 117, 23, 0.1), rgba(250, 199, 117, 0.4), rgba(186, 117, 23, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+.gold-border-glow:hover::after {
+  opacity: 1;
+}
+
+.gold-text-glow {
+  text-shadow: 0 0 12px rgba(250, 199, 117, 0.4);
+}
+
+/* Interactive SVG chart style overlays */
+.chart-path-glow {
+  filter: drop-shadow(0px 4px 8px rgba(250, 199, 117, 0.3));
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes gold-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-text {
+  background: linear-gradient(90deg, #F1EFE8 0%, #FAC775 50%, #F1EFE8 100%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: gold-shimmer 6s linear infinite;
+}
+
+/* Custom switch / range tweaks */
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #FAC775;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(250, 199, 117, 0.6);
+  transition: transform 0.2s ease;
+}
+.custom-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+
 
