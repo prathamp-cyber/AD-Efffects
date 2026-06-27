@@ -28,8 +28,7 @@ interface Inquiry {
 }
 
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
   
   // Real-time greeting and clock
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -146,25 +145,18 @@ export default function AdminPage() {
     }
   }, []);
 
-  // Check login auth on mount
+  // Force login/inspection on every single mount in the background
   useEffect(() => {
-    async function checkAuth() {
+    async function clearSessionAndRequireAuth() {
       try {
-        const res = await fetch('/api/auth/check');
-        const data = await res.json();
-        setIsAuthenticated(data.authenticated);
-        if (data.authenticated) {
-          loadConfig();
-          loadInquiries();
-        }
+        // Clear any active session cookie on the server in the background
+        await fetch('/api/auth/logout', { method: 'POST' });
       } catch {
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoadingAuth(false);
+        // Ignore logout errors
       }
     }
-    checkAuth();
-  }, [loadConfig, loadInquiries]);
+    clearSessionAndRequireAuth();
+  }, []);
 
   // Handle Login submission
   async function handleLogin(e: React.FormEvent) {
@@ -507,7 +499,7 @@ export default function AdminPage() {
   };
 
   // Auth Loading
-  if (isAuthenticated === null || isLoadingAuth) {
+  if (isAuthenticated === null) {
     return (
       <div className="w-full min-h-screen bg-background flex flex-col items-center justify-center transition-colors duration-300">
         <div className="text-center font-cormorant font-light text-2xl tracking-[0.2em] uppercase text-accent animate-pulse">
@@ -527,70 +519,73 @@ export default function AdminPage() {
           <div className="absolute top-[20%] left-[30%] w-[350px] h-[350px] rounded-full bg-[#BA7517] opacity-[0.06] filter blur-[80px] pointer-events-none animate-pulse-slow" />
           <div className="absolute bottom-[20%] right-[30%] w-[400px] h-[400px] rounded-full bg-[#FAC775] opacity-[0.04] filter blur-[100px] pointer-events-none animate-pulse-slow" style={{ animationDelay: '2s' }} />
 
-          {/* Logo header */}
-          <div className="flex flex-col items-center select-none mb-10 text-center z-10">
-            <h1 className="font-serif text-[64px] font-light tracking-wide text-[#F1EFE8] leading-none">The AD Efffects</h1>
-            <div className="w-[120px] h-[1px] bg-gradient-to-r from-transparent via-[#FAC775]/50 to-transparent mt-4" />
-            <span className="text-[11px] uppercase tracking-[0.4em] text-[#FAC775] font-semibold block mt-4 font-sans">
-              <span className="mr-[-0.4em]">STUDIO ADMINISTRATION</span>
-            </span>
-          </div>
+          {/* Centralized Login Block */}
+          <div className="flex flex-col items-center gap-7 z-10 w-full max-w-[500px] flex-shrink-0">
+            {/* Logo header */}
+            <div className="flex flex-col items-center select-none text-center">
+              <h1 className="font-serif text-[64px] font-light tracking-wide text-[#F1EFE8] leading-none">The AD Efffects</h1>
+              <div className="w-[120px] h-[1px] bg-gradient-to-r from-transparent via-[#FAC775]/50 to-transparent mt-4" />
+              <span className="text-[11px] uppercase tracking-[0.4em] text-[#FAC775] font-semibold block mt-4 font-sans">
+                <span className="mr-[-0.4em]">STUDIO ADMINISTRATION</span>
+              </span>
+            </div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full max-w-[440px] glass-panel p-10 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] z-10 gold-border-glow"
-          >
-            <form onSubmit={handleLogin} className="space-y-8">
-              {loginError && (
-                <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-sm font-light rounded-[6px] flex items-center gap-3">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
-                  <span className="font-sans">{loginError}</span>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full glass-panel p-12 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] gold-border-glow"
+            >
+              <form onSubmit={handleLogin} className="space-y-10">
+                {loginError && (
+                  <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-sm font-light rounded-[6px] flex items-center justify-center gap-3">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                    <span className="font-sans text-center">{loginError}</span>
+                  </div>
+                )}
+
+                {/* Username Input */}
+                <div className="space-y-4 relative group">
+                  <label className="font-serif italic text-[16px] md:text-[18px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter username"
+                    className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-4 text-[16px] md:text-[18px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                  />
                 </div>
-              )}
 
-              {/* Username Input */}
-              <div className="space-y-2 relative group">
-                <label className="font-serif italic text-[15px] md:text-[16px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors duration-300">
-                  Username
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username"
-                  className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-3 text-[15px] md:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 outline-none transition-all duration-300 font-sans font-light"
-                />
-              </div>
+                {/* Password Input */}
+                <div className="space-y-4 relative group">
+                  <label className="font-serif italic text-[16px] md:text-[18px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-4 text-[16px] md:text-[18px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                  />
+                </div>
 
-              {/* Password Input */}
-              <div className="space-y-2 relative group">
-                <label className="font-serif italic text-[15px] md:text-[16px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors duration-300">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-3 text-[15px] md:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 outline-none transition-all duration-300 font-sans font-light"
-                />
-              </div>
-
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={isSubmittingLogin}
-                  className="w-full bg-[#BA7517] text-white py-4 text-[13px] md:text-[14px] uppercase tracking-[0.3em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] shadow-[0_4px_20px_rgba(186,117,23,0.15)] hover:shadow-[0_4px_25px_rgba(250,199,117,0.3)] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center block"
-                >
-                  {isSubmittingLogin ? 'VERIFYING...' : 'ENTER DASHBOARD'}
-                </button>
-              </div>
-            </form>
-          </motion.div>
+                <div className="pt-6">
+                  <button
+                    type="submit"
+                    disabled={isSubmittingLogin}
+                    className="w-full bg-[#BA7517] text-white py-5 text-[14px] md:text-[15px] uppercase tracking-[0.3em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] shadow-[0_4px_20px_rgba(186,117,23,0.15)] hover:shadow-[0_4px_25px_rgba(250,199,117,0.3)] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center block"
+                  >
+                    {isSubmittingLogin ? 'VERIFYING...' : 'ENTER DASHBOARD'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
         </div>
       ) : (
         <>
@@ -698,7 +693,7 @@ export default function AdminPage() {
                   {getTabLabel()}
                 </span>
                 <span className="text-[11px] font-sans text-[#888780] font-light">
-                  {greeting}, Pratham &bull; <span className="font-mono text-[#F1EFE8]/70">{currentTime}</span>
+                  {greeting}, Admin &bull; <span className="font-mono text-[#F1EFE8]/70">{currentTime}</span>
                 </span>
               </div>
 
@@ -712,9 +707,9 @@ export default function AdminPage() {
                   <Eye className="w-3.5 h-3.5 stroke-[1.5]" /> View Live
                 </a>
                 <div className="flex items-center gap-3 border-l border-[#BA7517]/15 pl-6">
-                  <span className="text-[13px] text-[#F1EFE8]/90 font-sans font-medium tracking-wide">Pratham</span>
+                  <span className="text-[13px] text-[#F1EFE8]/90 font-sans font-medium tracking-wide">Admin</span>
                   <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-br from-[#FAC775] to-[#BA7517] flex items-center justify-center text-[13px] text-[#141311] font-bold select-none text-center shadow-[0_0_12px_rgba(250,199,117,0.2)]">
-                    P
+                    A
                   </div>
                 </div>
               </div>
