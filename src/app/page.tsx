@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { projectsData, Project } from '@/data';
+import { projectsData, pressData, blogsData, Project } from '@/data';
 import { MapPin, Mail, Clock, Phone, RefreshCw } from 'lucide-react';
 
 export default function Home() {
@@ -263,7 +263,7 @@ export default function Home() {
                 >
                   {/* Heading Section */}
                   <div className="space-y-4 text-center w-full" style={{ marginBottom: '40px' }}> {/* 40px gap below title */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Philosophy</span></span>
+                    <span className="text-[9.5px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Philosophy</span></span>
                     <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Restraint & Harmony</h2>
                   </div>
 
@@ -307,27 +307,99 @@ export default function Home() {
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
                   <div className="space-y-4 text-center w-full" style={{ marginBottom: '48px' }}> {/* Exact 48px gap to press items */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block"><span className="mr-[-0.35em]">Recognition</span></span>
-                    <h2 className="text-3xl font-cormorant font-light text-primary italic">Featured Press</h2>
+                    <span className="text-[9.6px] uppercase tracking-[0.35em] text-accent font-semibold block"><span className="mr-[-0.35em]">Recognition</span></span>
+                    <h2 className="text-[32px] font-cormorant font-light text-primary italic">Featured Press</h2>
                   </div>
-                  <ul className="space-y-6 max-w-md w-full text-[10px] uppercase tracking-[0.25em] text-secondary font-light mx-auto">
-                    <li className="pb-6 border-b border-border-custom/60 flex justify-between items-center">
-                      <span className="text-primary hover:text-accent transition-colors duration-300 cursor-pointer">Architectural Digest</span>
-                      <span className="text-[9px] text-accent">2024</span>
-                    </li>
-                    <li className="pb-6 border-b border-border-custom/60 flex justify-between items-center">
-                      <span className="text-primary hover:text-accent transition-colors duration-300 cursor-pointer">Elle Decor India</span>
-                      <span className="text-[9px] text-accent">2023</span>
-                    </li>
-                    <li className="pb-6 border-b border-border-custom/60 flex justify-between items-center">
-                      <span className="text-primary hover:text-accent transition-colors duration-300 cursor-pointer">Design Anthology</span>
-                      <span className="text-[9px] text-accent">2024</span>
-                    </li>
-                    <li className="pb-6 border-b border-border-custom/60 flex justify-between items-center">
-                      <span className="text-primary hover:text-accent transition-colors duration-300 cursor-pointer">The Architect&apos;s Diary</span>
-                      <span className="text-[9px] text-accent">2024</span>
-                    </li>
-                  </ul>
+
+                  {/* Symmetrical Grid for Magazine Covers and Awards matching reference website */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-7xl px-6 md:px-12 mx-auto">
+                    {pressData.map((item) => (
+                      <a 
+                        key={item.id} 
+                        href={item.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-card-bg border border-card-border p-4 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.03)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] transition-all duration-500 ease-out group cursor-pointer block"
+                      >
+                        <div>
+                          {/* Vertical Image Container for Magazine Covers / Awards */}
+                          <div className="overflow-hidden aspect-[3/4] w-full bg-background border border-border-custom/40 flex items-center justify-center">
+                            <img 
+                              src={item.image} 
+                              alt={item.title} 
+                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          {/* Title: Center aligned, bold weight, highly readable size */}
+                          <h3 className="text-[14px] md:text-[15px] font-bold text-primary leading-[1.4] text-center mt-5 font-sans tracking-wide">
+                            {item.title}
+                          </h3>
+                          
+                          {/* Subtitle (Optional): Centered, elegant cormorant serif, slightly muted */}
+                          {item.subtitle && (
+                            <div className="text-[12px] md:text-[13px] font-cormorant font-medium italic text-accent text-center mt-1.5 pb-1">
+                              {item.subtitle}
+                            </div>
+                          )}
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* BLOG TAB */}
+              {activeTab === 'blog' && (
+                <div 
+                  className="w-full flex flex-col items-center"
+                  style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
+                >
+                  <div className="space-y-4 text-center w-full" style={{ marginBottom: '56px' }}>
+                    <span className="text-[9.5px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">JOURNAL</span></span>
+                    <h2 className="text-[31.5px] font-cormorant font-light text-primary italic">Editorial Blog</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-7xl px-6 md:px-12 mx-auto">
+                    {blogsData.map((blog) => (
+                      <div 
+                        key={blog.id} 
+                        className="bg-card-bg border border-card-border p-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-500 ease-out group"
+                      >
+                        <div>
+                          {/* Image Container */}
+                          <div className="overflow-hidden aspect-[16/10] w-full bg-background border border-border-custom/40">
+                            <img 
+                              src={blog.image} 
+                              alt={blog.title} 
+                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
+                            />
+                          </div>
+                          <span className="text-[9px] font-mono tracking-widest text-accent uppercase block mt-6">
+                            {blog.date}
+                          </span>
+                          <h3 className="text-[18px] md:text-[20px] font-cormorant font-light text-primary leading-[1.4] mt-3 group-hover:text-accent transition-colors duration-300">
+                            {blog.title}
+                          </h3>
+                          <p className="text-xs md:text-sm text-secondary font-light leading-[1.7] mt-3">
+                            {blog.excerpt}
+                          </p>
+                        </div>
+
+                        {/* Read Full Article */}
+                        <div className="border-t border-border-custom/40 pt-4 mt-6 flex justify-between items-center">
+                          <span className="text-[10px] tracking-[0.2em] font-sans font-medium uppercase text-primary group-hover:text-accent transition-colors">
+                            Read Full Article
+                          </span>
+                          <span className="text-accent group-hover:translate-x-1 transition-transform duration-300">
+                            &rarr;
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -338,8 +410,8 @@ export default function Home() {
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
                   <div className="space-y-4 text-center w-full" style={{ marginBottom: '32px' }}> {/* 32px gap below title */}
-                    <span className="text-[9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Inspiration</span></span>
-                    <h2 className="text-3xl font-cormorant font-light text-primary italic">Spatial Influences</h2>
+                    <span className="text-[9.9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Inspiration</span></span>
+                    <h2 className="text-[33px] font-cormorant font-light text-primary italic">Spatial Influences</h2>
                   </div>
                   <p className="text-xs md:text-sm text-secondary font-light leading-[1.8] max-w-[700px] px-6 text-center mx-auto">
                     We draw inspiration from Japandi design principles, organic Wabi-Sabi textures, and mid-century architectural structuralism. We design with a deep reverence for local craft, raw wood structures, and passive light integration.
@@ -365,7 +437,7 @@ export default function Home() {
                 >
                   {/* Page Title Header */}
                   <div className="space-y-3 text-center w-full" style={{ marginBottom: '56px' }}>
-                    <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-semibold block font-sans"><span className="mr-[-0.4em]">CONNECT</span></span>
+                    <span className="text-[10.5px] uppercase tracking-[0.4em] text-accent font-semibold block font-sans"><span className="mr-[-0.4em]">CONNECT</span></span>
                     <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Contact the Studio</h2>
                   </div>
 

@@ -14,9 +14,10 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
 
   const tabs = [
     { id: 'portfolio', label: 'PORTFOLIO' },
-    { id: 'our-influence', label: 'OUR INFLUENCE' },
     { id: 'our-story', label: 'OUR STORY' },
     { id: 'featured', label: 'FEATURED' },
+    { id: 'our-influence', label: 'OUR INFLUENCE' },
+    { id: 'blog', label: 'BLOG' },
     { id: 'contact', label: 'CONTACT' },
   ];
 

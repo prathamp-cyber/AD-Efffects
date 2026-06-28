@@ -54,6 +54,21 @@ export default function AdminPage() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
 
+  // Forgot Password flow state
+  const [forgotState, setForgotState] = useState<'login' | 'email' | 'otp' | 'reset'>('login');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [forgotNewUsername, setForgotNewUsername] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [forgotError, setForgotError] = useState<string | null>(null);
+  const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
+  const [isSubmittingForgot, setIsSubmittingForgot] = useState(false);
+
+  // Admin Credentials (for CRM Settings tab)
+  const [adminCreds, setAdminCreds] = useState({ username: '', password: '', email: '' });
+  const [savingCreds, setSavingCreds] = useState(false);
+
   // Configuration State
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -127,6 +142,17 @@ export default function AdminPage() {
         ];
         setBlogs(defaultBlogs);
       }
+
+      // Fetch admin credentials securely
+      try {
+        const credsRes = await fetch('/api/auth/credentials');
+        if (credsRes.ok) {
+          const credsData = await credsRes.json();
+          setAdminCreds(credsData);
+        }
+      } catch (e) {
+        console.warn('Failed to load admin credentials.');
+      }
     } catch {
       showAlert('error', 'Failed to load website configuration.');
     }
@@ -157,6 +183,122 @@ export default function AdminPage() {
     }
     clearSessionAndRequireAuth();
   }, []);
+
+  // Forgot Password flow handlers
+  async function handleSendOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotSuccess(null);
+    setIsSubmittingForgot(true);
+
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setForgotState('otp');
+        setForgotSuccess('Security code sent. Please check your registered email inbox.');
+      } else {
+        setForgotError(data.error || 'Failed to send OTP.');
+      }
+    } catch {
+      setForgotError('Failed to connect to the server.');
+    } finally {
+      setIsSubmittingForgot(false);
+    }
+  }
+
+  async function handleVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotSuccess(null);
+    setIsSubmittingForgot(true);
+
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setResetToken(data.resetToken);
+        setForgotState('reset');
+      } else {
+        setForgotError(data.error || 'Invalid OTP.');
+      }
+    } catch {
+      setForgotError('Failed to verify OTP.');
+    } finally {
+      setIsSubmittingForgot(false);
+    }
+  }
+
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotError(null);
+    setForgotSuccess(null);
+    setIsSubmittingForgot(true);
+
+    try {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: forgotEmail, 
+          resetToken, 
+          newUsername: forgotNewUsername, 
+          newPassword: forgotNewPassword 
+        })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setForgotState('login');
+        showAlert('success', 'Admin credentials updated successfully! You can now log in.');
+        setUsername(forgotNewUsername);
+        setPassword('');
+        // Reset state
+        setForgotEmail('');
+        setForgotOtp('');
+        setForgotNewUsername('');
+        setForgotNewPassword('');
+        setResetToken('');
+      } else {
+        setForgotError(data.error || 'Failed to reset password.');
+      }
+    } catch {
+      setForgotError('Failed to reset password.');
+    } finally {
+      setIsSubmittingForgot(false);
+    }
+  }
+
+  async function handleSaveCredentials() {
+    setSavingCreds(true);
+    try {
+      const res = await fetch('/api/auth/credentials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminCreds)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showAlert('success', 'Administrator access credentials updated successfully!');
+      } else {
+        showAlert('error', data.error || 'Failed to save credentials.');
+      }
+    } catch {
+      showAlert('error', 'Failed to connect to the server.');
+    } finally {
+      setSavingCreds(false);
+    }
+  }
 
   // Handle Login submission
   async function handleLogin(e: React.FormEvent) {
@@ -440,14 +582,20 @@ export default function AdminPage() {
       : 1).toString();
     const updatedPress: PressItem[] = [
       ...config.press,
-      { id: nextId, source: 'New Press Publication', year: new Date().getFullYear().toString() }
+      { 
+        id: nextId, 
+        title: 'New Press Title', 
+        subtitle: 'Subheading/Project', 
+        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
+        link: 'https://instagram.com/' 
+      }
     ];
     const updatedConfig = { ...config, press: updatedPress };
     setConfig(updatedConfig);
     handleSaveConfig(updatedConfig);
   }
 
-  function handleUpdatePressItem(id: string, field: 'source' | 'year', value: string) {
+  function handleUpdatePressItem(id: string, field: 'title' | 'subtitle' | 'image' | 'link', value: string) {
     if (!config) return;
     const updatedPress = config.press.map(item => {
       if (item.id === id) {
@@ -523,9 +671,9 @@ export default function AdminPage() {
           <div className="flex flex-col items-center gap-7 z-10 w-full max-w-[500px] flex-shrink-0">
             {/* Logo header */}
             <div className="flex flex-col items-center select-none text-center">
-              <h1 className="font-serif text-[64px] font-light tracking-wide text-[#F1EFE8] leading-none">The AD Efffects</h1>
-              <div className="w-[120px] h-[1px] bg-gradient-to-r from-transparent via-[#FAC775]/50 to-transparent mt-4" />
-              <span className="text-[11px] uppercase tracking-[0.4em] text-[#FAC775] font-semibold block mt-4 font-sans">
+              <h1 className="font-serif text-[42px] sm:text-[52px] md:text-[60px] font-light tracking-wide text-[#F1EFE8] leading-none">The AD Efffects</h1>
+              <div className="w-[100px] h-[1px] bg-gradient-to-r from-transparent via-[#FAC775]/50 to-transparent mt-3.5" />
+              <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-[#FAC775] font-semibold block mt-3.5 font-sans">
                 <span className="mr-[-0.4em]">STUDIO ADMINISTRATION</span>
               </span>
             </div>
@@ -534,56 +682,234 @@ export default function AdminPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full glass-panel p-12 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] gold-border-glow"
+              className="w-full glass-panel p-10 sm:p-12 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] gold-border-glow"
             >
-              <form onSubmit={handleLogin} className="space-y-10">
-                {loginError && (
-                  <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-sm font-light rounded-[6px] flex items-center justify-center gap-3">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
-                    <span className="font-sans text-center">{loginError}</span>
+              {forgotState === 'login' && (
+                <form onSubmit={handleLogin} className="flex flex-col gap-6 w-full">
+                  {loginError && (
+                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                      <span className="font-sans text-center">{loginError}</span>
+                    </div>
+                  )}
+
+                  {/* Username Input */}
+                  <div className="flex flex-col gap-2 relative group">
+                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Enter username"
+                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                    />
                   </div>
-                )}
 
-                {/* Username Input */}
-                <div className="space-y-4 relative group">
-                  <label className="font-serif italic text-[16px] md:text-[18px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter username"
-                    className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-4 text-[16px] md:text-[18px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
-                  />
-                </div>
+                  {/* Password Input */}
+                  <div className="flex flex-col gap-2 relative group">
+                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                    />
+                    <div className="flex justify-end mt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForgotState('email');
+                          setForgotError(null);
+                          setForgotSuccess(null);
+                        }}
+                        className="text-[11px] sm:text-[12px] text-[#FAC775]/70 hover:text-[#FAC775] font-light font-sans tracking-wide transition-colors cursor-pointer border-none bg-transparent"
+                      >
+                        Forgot Password?
+                      </button>
+                    </div>
+                  </div>
 
-                {/* Password Input */}
-                <div className="space-y-4 relative group">
-                  <label className="font-serif italic text-[16px] md:text-[18px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-4 text-[16px] md:text-[18px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
-                  />
-                </div>
+                  <div className="pt-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingLogin}
+                      className="w-full bg-[#BA7517] text-white py-4.5 text-[13px] sm:text-[14px] uppercase tracking-[0.25em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] shadow-[0_4px_20px_rgba(186,117,23,0.15)] hover:shadow-[0_4px_25px_rgba(250,199,117,0.3)] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center block"
+                    >
+                      {isSubmittingLogin ? 'VERIFYING...' : 'ENTER DASHBOARD'}
+                    </button>
+                  </div>
+                </form>
+              )}
 
-                <div className="pt-6">
-                  <button
-                    type="submit"
-                    disabled={isSubmittingLogin}
-                    className="w-full bg-[#BA7517] text-white py-5 text-[14px] md:text-[15px] uppercase tracking-[0.3em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] shadow-[0_4px_20px_rgba(186,117,23,0.15)] hover:shadow-[0_4px_25px_rgba(250,199,117,0.3)] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center block"
-                  >
-                    {isSubmittingLogin ? 'VERIFYING...' : 'ENTER DASHBOARD'}
-                  </button>
-                </div>
-              </form>
+              {forgotState === 'email' && (
+                <form onSubmit={handleSendOtp} className="flex flex-col gap-6 w-full">
+                  <div className="text-center flex flex-col gap-2.5">
+                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Forgot Password</h2>
+                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
+                      Enter your registered email address below, and we will send you a 6-digit OTP code to verify your identity.
+                    </p>
+                  </div>
+
+                  {forgotError && (
+                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                      <span className="font-sans text-center">{forgotError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-2 relative group">
+                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors">
+                      Registered Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="e.g. admin@adefffects.com"
+                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                    />
+                  </div>
+
+                  <div className="pt-3 flex flex-col gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingForgot}
+                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
+                    >
+                      {isSubmittingForgot ? 'SENDING OTP...' : 'SEND OTP'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForgotState('login')}
+                      className="w-full border border-[#BA7517]/20 text-[#888780] hover:text-[#F1EFE8] py-3 text-[11px] sm:text-[12px] uppercase tracking-[0.2em] font-sans rounded-[6px] transition-all cursor-pointer bg-transparent"
+                    >
+                      Back to Login
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {forgotState === 'otp' && (
+                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6 w-full">
+                  <div className="text-center flex flex-col gap-2.5">
+                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Enter Security Code</h2>
+                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
+                      A 6-digit security code has been generated. Please enter it below.
+                    </p>
+                  </div>
+
+                  {forgotSuccess && (
+                    <div className="p-4 bg-green-950/20 border border-green-800/40 text-green-400 text-xs sm:text-sm font-light rounded-[6px] flex flex-col items-center justify-center gap-1 my-1">
+                      <span className="font-sans text-center text-xs">{forgotSuccess}</span>
+                    </div>
+                  )}
+
+                  {forgotError && (
+                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                      <span className="font-sans text-center">{forgotError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-2 relative group">
+                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors">
+                      Security Code (OTP)
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      maxLength={6}
+                      value={forgotOtp}
+                      onChange={(e) => setForgotOtp(e.target.value)}
+                      placeholder="e.g. 123456"
+                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[18px] sm:text-[20px] text-[#F1EFE8] placeholder:text-[#888780]/30 text-center tracking-[0.5em] outline-none transition-all duration-300 font-mono font-bold"
+                    />
+                  </div>
+
+                  <div className="pt-3 flex flex-col gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingForgot}
+                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
+                    >
+                      {isSubmittingForgot ? 'VERIFYING...' : 'VERIFY CODE'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForgotState('email')}
+                      className="w-full border border-[#BA7517]/20 text-[#888780] hover:text-[#F1EFE8] py-3 text-[11px] sm:text-[12px] uppercase tracking-[0.2em] font-sans rounded-[6px] transition-all cursor-pointer bg-transparent"
+                    >
+                      Resend OTP
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {forgotState === 'reset' && (
+                <form onSubmit={handleResetPassword} className="flex flex-col gap-6 w-full">
+                  <div className="text-center flex flex-col gap-2.5">
+                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Reset Credentials</h2>
+                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
+                      Your identity is verified. Set your new administrative Username and Password.
+                    </p>
+                  </div>
+
+                  {forgotError && (
+                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
+                      <span className="font-sans text-center">{forgotError}</span>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2 relative group">
+                      <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors">
+                        New Username
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={forgotNewUsername}
+                        onChange={(e) => setForgotNewUsername(e.target.value)}
+                        placeholder="Min. 3 characters"
+                        className="w-full bg-[#181715] border border-[#BA7517]/25 focus:border-[#FAC775] px-4 py-2.5 text-[14px] sm:text-[15px] text-[#F1EFE8] outline-none rounded transition-all duration-300 font-sans font-light"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2 relative group">
+                      <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors">
+                        New Password
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={forgotNewPassword}
+                        onChange={(e) => setForgotNewPassword(e.target.value)}
+                        placeholder="Min. 6 characters"
+                        className="w-full bg-[#181715] border border-[#BA7517]/25 focus:border-[#FAC775] px-4 py-2.5 text-[14px] sm:text-[15px] text-[#F1EFE8] outline-none rounded transition-all duration-300 font-sans font-light"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-3 flex flex-col gap-3">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingForgot}
+                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
+                    >
+                      {isSubmittingForgot ? 'SAVING...' : 'RESET CREDENTIALS'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </motion.div>
           </div>
         </div>
@@ -1453,29 +1779,64 @@ export default function AdminPage() {
                         {config.press.map((item) => (
                           <div 
                             key={item.id} 
-                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4 border-b border-[#BA7517]/5 gap-6 group hover:bg-[#1e1c19]/20 px-3 rounded transition-colors"
+                            className="flex flex-col gap-4 py-6 border-b border-[#BA7517]/15 group hover:bg-[#1e1c19]/10 px-3 rounded transition-colors"
                           >
-                            <input
-                              type="text"
-                              value={item.source}
-                              onChange={(e) => handleUpdatePressItem(item.id, 'source', e.target.value)}
-                              placeholder="Press Publication name..."
-                              className="flex-1 bg-transparent border-b border-transparent focus:border-[#FAC775] py-2 text-[17px] font-serif text-[#F1EFE8] outline-none transition-all font-light"
-                            />
-                            <div className="flex items-center gap-6 w-full sm:w-auto justify-between">
-                              <input
-                                type="text"
-                                value={item.year}
-                                onChange={(e) => handleUpdatePressItem(item.id, 'year', e.target.value)}
-                                placeholder="Year"
-                                className="w-24 bg-transparent border-b border-transparent focus:border-[#FAC775] py-2 text-[15px] text-[#FAC775] font-mono text-center outline-none transition-all font-semibold"
-                              />
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] tracking-[0.15em] uppercase text-[#FAC775] font-semibold">
+                                Press Entry #{item.id}
+                              </span>
                               <button
                                 onClick={() => handleDeletePressItem(item.id)}
                                 className="text-[#888780] hover:text-red-400 opacity-60 group-hover:opacity-100 transition-all p-2 cursor-pointer border-none bg-transparent"
                               >
                                 <Trash2 className="w-4 h-4 stroke-[1.5]" />
                               </button>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                <label className="text-[9px] text-[#888780] uppercase tracking-wider font-semibold block">Title / Publication Cover Info</label>
+                                <input
+                                  type="text"
+                                  value={item.title}
+                                  onChange={(e) => handleUpdatePressItem(item.id, 'title', e.target.value)}
+                                  placeholder="e.g. GoodHomes India, Sept 2025 Edition"
+                                  className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[14px] text-[#F1EFE8] outline-none rounded transition-all font-light"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[9px] text-[#888780] uppercase tracking-wider font-semibold block">Subtitle / Related Project</label>
+                                <input
+                                  type="text"
+                                  value={item.subtitle}
+                                  onChange={(e) => handleUpdatePressItem(item.id, 'subtitle', e.target.value)}
+                                  placeholder="e.g. Pranaya"
+                                  className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[14px] text-[#F1EFE8] outline-none rounded transition-all font-light"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[9px] text-[#888780] uppercase tracking-wider font-semibold block">Cover Image URL</label>
+                                <input
+                                  type="text"
+                                  value={item.image}
+                                  onChange={(e) => handleUpdatePressItem(item.id, 'image', e.target.value)}
+                                  placeholder="https://images.unsplash.com/..."
+                                  className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[12px] text-[#F1EFE8] outline-none rounded transition-all font-light"
+                                />
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-[9px] text-[#888780] uppercase tracking-wider font-semibold block">Redirection Link URL</label>
+                                <input
+                                  type="text"
+                                  value={item.link}
+                                  onChange={(e) => handleUpdatePressItem(item.id, 'link', e.target.value)}
+                                  placeholder="https://instagram.com/p/..."
+                                  className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[12px] text-[#FAC775] outline-none rounded transition-all font-light font-mono"
+                                />
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1788,29 +2149,47 @@ export default function AdminPage() {
                       <div className="space-y-10">
                         {/* Credentials */}
                         <div className="space-y-6">
-                          <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Administrator Access</h4>
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+                          <div className="flex justify-between items-center">
+                            <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Administrator Access</h4>
+                            <button
+                              onClick={handleSaveCredentials}
+                              disabled={savingCreds}
+                              className="px-5 py-2 bg-[#BA7517] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all text-white text-[11px] font-sans font-semibold uppercase tracking-wider rounded disabled:opacity-50 cursor-pointer"
+                            >
+                              {savingCreds ? 'SAVING...' : 'SAVE CREDENTIALS'}
+                            </button>
+                          </div>
+                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div className="space-y-4">
                               <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Login Username</label>
                               <input
                                 type="text"
-                                disabled
-                                value="AD EFFFECTS"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[15px] text-[#B4B2A9]/70 outline-none font-light select-all"
+                                value={adminCreds.username}
+                                onChange={(e) => setAdminCreds({ ...adminCreds, username: e.target.value })}
+                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#F1EFE8] outline-none rounded font-light transition-all"
                               />
                             </div>
                             <div className="space-y-4">
                               <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Password Secret</label>
                               <input
                                 type="text"
-                                disabled
-                                value="AD12345"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-3 text-[15px] text-[#B4B2A9]/70 outline-none font-light select-all"
+                                value={adminCreds.password}
+                                onChange={(e) => setAdminCreds({ ...adminCreds, password: e.target.value })}
+                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#F1EFE8] outline-none rounded font-light transition-all"
+                              />
+                            </div>
+                            <div className="space-y-4">
+                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Registered Email (for OTP recovery)</label>
+                              <input
+                                type="email"
+                                value={adminCreds.email}
+                                onChange={(e) => setAdminCreds({ ...adminCreds, email: e.target.value })}
+                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#FAC775] outline-none rounded font-light transition-all"
                               />
                             </div>
                           </div>
                           <span className="text-[11px] text-[#B4B2A9]/50 font-light block">
-                            * Note: Admin credentials are set dynamically to hardcoded values as per project parameters.
+                            * Note: Admin credentials and password recovery email are saved securely to adminCredentials.json.
                           </span>
                         </div>
 

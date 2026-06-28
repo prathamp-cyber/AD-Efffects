@@ -13,8 +13,10 @@ export interface Project {
 
 export interface PressItem {
   id: string;
-  source: string;
-  year: string;
+  title: string;
+  subtitle: string;
+  image: string;
+  link: string;
 }
 
 export interface StorySection {
@@ -29,13 +31,25 @@ export interface InfluenceSection {
   image: string;
 }
 
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  date: string;
+}
+
 export interface SiteConfig {
   brandStatement: string;
   story: StorySection;
   influence: InfluenceSection;
   press: PressItem[];
   projects: Project[];
+  blogs?: BlogPost[];
 }
 
-export const defaultSiteConfig = siteConfigJson as SiteConfig;
+export const defaultSiteConfig = siteConfigJson as unknown as SiteConfig;
 export const projectsData = defaultSiteConfig.projects;
+export const pressData = defaultSiteConfig.press;
+export const blogsData = defaultSiteConfig.blogs || [];

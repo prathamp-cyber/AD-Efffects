@@ -17,10 +17,69 @@
     "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80"
   },
   "press": [
-    { "id": "1", "source": "Architectural Digest", "year": "2024" },
-    { "id": "2", "source": "Elle Decor India", "year": "2023" },
-    { "id": "3", "source": "Design Anthology", "year": "2024" },
-    { "id": "4", "source": "The Architect's Diary", "year": "2024" }
+    {
+      "id": "1",
+      "title": "GoodHomes India, August September 2025 Edition",
+      "subtitle": "Pranaya",
+      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "2",
+      "title": "LivingETC India, September 2025 Edition",
+      "subtitle": "Sirocco @ 45",
+      "image": "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "3",
+      "title": "WADE ASIA 2025",
+      "subtitle": "Best in Retail Interiors",
+      "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "4",
+      "title": "The Architect's Diary, July - August 2025 Edition",
+      "subtitle": "Featured as Power Couple",
+      "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "5",
+      "title": "Architectural Digest India",
+      "subtitle": "Kayan House",
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "6",
+      "title": "GoodHomes India Awards 2025",
+      "subtitle": "Crusader of Indian Design",
+      "image": "https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "7",
+      "title": "WADE ASIA 2024",
+      "subtitle": "Excellence in Design",
+      "image": "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "8",
+      "title": "The Goodhomes India, April - May 2024 Edition",
+      "subtitle": "Sere Sanctuary",
+      "image": "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
+      "id": "9",
+      "title": "New Press Title",
+      "subtitle": "Subheading/Project",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    }
   ],
   "projects": [
     {
@@ -106,6 +165,24 @@
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1200&q=85"
       ]
+    }
+  ],
+  "blogs": [
+    {
+      "id": "1",
+      "title": "The Art of Minimalist Living",
+      "excerpt": "How spatial purity and restraint can transform your daily life.",
+      "content": "Detailed thoughts on minimalist design philosophy, tactile materiality, and silent luxury. We explore how subtraction creates space for presence, and how choosing the right natural materials brings warmth and texture to the home.",
+      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80",
+      "date": "2026-06-25"
+    },
+    {
+      "id": "2",
+      "title": "Material Honesty in Interior Design",
+      "excerpt": "Celebrating the raw beauty of wood, travertine stone, and metal.",
+      "content": "True luxury lies in the authenticity of materials. In this editorial, we discuss why we prioritize raw textures over synthetic finishes, allowing natural aging to tell a story of longevity and character.",
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+      "date": "2026-06-20"
     }
   ]
 }
