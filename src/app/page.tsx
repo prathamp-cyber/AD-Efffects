@@ -231,7 +231,7 @@ export default function Home() {
                     className="max-w-[700px] text-center px-6 mx-auto"
                     style={{ marginTop: '48px', marginBottom: '64px' }} // 48px top, 64px bottom
                   >
-                    <p className="text-[18px] font-cormorant font-light text-primary leading-[1.6] text-center">
+                    <p className="text-[19px] font-cormorant font-medium text-primary leading-[1.6] text-center">
                       The AD Efffects is a bespoke interior design studio creating thoughtfully crafted homes and spaces. Our work is rooted in clarity of planning, depth of detail, and a deep respect for material, craft, and context. Every project is approached as a collaboration — designed with intent, executed with rigour, and shaped around the people who live within it.
                     </p>
                   </div>
