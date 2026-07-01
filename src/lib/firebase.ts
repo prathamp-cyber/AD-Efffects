@@ -2,13 +2,13 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBY3I9t19_WU8NjI06ayaC6vukOudQ7gIk",
-  authDomain: "ad-efffects.firebaseapp.com",
-  projectId: "ad-efffects",
-  storageBucket: "ad-efffects.firebasestorage.app",
-  messagingSenderId: "599566372721",
-  appId: "1:599566372721:web:e9cfd33873321cd777f0d0",
-  measurementId: "G-WMY6KWC435"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase app (avoiding duplicate initialization on hot reloads)
