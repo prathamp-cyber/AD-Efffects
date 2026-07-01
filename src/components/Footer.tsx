@@ -20,7 +20,7 @@ export default function Footer({ onTabChange }: FooterProps) {
       >
         <button 
           onClick={() => onTabChange?.('portfolio')}
-          className="font-script text-[64px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
+          className="brand-logo text-[76px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
         >
           The AD Efffects
         </button>

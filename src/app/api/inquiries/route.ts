@@ -1,33 +1,28 @@
 import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-import { getSessionCookie, verifySessionToken } from '../auth/session';
+import { requireRole } from '../auth/session';
+import { addAuditLog } from '../logs/db';
+import { isObject, sanitizeText, validateEmail, validateId, validateJsonRequest, validateString } from '../validation';
+import { checkRateLimit, RATE_LIMITS } from '../auth/rateLimiter';
+import { getInquiries, saveInquiries } from '../dbAdapter';
 
-const inquiriesPath = path.join(process.cwd(), 'src', 'data', 'inquiries.json');
-
-// Security Hardening: XSS Sanitizer to neutralize HTML injection
-function sanitizeString(str: string): string {
-  if (typeof str !== 'string') return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+interface Inquiry {
+  id: string;
+  name: string;
+  email: string;
+  projectType: string;
+  message: string;
+  date: string;
 }
 
 export async function GET() {
-  // Check auth
-  const token = await getSessionCookie();
-  const isValid = verifySessionToken(token);
-  if (!isValid) {
+  // Admin only — super admin uses /api/logs for their data
+  const auth = await requireRole('admin');
+  if (!auth.authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const data = await fs.readFile(inquiriesPath, 'utf8');
-    const inquiries = JSON.parse(data);
+    const inquiries = await getInquiries() as unknown as Inquiry[];
     return NextResponse.json(inquiries);
   } catch {
     return NextResponse.json([]);
@@ -35,55 +30,57 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // ── Rate Limit (3 submissions / 10 minutes — public endpoint) ─────────────
+  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.inquiry);
+  if (rateLimitResponse) return rateLimitResponse;
+
+  // ── Body Size Check (4KB max to prevent DoS via payload bloating) ────────
+  const requestError = validateJsonRequest(request, 4096);
+  if (requestError) {
+    const status = requestError.includes('exceeds') ? 413 : 400;
+    return NextResponse.json({ error: requestError }, { status });
+  }
+
   try {
     const body = await request.json();
-    const { name, email, projectType, message } = body;
-
-    // 1. Check required fields and type safety
-    if (
-      typeof name !== 'string' || 
-      typeof email !== 'string' || 
-      typeof message !== 'string'
-    ) {
-      return NextResponse.json({ error: 'Required fields missing or invalid' }, { status: 400 });
+    if (!isObject(body)) {
+      return NextResponse.json({ error: 'Request body must be a JSON object' }, { status: 400 });
     }
 
-    const trimmedName = name.trim();
-    const trimmedEmail = email.trim();
-    const trimmedMessage = message.trim();
-    const trimmedProjectType = typeof projectType === 'string' ? projectType.trim() : 'Residential';
-
-    if (!trimmedName || !trimmedEmail || !trimmedMessage) {
-      return NextResponse.json({ error: 'Required fields cannot be empty' }, { status: 400 });
+    const allowedKeys = new Set(['name', 'email', 'projectType', 'message']);
+    const unknownKey = Object.keys(body).find((key) => !allowedKeys.has(key));
+    if (unknownKey) {
+      return NextResponse.json({ error: `Unexpected field: ${unknownKey}` }, { status: 400 });
     }
 
-    // 2. Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(trimmedEmail)) {
-      return NextResponse.json({ error: 'Invalid email address format' }, { status: 400 });
-    }
+    // ── Input Validation ─────────────────────────────────────────────────────
+    const nameVal = validateString(body.name, 'Name', { minLen: 2, maxLen: 100 });
+    if (nameVal.error) return NextResponse.json({ error: nameVal.error }, { status: 400 });
 
-    // 3. Enforce character length limits (prevents payload abuse / DoS)
-    if (trimmedName.length > 100) return NextResponse.json({ error: 'Name exceeds 100 characters' }, { status: 400 });
-    if (trimmedEmail.length > 100) return NextResponse.json({ error: 'Email exceeds 100 characters' }, { status: 400 });
-    if (trimmedProjectType.length > 50) return NextResponse.json({ error: 'Project type exceeds 50 characters' }, { status: 400 });
-    if (trimmedMessage.length > 2000) return NextResponse.json({ error: 'Message exceeds 2000 characters' }, { status: 400 });
+    const emailVal = validateEmail(body.email, 'Email');
+    if (emailVal.error) return NextResponse.json({ error: emailVal.error }, { status: 400 });
 
-    // 4. Sanitize inputs to prevent Stored XSS
-    const sanitizedName = sanitizeString(trimmedName);
-    const sanitizedEmail = sanitizeString(trimmedEmail);
-    const sanitizedProjectType = sanitizeString(trimmedProjectType);
-    const sanitizedMessage = sanitizeString(trimmedMessage);
+    const projectTypeVal = validateString(body.projectType, 'Project Type', { minLen: 1, maxLen: 100 });
+    // Default fallback if no project type is supplied
+    const trimmedProjectType = projectTypeVal.value ? projectTypeVal.value.trim() : 'General Inquiry';
 
-    let inquiries = [];
+    const messageVal = validateString(body.message, 'Message', { minLen: 5, maxLen: 2000 });
+    if (messageVal.error) return NextResponse.json({ error: messageVal.error }, { status: 400 });
+
+    // ── XSS Sanitization (Strict HTML entities encoding) ───────────────────
+    const sanitizedName = sanitizeText(nameVal.value);
+    const sanitizedEmail = sanitizeText(emailVal.value);
+    const sanitizedProjectType = sanitizeText(trimmedProjectType);
+    const sanitizedMessage = sanitizeText(messageVal.value);
+
+    let inquiries: Inquiry[] = [];
     try {
-      const data = await fs.readFile(inquiriesPath, 'utf8');
-      inquiries = JSON.parse(data);
+      inquiries = await getInquiries() as unknown as Inquiry[];
     } catch {
-      // Ignored if file does not exist
+      // Ignored if key does not exist
     }
 
-    const newInquiry = {
+    const newInquiry: Inquiry = {
       id: Date.now().toString(),
       name: sanitizedName,
       email: sanitizedEmail,
@@ -95,10 +92,10 @@ export async function POST(request: Request) {
     inquiries.push(newInquiry);
     
     try {
-      await fs.writeFile(inquiriesPath, JSON.stringify(inquiries, null, 2), 'utf8');
+      await saveInquiries(inquiries as unknown as Record<string, unknown>[]);
       return NextResponse.json({ success: true });
     } catch (fsError) {
-      console.warn('Failed to save inquiry to file system:', fsError);
+      console.warn('Failed to save inquiry via adapter:', fsError);
       return NextResponse.json({ success: true, warning: 'Saved in-memory only' });
     }
   } catch (error) {
@@ -108,26 +105,32 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  // Check auth
-  const token = await getSessionCookie();
-  const isValid = verifySessionToken(token);
-  if (!isValid) {
+  // Admin only — super admin cannot delete client inquiries
+  const auth = await requireRole('admin');
+  if (!auth.authorized) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const username = auth.username;
 
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const rawId = searchParams.get('id');
 
-    if (!id) {
-      return NextResponse.json({ error: 'No ID provided' }, { status: 400 });
-    }
+    // ── Strict ID Validation (alphanumeric + hyphens only) ────────────────
+    const idVal = validateId(rawId, 'id');
+    if (idVal.error) return NextResponse.json({ error: idVal.error }, { status: 400 });
+    const id = idVal.value;
 
-    const data = await fs.readFile(inquiriesPath, 'utf8');
-    const inquiries = JSON.parse(data);
-    const filteredInquiries = inquiries.filter((inq: { id: string }) => inq.id !== id);
+    const inquiries = await getInquiries() as unknown as Inquiry[];
+    const targetInquiry = inquiries.find((inq) => inq.id === id);
+    const clientName = targetInquiry ? targetInquiry.name : 'Unknown';
+    const filteredInquiries = inquiries.filter((inq) => inq.id !== id);
 
-    await fs.writeFile(inquiriesPath, JSON.stringify(filteredInquiries, null, 2), 'utf8');
+    await saveInquiries(filteredInquiries as unknown as Record<string, unknown>[]);
+    
+    // Log deletion
+    await addAuditLog(`Cleared client inquiry from: "${clientName}"`, username);
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Failed to delete inquiry:', error);

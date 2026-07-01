@@ -1,21 +1,18 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Briefcase, BookOpen, Award, 
-  PenSquare, Mail, Settings, Plus, Trash2, LogOut, 
-  Upload, Download, Eye, ArrowLeft, ArrowRight, 
+  PenSquare, Mail, Plus, Trash2, LogOut, 
+  Upload, Download, Eye, EyeOff, ArrowLeft, ArrowRight, 
   AlertCircle, CheckCircle, Edit3, X
 } from 'lucide-react';
-import { Project, PressItem, SiteConfig } from '@/data';
+import type { BlogPost, Project, PressItem, SiteConfig } from '@/data';
 
-interface Blog {
-  id: string;
-  title: string;
-  date: string;
-  author: string;
-  excerpt: string;
+interface Blog extends BlogPost {
+  author?: string;
 }
 
 interface Inquiry {
@@ -53,27 +50,17 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isSubmittingLogin, setIsSubmittingLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Forgot Password flow state
-  const [forgotState, setForgotState] = useState<'login' | 'email' | 'otp' | 'reset'>('login');
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotOtp, setForgotOtp] = useState('');
-  const [forgotNewUsername, setForgotNewUsername] = useState('');
-  const [forgotNewPassword, setForgotNewPassword] = useState('');
-  const [resetToken, setResetToken] = useState('');
-  const [forgotError, setForgotError] = useState<string | null>(null);
-  const [forgotSuccess, setForgotSuccess] = useState<string | null>(null);
-  const [isSubmittingForgot, setIsSubmittingForgot] = useState(false);
 
-  // Admin Credentials (for CRM Settings tab)
-  const [adminCreds, setAdminCreds] = useState({ username: '', password: '', email: '' });
-  const [savingCreds, setSavingCreds] = useState(false);
+
+
 
   // Configuration State
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'story' | 'featured' | 'blogs' | 'inquiries' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'story' | 'featured' | 'blogs' | 'inquiries'>('dashboard');
   const [savingConfig, setSavingConfig] = useState(false);
   
   // Project CRUD editing state
@@ -98,7 +85,9 @@ export default function AdminPage() {
     title: '',
     date: new Date().toISOString().split('T')[0],
     author: 'Studio Admin',
-    excerpt: ''
+    excerpt: '',
+    content: '',
+    image: ''
   });
 
   // Inquiry focus modal state
@@ -137,22 +126,13 @@ export default function AdminPage() {
         setBlogs(data.blogs);
       } else {
         const defaultBlogs: Blog[] = [
-          { id: '1', title: 'The Spatial Purity of Japandi Restraint', date: '2026-06-15', author: 'The AD Efffects', excerpt: 'An editorial exploration of Japanese minimalism combined with Scandinavian functional warmth.' },
-          { id: '2', title: 'Tactiletravertine & Traverses of Passive Illumination', date: '2026-05-24', author: 'The AD Efffects', excerpt: 'How we utilize natural daylight paths alongside raw stone textures to construct durative sanctuaries.' }
+          { id: '1', title: 'The Spatial Purity of Japandi Restraint', date: '2026-06-15', author: 'The AD Efffects', excerpt: 'An editorial exploration of Japanese minimalism combined with Scandinavian functional warmth.', content: 'An editorial exploration of Japanese minimalism combined with Scandinavian functional warmth.', image: '' },
+          { id: '2', title: 'Tactiletravertine & Traverses of Passive Illumination', date: '2026-05-24', author: 'The AD Efffects', excerpt: 'How we utilize natural daylight paths alongside raw stone textures to construct durative sanctuaries.', content: 'How we utilize natural daylight paths alongside raw stone textures to construct durative sanctuaries.', image: '' }
         ];
         setBlogs(defaultBlogs);
       }
 
-      // Fetch admin credentials securely
-      try {
-        const credsRes = await fetch('/api/auth/credentials');
-        if (credsRes.ok) {
-          const credsData = await credsRes.json();
-          setAdminCreds(credsData);
-        }
-      } catch (e) {
-        console.warn('Failed to load admin credentials.');
-      }
+
     } catch {
       showAlert('error', 'Failed to load website configuration.');
     }
@@ -184,121 +164,9 @@ export default function AdminPage() {
     clearSessionAndRequireAuth();
   }, []);
 
-  // Forgot Password flow handlers
-  async function handleSendOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setForgotError(null);
-    setForgotSuccess(null);
-    setIsSubmittingForgot(true);
 
-    try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail })
-      });
-      const data = await res.json();
 
-      if (res.ok) {
-        setForgotState('otp');
-        setForgotSuccess('Security code sent. Please check your registered email inbox.');
-      } else {
-        setForgotError(data.error || 'Failed to send OTP.');
-      }
-    } catch {
-      setForgotError('Failed to connect to the server.');
-    } finally {
-      setIsSubmittingForgot(false);
-    }
-  }
 
-  async function handleVerifyOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setForgotError(null);
-    setForgotSuccess(null);
-    setIsSubmittingForgot(true);
-
-    try {
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: forgotEmail, otp: forgotOtp })
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setResetToken(data.resetToken);
-        setForgotState('reset');
-      } else {
-        setForgotError(data.error || 'Invalid OTP.');
-      }
-    } catch {
-      setForgotError('Failed to verify OTP.');
-    } finally {
-      setIsSubmittingForgot(false);
-    }
-  }
-
-  async function handleResetPassword(e: React.FormEvent) {
-    e.preventDefault();
-    setForgotError(null);
-    setForgotSuccess(null);
-    setIsSubmittingForgot(true);
-
-    try {
-      const res = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: forgotEmail, 
-          resetToken, 
-          newUsername: forgotNewUsername, 
-          newPassword: forgotNewPassword 
-        })
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setForgotState('login');
-        showAlert('success', 'Admin credentials updated successfully! You can now log in.');
-        setUsername(forgotNewUsername);
-        setPassword('');
-        // Reset state
-        setForgotEmail('');
-        setForgotOtp('');
-        setForgotNewUsername('');
-        setForgotNewPassword('');
-        setResetToken('');
-      } else {
-        setForgotError(data.error || 'Failed to reset password.');
-      }
-    } catch {
-      setForgotError('Failed to reset password.');
-    } finally {
-      setIsSubmittingForgot(false);
-    }
-  }
-
-  async function handleSaveCredentials() {
-    setSavingCreds(true);
-    try {
-      const res = await fetch('/api/auth/credentials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(adminCreds)
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showAlert('success', 'Administrator access credentials updated successfully!');
-      } else {
-        showAlert('error', data.error || 'Failed to save credentials.');
-      }
-    } catch {
-      showAlert('error', 'Failed to connect to the server.');
-    } finally {
-      setSavingCreds(false);
-    }
-  }
 
   // Handle Login submission
   async function handleLogin(e: React.FormEvent) {
@@ -368,6 +236,13 @@ export default function AdminPage() {
           showAlert('warning', data.warning || 'Saved in-memory only due to hosting constraints.');
         }
         setConfig(fullConfig);
+        window.dispatchEvent(new Event('site-config-updated'));
+        window.localStorage.setItem('site-config-updated-at', Date.now().toString());
+        if (typeof BroadcastChannel !== 'undefined') {
+          const channel = new BroadcastChannel('site-config-updates');
+          channel.postMessage({ updatedAt: Date.now() });
+          channel.close();
+        }
       } else {
         showAlert('error', data.error || 'Failed to save configuration.');
       }
@@ -422,7 +297,7 @@ export default function AdminPage() {
   }
 
   // Specific file fields handlers
-  async function handleFieldImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'story0' | 'story1' | 'influence' | 'projectCover' | 'projectDetail') {
+  async function handleFieldImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'story0' | 'story1' | 'influence' | 'projectCover' | 'projectDetail' | 'blogImage') {
     const file = e.target.files?.[0];
     if (!file || !config) return;
 
@@ -457,6 +332,11 @@ export default function AdminPage() {
           ...prev,
           detailImages: [...(prev.detailImages || []), url]
         }));
+      }
+    } else if (type === 'blogImage') {
+      const url = await uploadFile(file, type);
+      if (url) {
+        setBlogForm(prev => ({ ...prev, image: url }));
       }
     }
   }
@@ -535,7 +415,9 @@ export default function AdminPage() {
       title: '',
       date: new Date().toISOString().split('T')[0],
       author: 'The AD Efffects',
-      excerpt: ''
+      excerpt: '',
+      content: '',
+      image: ''
     });
     setEditingBlog({ id: nextId } as Blog);
   }
@@ -547,18 +429,27 @@ export default function AdminPage() {
   }
 
   function handleSaveBlogForm() {
-    if (!blogForm.title || !blogForm.excerpt) {
-      showAlert('error', 'Title and excerpt content snippet are required.');
+    if (!blogForm.title || !blogForm.excerpt || !blogForm.content) {
+      showAlert('error', 'Title, summary excerpt, and full article body are required.');
       return;
     }
 
     const updatedBlogs = [...blogs];
     if (isNewBlog) {
-      updatedBlogs.push(blogForm as Blog);
+      updatedBlogs.push({
+        ...(blogForm as Blog),
+        content: blogForm.content || blogForm.excerpt || '',
+        image: blogForm.image || ''
+      });
     } else {
       const idx = updatedBlogs.findIndex(b => b.id === blogForm.id);
       if (idx !== -1) {
-        updatedBlogs[idx] = blogForm as Blog;
+        updatedBlogs[idx] = {
+          ...updatedBlogs[idx],
+          ...(blogForm as Blog),
+          content: blogForm.content || blogForm.excerpt || '',
+          image: blogForm.image || updatedBlogs[idx].image || ''
+        };
       }
     }
 
@@ -619,7 +510,7 @@ export default function AdminPage() {
     if (!confirm('Are you sure you want to delete this inquiry from the inbox?')) return;
     
     try {
-      const res = await fetch(`/api/inquiries?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/inquiries?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
       if (res.ok) {
         setInquiries(prev => prev.filter(inq => inq.id !== id));
         showAlert('success', 'Inquiry deleted successfully.');
@@ -641,7 +532,6 @@ export default function AdminPage() {
       case 'featured': return 'Featured Press mentions';
       case 'blogs': return editingBlog ? 'Blog Posts / Edit Post' : 'Editorial Blog Posts';
       case 'inquiries': return 'Inquiries Inbox';
-      case 'settings': return 'Studio Settings';
       default: return 'Control Center';
     }
   };
@@ -658,20 +548,20 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="w-full h-screen bg-[#121212] text-[#FAF9F7] font-sans antialiased selection:bg-accent selection:text-white flex gap-[12px] pr-[12px] overflow-hidden">
+    <div className="admin-shell w-full h-screen bg-[#121212] text-[#FAF9F7] font-sans antialiased selection:bg-accent selection:text-white flex gap-[12px] pr-[12px] overflow-hidden">
       
       {/* 1. AUTHENTICATION LOGIN UI */}
       {!isAuthenticated ? (
-        <div className="w-full h-full flex flex-col items-center justify-center px-6 py-12 relative bg-[#0f0e0c] overflow-y-auto">
+        <div className="admin-login-screen w-full h-full flex flex-col items-center justify-center px-6 py-12 relative bg-[#0f0e0c] overflow-y-auto">
           {/* Ambient Background Lights */}
           <div className="absolute top-[20%] left-[30%] w-[350px] h-[350px] rounded-full bg-[#BA7517] opacity-[0.06] filter blur-[80px] pointer-events-none animate-pulse-slow" />
           <div className="absolute bottom-[20%] right-[30%] w-[400px] h-[400px] rounded-full bg-[#FAC775] opacity-[0.04] filter blur-[100px] pointer-events-none animate-pulse-slow" style={{ animationDelay: '2s' }} />
 
           {/* Centralized Login Block */}
-          <div className="flex flex-col items-center gap-7 z-10 w-full max-w-[500px] flex-shrink-0">
+          <div className="admin-login-stack flex flex-col items-center gap-7 z-10 w-full max-w-[500px] flex-shrink-0">
             {/* Logo header */}
             <div className="flex flex-col items-center select-none text-center">
-              <h1 className="font-serif text-[42px] sm:text-[52px] md:text-[60px] font-light tracking-wide text-[#F1EFE8] leading-none">The AD Efffects</h1>
+              <h1 className="font-serif text-[42px] sm:text-[52px] md:text-[60px] font-light tracking-wide text-[#F1EFE8] leading-none">AD-Efffects</h1>
               <div className="w-[100px] h-[1px] bg-gradient-to-r from-transparent via-[#FAC775]/50 to-transparent mt-3.5" />
               <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.4em] text-[#FAC775] font-semibold block mt-3.5 font-sans">
                 <span className="mr-[-0.4em]">STUDIO ADMINISTRATION</span>
@@ -682,10 +572,9 @@ export default function AdminPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="w-full glass-panel p-10 sm:p-12 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] gold-border-glow"
+              className="admin-login-card w-full glass-panel p-10 sm:p-12 border border-[#BA7517]/25 rounded-[12px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-[#F1EFE8] gold-border-glow"
             >
-              {forgotState === 'login' && (
-                <form onSubmit={handleLogin} className="flex flex-col gap-6 w-full">
+              <form onSubmit={handleLogin} className="flex flex-col gap-6 w-full">
                   {loginError && (
                     <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3">
                       <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
@@ -713,25 +602,22 @@ export default function AdminPage() {
                     <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors duration-300">
                       Password
                     </label>
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
-                    />
-                    <div className="flex justify-end mt-1">
+                    <div className="relative w-full">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 pr-10 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
+                      />
                       <button
                         type="button"
-                        onClick={() => {
-                          setForgotState('email');
-                          setForgotError(null);
-                          setForgotSuccess(null);
-                        }}
-                        className="text-[11px] sm:text-[12px] text-[#FAC775]/70 hover:text-[#FAC775] font-light font-sans tracking-wide transition-colors cursor-pointer border-none bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-[#888780] hover:text-[#FAC775] transition-colors duration-300 cursor-pointer"
+                        tabIndex={-1}
                       >
-                        Forgot Password?
+                        {showPassword ? <EyeOff className="w-4 h-4 stroke-[1.5]" /> : <Eye className="w-4 h-4 stroke-[1.5]" />}
                       </button>
                     </div>
                   </div>
@@ -746,170 +632,6 @@ export default function AdminPage() {
                     </button>
                   </div>
                 </form>
-              )}
-
-              {forgotState === 'email' && (
-                <form onSubmit={handleSendOtp} className="flex flex-col gap-6 w-full">
-                  <div className="text-center flex flex-col gap-2.5">
-                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Forgot Password</h2>
-                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
-                      Enter your registered email address below, and we will send you a 6-digit OTP code to verify your identity.
-                    </p>
-                  </div>
-
-                  {forgotError && (
-                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
-                      <span className="font-sans text-center">{forgotError}</span>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col gap-2 relative group">
-                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors">
-                      Registered Email
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      placeholder="e.g. admin@adefffects.com"
-                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[15px] sm:text-[16px] text-[#F1EFE8] placeholder:italic placeholder:text-[#888780]/30 text-center outline-none transition-all duration-300 font-sans font-light"
-                    />
-                  </div>
-
-                  <div className="pt-3 flex flex-col gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmittingForgot}
-                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
-                    >
-                      {isSubmittingForgot ? 'SENDING OTP...' : 'SEND OTP'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setForgotState('login')}
-                      className="w-full border border-[#BA7517]/20 text-[#888780] hover:text-[#F1EFE8] py-3 text-[11px] sm:text-[12px] uppercase tracking-[0.2em] font-sans rounded-[6px] transition-all cursor-pointer bg-transparent"
-                    >
-                      Back to Login
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {forgotState === 'otp' && (
-                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6 w-full">
-                  <div className="text-center flex flex-col gap-2.5">
-                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Enter Security Code</h2>
-                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
-                      A 6-digit security code has been generated. Please enter it below.
-                    </p>
-                  </div>
-
-                  {forgotSuccess && (
-                    <div className="p-4 bg-green-950/20 border border-green-800/40 text-green-400 text-xs sm:text-sm font-light rounded-[6px] flex flex-col items-center justify-center gap-1 my-1">
-                      <span className="font-sans text-center text-xs">{forgotSuccess}</span>
-                    </div>
-                  )}
-
-                  {forgotError && (
-                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
-                      <span className="font-sans text-center">{forgotError}</span>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col gap-2 relative group">
-                    <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block text-center transition-colors">
-                      Security Code (OTP)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      maxLength={6}
-                      value={forgotOtp}
-                      onChange={(e) => setForgotOtp(e.target.value)}
-                      placeholder="e.g. 123456"
-                      className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#FAC775] py-2.5 text-[18px] sm:text-[20px] text-[#F1EFE8] placeholder:text-[#888780]/30 text-center tracking-[0.5em] outline-none transition-all duration-300 font-mono font-bold"
-                    />
-                  </div>
-
-                  <div className="pt-3 flex flex-col gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmittingForgot}
-                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
-                    >
-                      {isSubmittingForgot ? 'VERIFYING...' : 'VERIFY CODE'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setForgotState('email')}
-                      className="w-full border border-[#BA7517]/20 text-[#888780] hover:text-[#F1EFE8] py-3 text-[11px] sm:text-[12px] uppercase tracking-[0.2em] font-sans rounded-[6px] transition-all cursor-pointer bg-transparent"
-                    >
-                      Resend OTP
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {forgotState === 'reset' && (
-                <form onSubmit={handleResetPassword} className="flex flex-col gap-6 w-full">
-                  <div className="text-center flex flex-col gap-2.5">
-                    <h2 className="font-serif italic text-[18px] sm:text-[20px] text-[#FAC775] tracking-wide">Reset Credentials</h2>
-                    <p className="text-[11px] sm:text-[12px] text-[#888780] font-sans leading-[1.65] px-2">
-                      Your identity is verified. Set your new administrative Username and Password.
-                    </p>
-                  </div>
-
-                  {forgotError && (
-                    <div className="p-4 bg-red-950/20 border border-red-800/40 text-red-400 text-xs sm:text-sm font-light rounded-[6px] flex items-center justify-center gap-3 my-1">
-                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-red-500" />
-                      <span className="font-sans text-center">{forgotError}</span>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-2 relative group">
-                      <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors">
-                        New Username
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={forgotNewUsername}
-                        onChange={(e) => setForgotNewUsername(e.target.value)}
-                        placeholder="Min. 3 characters"
-                        className="w-full bg-[#181715] border border-[#BA7517]/25 focus:border-[#FAC775] px-4 py-2.5 text-[14px] sm:text-[15px] text-[#F1EFE8] outline-none rounded transition-all duration-300 font-sans font-light"
-                      />
-                    </div>
-
-                    <div className="flex flex-col gap-2 relative group">
-                      <label className="font-serif italic text-[14px] sm:text-[15px] text-[#B4B2A9] group-focus-within:text-[#FAC775] block transition-colors">
-                        New Password
-                      </label>
-                      <input
-                        type="password"
-                        required
-                        value={forgotNewPassword}
-                        onChange={(e) => setForgotNewPassword(e.target.value)}
-                        placeholder="Min. 6 characters"
-                        className="w-full bg-[#181715] border border-[#BA7517]/25 focus:border-[#FAC775] px-4 py-2.5 text-[14px] sm:text-[15px] text-[#F1EFE8] outline-none rounded transition-all duration-300 font-sans font-light"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-3 flex flex-col gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmittingForgot}
-                      className="w-full bg-[#BA7517] text-white py-3.5 text-[12px] sm:text-[13px] uppercase tracking-[0.2em] font-sans font-semibold rounded-[6px] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all duration-500 cursor-pointer disabled:opacity-50 select-none text-center"
-                    >
-                      {isSubmittingForgot ? 'SAVING...' : 'RESET CREDENTIALS'}
-                    </button>
-                  </div>
-                </form>
-              )}
             </motion.div>
           </div>
         </div>
@@ -922,7 +644,7 @@ export default function AdminPage() {
               {/* Logo / Site Title Header Box */}
               <div className="h-[88px] w-full border-b border-[#BA7517]/15 flex flex-col justify-center items-center bg-[#181715] select-none px-6">
                 <span className="font-serif text-[24px] font-light text-[#F1EFE8] tracking-wider leading-none mb-1.5 hover:text-[#FAC775] transition-colors duration-300 cursor-pointer">
-                  The AD Efffects
+                  AD-Efffects
                 </span>
                 <span className="text-[9px] uppercase tracking-[0.35em] text-[#888780] font-sans font-bold">
                   <span className="mr-[-0.35em]">ADMINISTRATION</span>
@@ -979,24 +701,7 @@ export default function AdminPage() {
 
               {/* Sidebar Footer (Settings and Logout) */}
               <div className="w-full py-6 flex flex-col gap-[14px] border-t border-[#BA7517]/15 bg-[#141311]">
-                <button
-                  onClick={() => { 
-                    setEditingProject(null); 
-                    setEditingBlog(null); 
-                    setActiveTab('settings'); 
-                  }}
-                  className="relative w-full flex items-center gap-[16px] px-6 py-4 text-[14px] font-sans uppercase tracking-[0.2em] font-semibold transition-all duration-300 cursor-pointer group"
-                >
-                  {activeTab === 'settings' && (
-                    <motion.div
-                      layoutId="activeTabIndicator"
-                      className="absolute inset-0 bg-[#262522] border-l-2 border-[#FAC775] z-0"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <Settings className={`w-[20px] h-[20px] stroke-[1.5] z-10 transition-colors duration-300 ${activeTab === 'settings' ? 'text-[#FAC775]' : 'text-[#888780] group-hover:text-[#F1EFE8]'}`} />
-                  <span className={`z-10 transition-colors duration-300 ${activeTab === 'settings' ? 'text-[#F1EFE8]' : 'text-[#888780] group-hover:text-[#F1EFE8]'}`}>Settings</span>
-                </button>
+
 
                 <button
                   onClick={handleLogout}
@@ -1010,7 +715,7 @@ export default function AdminPage() {
           </aside>
 
           {/* Right Main Content Area Container */}
-          <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0f0e0c]">
+          <div className="admin-workspace flex-1 flex flex-col h-full overflow-hidden bg-[#0f0e0c]">
             
             {/* Top Header Bar (88px height) */}
             <div className="h-[88px] bg-[#141311] border-b border-[#BA7517]/15 flex justify-between items-center px-10 flex-shrink-0 z-20 select-none">
@@ -1042,7 +747,7 @@ export default function AdminPage() {
             </div>
 
             {/* Main content viewport, scrollable independently */}
-            <main className="flex-1 overflow-y-auto p-12 md:p-16 space-y-12">
+            <main className="flex-1 overflow-y-auto p-8 md:p-12 xl:p-14 space-y-12">
               
               {/* Alert Notification Banners */}
               <AnimatePresence>
@@ -1089,7 +794,7 @@ export default function AdminPage() {
 
               {/* Config Loaded Tabs */}
               {config ? (
-                <div className="transition-all">
+                <div className="admin-content transition-all">
                   
                   {/* VIEW 1: DASHBOARD TAB */}
                   {activeTab === 'dashboard' && (
@@ -1288,7 +993,7 @@ export default function AdminPage() {
                     <div>
                       {editingProject ? (
                         /* Portfolio Edit/Add Form */
-                        <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8] min-h-[600px]">
+                        <div className="admin-edit-panel bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-8 space-y-8 w-full text-[#F1EFE8] min-h-[600px]">
                           <div className="flex items-center justify-between pb-4 border-b border-[#4A4A48]/45">
                             <h3 className="font-serif font-light text-2xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewProject ? 'Add portfolio item' : `Edit project: ${projectForm.title}`}
@@ -1368,7 +1073,7 @@ export default function AdminPage() {
                             {/* Cover Photo */}
                             <div className="space-y-8 pt-10 border-t border-[#4A4A48]/40">
                               <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Cover Photo Image</label>
-                              <div className="flex flex-col sm:flex-row gap-6 items-end">
+                              <div className="flex flex-col xl:flex-row gap-6 xl:items-end">
                                 <div className="flex-1 w-full">
                                   <input
                                     type="text"
@@ -1378,18 +1083,18 @@ export default function AdminPage() {
                                     className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] md:text-[16px] text-[#F1EFE8] outline-none transition-all duration-300 font-light"
                                   />
                                 </div>
-                                <div className="relative w-full sm:w-auto">
+                                <div className="relative w-full xl:w-auto">
                                   <input
                                     type="file"
                                     id="upload-cover"
-                                    accept="image/*"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
                                     onChange={(e) => handleFieldImageUpload(e, 'projectCover')}
                                     className="hidden"
                                     disabled={uploadingField !== null}
                                   />
                                   <label 
                                     htmlFor="upload-cover"
-                                    className="w-full sm:w-auto border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-5 py-3.5 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[#2E2D2B] select-none"
+                                    className="w-full xl:w-auto min-h-[52px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
                                   >
                                     <Upload className="w-3.5 h-3.5" /> 
                                     {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
@@ -1406,7 +1111,7 @@ export default function AdminPage() {
 
                             {/* Gallery Details */}
                             <div className="space-y-10 pt-10 border-t border-[#4A4A48]/40">
-                              <div className="flex justify-between items-center">
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-5 sm:items-center">
                                 <div>
                                   <h4 className="text-[13px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
                                   <p className="text-[13px] text-[#B4B2A9]/75 font-light mt-0.5">Upload gallery photos or add links below.</p>
@@ -1415,14 +1120,14 @@ export default function AdminPage() {
                                   <input
                                     type="file"
                                     id="upload-detail"
-                                    accept="image/*"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
                                     onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
                                     className="hidden"
                                     disabled={uploadingField !== null}
                                   />
                                   <label 
                                     htmlFor="upload-detail"
-                                    className="border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-4 py-2.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#2E2D2B] select-none"
+                                    className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
                                   >
                                     <Plus className="w-3.5 h-3.5" /> 
                                     {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload File'}
@@ -1430,7 +1135,7 @@ export default function AdminPage() {
                                 </div>
                               </div>
 
-                              <div className="flex gap-4 items-end bg-[#1A1A1A]/40 p-5 rounded-[8px] border border-[#4A4A48]/30">
+                              <div className="flex flex-col lg:flex-row gap-5 lg:items-end bg-[#1A1A1A]/40 p-5 rounded-[8px] border border-[#4A4A48]/30">
                                 <input
                                   type="text"
                                   id="manual-detail-url"
@@ -1449,7 +1154,7 @@ export default function AdminPage() {
                                       input.value = '';
                                     }
                                   }}
-                                  className="border border-[#F1EFE8] hover:bg-[#F1EFE8] hover:text-[#1A1A1A] text-[#F1EFE8] text-[12px] uppercase tracking-[0.15em] font-semibold px-4 py-2.5 rounded-[4px] transition-all cursor-pointer"
+                                  className="min-h-[48px] border border-[#F1EFE8] hover:bg-[#F1EFE8] hover:text-[#1A1A1A] text-[#F1EFE8] text-[12px] uppercase tracking-[0.15em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer whitespace-nowrap"
                                 >
                                   Add URL
                                 </button>
@@ -1483,17 +1188,17 @@ export default function AdminPage() {
 
                           </div>
 
-                          <div className="flex justify-end gap-6 border-t border-[#4A4A48]/45 pt-10 mt-12">
+                          <div className="flex flex-col sm:flex-row sm:justify-end gap-4 sm:gap-6 border-t border-[#4A4A48]/45 pt-10 mt-12">
                             <button
                               type="button"
                               onClick={() => setEditingProject(null)}
-                              className="border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[12px] uppercase tracking-[0.2em] px-6 py-3 rounded-[6px] transition-all cursor-pointer font-semibold"
+                              className="min-h-[52px] border border-[#4A4A48] hover:border-accent text-[#B4B2A9] hover:text-[#F1EFE8] bg-transparent text-[12px] uppercase tracking-[0.2em] px-8 py-4 rounded-[6px] transition-all cursor-pointer font-semibold"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={handleSaveProjectForm}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3 rounded-[6px] transition-all duration-300 cursor-pointer"
+                              className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white border border-[#BA7517] hover:border-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-9 py-4 rounded-[6px] transition-all duration-300 cursor-pointer"
                             >
                               Save Project
                             </button>
@@ -1693,7 +1398,7 @@ export default function AdminPage() {
                                 <input
                                   type="file"
                                   id="story-img-left"
-                                  accept="image/*"
+                                  accept="image/jpeg,image/png,image/webp,image/gif"
                                   onChange={(e) => handleFieldImageUpload(e, 'story0')}
                                   className="hidden"
                                   disabled={uploadingField !== null}
@@ -1727,7 +1432,7 @@ export default function AdminPage() {
                                 <input
                                   type="file"
                                   id="story-img-right"
-                                  accept="image/*"
+                                  accept="image/jpeg,image/png,image/webp,image/gif"
                                   onChange={(e) => handleFieldImageUpload(e, 'story1')}
                                   className="hidden"
                                   disabled={uploadingField !== null}
@@ -1746,11 +1451,11 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <div className="flex justify-end pt-6 border-t border-[#BA7517]/15 mt-4">
+                      <div className="flex justify-end pt-8 pr-20 lg:pr-24 border-t border-[#BA7517]/15 mt-6">
                         <button
                           onClick={() => handleSaveConfig()}
                           disabled={savingConfig}
-                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-6 py-3.5 rounded-[4px] transition-all duration-300 cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)]"
+                          className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-9 py-4 rounded-[6px] transition-all duration-300 cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)] whitespace-nowrap"
                         >
                           {savingConfig ? 'Applying changes...' : 'Save Story Section'}
                         </button>
@@ -1848,11 +1553,11 @@ export default function AdminPage() {
                         )}
                       </div>
 
-                      <div className="flex justify-end pt-6 border-t border-[#BA7517]/15">
+                      <div className="flex justify-end pt-8 border-t border-[#BA7517]/15">
                         <button
                           onClick={() => handleSaveConfig()}
                           disabled={savingConfig}
-                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-6 py-3.5 rounded-[4px] transition-all cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)]"
+                          className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-9 py-4 rounded-[6px] transition-all cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)] whitespace-nowrap"
                         >
                           {savingConfig ? 'Saving...' : 'Save Press List'}
                         </button>
@@ -1865,7 +1570,7 @@ export default function AdminPage() {
                     <div>
                       {editingBlog ? (
                         /* Add/Edit Blog Post Form */
-                        <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-8 w-full text-[#F1EFE8] min-h-[600px] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
+                        <div className="admin-edit-panel glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-8 w-full text-[#F1EFE8] min-h-[600px] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
                           <div className="flex items-center justify-between pb-4 border-b border-[#BA7517]/15">
                             <h3 className="font-serif font-light text-2.5xl uppercase tracking-wider italic text-[#F1EFE8]">
                               {isNewBlog ? 'New Editorial Article' : `Edit Article: ${blogForm.title}`}
@@ -1913,28 +1618,83 @@ export default function AdminPage() {
                             </div>
 
                             <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Article Excerpt / Content Snippet *</label>
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Article Excerpt / Card Summary *</label>
                               <textarea
-                                rows={6}
+                                rows={3}
+                                required
                                 value={blogForm.excerpt || ''}
                                 onChange={(e) => setBlogForm({ ...blogForm, excerpt: e.target.value })}
-                                placeholder="Describe article editorial details or content..."
-                                className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] p-4 rounded-[6px] text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light resize-y min-h-[140px] leading-relaxed"
+                                placeholder="Short summary displayed on the blog catalog cards..."
+                                className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] p-4 rounded-[6px] text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light resize-y min-h-[90px] leading-relaxed"
                               />
+                            </div>
+
+                            <div className="space-y-4">
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Full Article Body Content *</label>
+                              <p className="text-[12px] text-[#B4B2A9]/65 font-sans font-light">Write the complete article content for the full reading view. Paragraphs separated by blank lines will format automatically.</p>
+                              <textarea
+                                rows={10}
+                                required
+                                value={blogForm.content || ''}
+                                onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })}
+                                placeholder="Write full article thoughts and editorial details here..."
+                                className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] p-4 rounded-[6px] text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light resize-y min-h-[220px] leading-relaxed"
+                              />
+                            </div>
+
+                            <div className="space-y-8 pt-10 border-t border-[#BA7517]/15">
+                              <div>
+                                <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Article Image</label>
+                                <p className="text-[12px] text-[#B4B2A9]/65 font-sans font-light mt-1">Upload a featured image or paste an external image URL.</p>
+                              </div>
+                              <div className="flex flex-col xl:flex-row gap-6 xl:items-end">
+                                <div className="flex-1 w-full">
+                                  <input
+                                    type="text"
+                                    value={blogForm.image || ''}
+                                    onChange={(e) => setBlogForm({ ...blogForm, image: e.target.value })}
+                                    placeholder="Paste article image URL..."
+                                    className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] px-5 py-4 rounded-[6px] text-[15px] md:text-[16px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light"
+                                  />
+                                </div>
+                                <div className="relative w-full xl:w-auto">
+                                  <input
+                                    type="file"
+                                    id="upload-blog-image"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    onChange={(e) => handleFieldImageUpload(e, 'blogImage')}
+                                    className="hidden"
+                                    disabled={uploadingField !== null}
+                                  />
+                                  <label
+                                    htmlFor="upload-blog-image"
+                                    className="w-full xl:w-auto min-h-[52px] border border-[#BA7517]/35 hover:border-[#FAC775] hover:text-[#141311] hover:bg-[#FAC775] text-[#F1EFE8] text-[12px] uppercase tracking-[0.2em] font-sans font-bold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#262522] select-none whitespace-nowrap"
+                                  >
+                                    <Upload className="w-4 h-4" />
+                                    {uploadingField === 'blogImage' ? 'Uploading...' : 'Upload Image'}
+                                  </label>
+                                </div>
+                              </div>
+
+                              {blogForm.image && (
+                                <div className="w-full max-w-[280px] aspect-[16/10] border border-[#BA7517]/20 rounded-[6px] overflow-hidden bg-black/20">
+                                  <img src={blogForm.image} className="w-full h-full object-cover" alt="Article preview" />
+                                </div>
+                              )}
                             </div>
                           </div>
 
-                          <div className="flex justify-end gap-6 border-t border-[#BA7517]/15 pt-10 mt-12">
+                          <div className="flex flex-col sm:flex-row sm:justify-end gap-4 sm:gap-6 border-t border-[#BA7517]/15 pt-10 mt-12">
                             <button
                               type="button"
                               onClick={() => setEditingBlog(null)}
-                              className="border border-[#BA7517]/35 hover:border-[#FAC775] text-[#B4B2A9] hover:text-[#FAC775] bg-transparent text-[11px] uppercase tracking-[0.2em] px-6 py-3.5 rounded-[4px] transition-all cursor-pointer font-bold"
+                              className="min-h-[52px] border border-[#BA7517]/35 hover:border-[#FAC775] text-[#B4B2A9] hover:text-[#FAC775] bg-transparent text-[11px] uppercase tracking-[0.2em] px-8 py-4 rounded-[6px] transition-all cursor-pointer font-bold"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={handleSaveBlogForm}
-                              className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-6 py-3.5 rounded-[4px] transition-all duration-300 cursor-pointer shadow-[0_4px_12px_rgba(186,117,23,0.15)]"
+                              className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-9 py-4 rounded-[6px] transition-all duration-300 cursor-pointer shadow-[0_4px_12px_rgba(186,117,23,0.15)]"
                             >
                               Save Article
                             </button>
@@ -1964,6 +1724,7 @@ export default function AdminPage() {
                             <table className="w-full text-left border-collapse">
                               <thead>
                                 <tr className="border-b border-[#BA7517]/10">
+                                  <th className="py-4 text-[#888780] text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-left w-24">Image</th>
                                   <th className="py-4 text-[#888780] text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-left">Article Title</th>
                                   <th className="py-4 text-[#888780] text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-left w-36">Author</th>
                                   <th className="py-4 text-[#888780] text-[11px] font-sans font-bold uppercase tracking-[0.15em] text-center w-32">Date</th>
@@ -1973,6 +1734,15 @@ export default function AdminPage() {
                               <tbody className="divide-y divide-[#BA7517]/5 font-light">
                                 {blogs.map((blog) => (
                                   <tr key={blog.id} className="hover:bg-[#1e1c19]/40 transition-colors group">
+                                    <td className="py-6 pr-4">
+                                      {blog.image ? (
+                                        <div className="w-16 aspect-[4/3] rounded-[4px] overflow-hidden border border-[#BA7517]/20 bg-black/20">
+                                          <img src={blog.image} className="w-full h-full object-cover" alt={blog.title} />
+                                        </div>
+                                      ) : (
+                                        <div className="w-16 aspect-[4/3] rounded-[4px] border border-dashed border-[#BA7517]/15 bg-[#1e1c19]/30" />
+                                      )}
+                                    </td>
                                     <td className="py-6 pr-4">
                                       <h4 className="font-serif font-medium text-[#F1EFE8] text-[17px] tracking-wide m-0">{blog.title}</h4>
                                       <p className="text-[13px] text-[#B4B2A9]/70 line-clamp-2 mt-1.5 leading-relaxed font-sans font-light">{blog.excerpt}</p>
@@ -2001,7 +1771,7 @@ export default function AdminPage() {
                                 ))}
                                 {blogs.length === 0 && (
                                   <tr>
-                                    <td colSpan={4} className="py-24 text-center text-[#B4B2A9]/40 font-light text-[17px] font-sans">
+                                    <td colSpan={5} className="py-24 text-center text-[#B4B2A9]/40 font-light text-[17px] font-sans">
                                       No editorial blog articles found.
                                     </td>
                                   </tr>
@@ -2137,100 +1907,7 @@ export default function AdminPage() {
                     </div>
                   )}
 
-                  {/* VIEW 7: SETTINGS TAB */}
-                  {activeTab === 'settings' && (
-                    <div className="bg-[#2E2D2B] border-[0.5px] border-[#4A4A48]/30 rounded-[10px] p-10 space-y-10 w-full text-[#F1EFE8] min-h-[600px]">
-                      <div className="pb-4 border-b border-[#4A4A48]/40">
-                        <span className="text-[13px] tracking-[0.25em] uppercase text-[#FAC775] font-semibold block">
-                          CRM Settings
-                        </span>
-                      </div>
 
-                      <div className="space-y-10">
-                        {/* Credentials */}
-                        <div className="space-y-6">
-                          <div className="flex justify-between items-center">
-                            <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Administrator Access</h4>
-                            <button
-                              onClick={handleSaveCredentials}
-                              disabled={savingCreds}
-                              className="px-5 py-2 bg-[#BA7517] hover:bg-[#FAC775] hover:text-[#1a1a1a] transition-all text-white text-[11px] font-sans font-semibold uppercase tracking-wider rounded disabled:opacity-50 cursor-pointer"
-                            >
-                              {savingCreds ? 'SAVING...' : 'SAVE CREDENTIALS'}
-                            </button>
-                          </div>
-                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                            <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Login Username</label>
-                              <input
-                                type="text"
-                                value={adminCreds.username}
-                                onChange={(e) => setAdminCreds({ ...adminCreds, username: e.target.value })}
-                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#F1EFE8] outline-none rounded font-light transition-all"
-                              />
-                            </div>
-                            <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Password Secret</label>
-                              <input
-                                type="text"
-                                value={adminCreds.password}
-                                onChange={(e) => setAdminCreds({ ...adminCreds, password: e.target.value })}
-                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#F1EFE8] outline-none rounded font-light transition-all"
-                              />
-                            </div>
-                            <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Registered Email (for OTP recovery)</label>
-                              <input
-                                type="email"
-                                value={adminCreds.email}
-                                onChange={(e) => setAdminCreds({ ...adminCreds, email: e.target.value })}
-                                className="w-full bg-[#1c1a18] border border-[#BA7517]/20 focus:border-[#FAC775] px-3 py-2 text-[15px] text-[#FAC775] outline-none rounded font-light transition-all"
-                              />
-                            </div>
-                          </div>
-                          <span className="text-[11px] text-[#B4B2A9]/50 font-light block">
-                            * Note: Admin credentials and password recovery email are saved securely to adminCredentials.json.
-                          </span>
-                        </div>
-
-                        {/* Coordinates */}
-                        <div className="space-y-6 pt-8 border-t border-[#4A4A48]/30">
-                          <h4 className="text-[13px] uppercase tracking-[0.1em] font-semibold text-[#F1EFE8] block">Studio Coordinates</h4>
-                          
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
-                            <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Studio Email</label>
-                              <input
-                                type="text"
-                                disabled
-                                value="hello@adefffects.com"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
-                              />
-                            </div>
-                            <div className="space-y-4">
-                              <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Contact Phone</label>
-                              <input
-                                type="text"
-                                disabled
-                                value="+45 3312 0000"
-                                className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
-                              />
-                            </div>
-                          </div>
-                          
-                          <div className="space-y-4 pt-4">
-                            <label className="font-serif italic text-[15px] text-[#B4B2A9] block">Studio Address</label>
-                            <input
-                              type="text"
-                              disabled
-                              value="14 Strandgade, 1401 Copenhagen, Denmark"
-                              className="w-full bg-transparent border-b border-[#4A4A48]/60 py-2.5 text-[15px] text-[#B4B2A9]/70 outline-none font-light"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                 </div>
               ) : (

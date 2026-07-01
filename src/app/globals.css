@@ -133,6 +133,17 @@ h1, h2, h3, h4, h5, h6, .font-serif {
   font-family: var(--font-cormorant), serif;
 }
 
+.brand-logo {
+  font-family: var(--font-pinyon), cursive !important;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.site-header {
+  padding-top: 80px;
+}
+
 /* Custom lenis scroll overrides */
 html.lenis, html.lenis body {
   height: auto;
@@ -218,6 +229,7 @@ html.lenis, html.lenis body {
   padding: 1px;
   background: linear-gradient(135deg, rgba(186, 117, 23, 0.1), rgba(250, 199, 117, 0.4), rgba(186, 117, 23, 0.1));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
@@ -258,6 +270,648 @@ html.lenis, html.lenis body {
   animation: gold-shimmer 6s linear infinite;
 }
 
+/* Admin editing comfort layer */
+.admin-shell {
+  --admin-bg: #eef3f8;
+  --admin-workspace-bg: #f7f9fc;
+  --admin-sidebar-bg: #172033;
+  --admin-sidebar-strong: #111827;
+  --admin-panel-bg: rgba(255, 255, 255, 0.94);
+  --admin-panel-alt: #f8fafc;
+  --admin-field-bg: #ffffff;
+  --admin-field-border: #cbd5e1;
+  --admin-field-border-focus: #2563eb;
+  --admin-text: #172033;
+  --admin-muted: #64748b;
+  --admin-soft-text: #334155;
+  --admin-accent: #2563eb;
+  --admin-accent-strong: #1d4ed8;
+  --admin-accent-soft: #dbeafe;
+  --admin-success: #047857;
+  --admin-danger: #dc2626;
+  background: var(--admin-bg) !important;
+  color: var(--admin-text) !important;
+}
+
+.admin-shell .glass-panel,
+.admin-shell .admin-edit-panel {
+  background: var(--admin-panel-bg);
+  border: 1px solid rgba(148, 163, 184, 0.36) !important;
+  border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  color: var(--admin-text) !important;
+}
+
+.admin-shell .gold-border-glow::after,
+.admin-shell .absolute[class*="blur-"],
+.admin-shell .absolute[class*="bg-gradient-to-r"] {
+  display: none;
+}
+
+.admin-shell .admin-workspace {
+  background: var(--admin-workspace-bg) !important;
+}
+
+.admin-shell aside {
+  background: var(--admin-sidebar-bg) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 8px 0 26px rgba(15, 23, 42, 0.16) !important;
+}
+
+.admin-shell aside > div > div:first-child,
+.admin-shell aside > div > div:last-child,
+.admin-shell .admin-workspace > div:first-child {
+  background: var(--admin-sidebar-strong) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.admin-shell .admin-workspace > div:first-child {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+}
+
+.admin-shell [class*="bg-[#121212]"],
+.admin-shell [class*="bg-[#0f0e0c]"] {
+  background: var(--admin-bg) !important;
+}
+
+.admin-shell [class*="bg-[#181715]"],
+.admin-shell [class*="bg-[#1e1c19]"],
+.admin-shell [class*="bg-[#1c1a18]"],
+.admin-shell [class*="bg-[#2E2D2B]"],
+.admin-shell [class*="bg-[#262522]"],
+.admin-shell [class*="bg-[#141311]"] {
+  background: var(--admin-panel-alt) !important;
+}
+
+.admin-shell aside [class*="bg-[#181715]"],
+.admin-shell aside [class*="bg-[#1e1c19]"],
+.admin-shell aside [class*="bg-[#262522]"],
+.admin-shell aside [class*="bg-[#141311]"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.admin-shell [class*="bg-[#BA7517]"],
+.admin-shell [class*="from-[#FAC775]"] {
+  background: var(--admin-accent) !important;
+}
+
+.admin-shell [class*="text-[#F1EFE8]"],
+.admin-shell [class*="text-[#FAF9F7]"] {
+  color: var(--admin-text) !important;
+}
+
+.admin-shell [class*="text-[#B4B2A9]"],
+.admin-shell [class*="text-[#888780]"] {
+  color: var(--admin-muted) !important;
+}
+
+.admin-shell [class*="text-[#FAC775]"] {
+  color: var(--admin-accent) !important;
+}
+
+.admin-shell aside [class*="text-[#F1EFE8]"],
+.admin-shell aside [class*="text-[#FAF9F7]"],
+.admin-shell aside [class*="text-[#B4B2A9]"],
+.admin-shell aside [class*="text-[#888780]"],
+.admin-shell aside [class*="text-[#FAC775]"] {
+  color: #e5edf7 !important;
+}
+
+.admin-shell aside > div > div:nth-child(2) {
+  padding-top: 28px !important;
+}
+
+.admin-shell aside nav button,
+.admin-shell aside > div > div:last-child button {
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.14em !important;
+}
+
+.admin-shell aside nav button,
+.admin-shell aside nav button > div,
+.admin-shell aside nav button span,
+.admin-shell aside nav button [class*="text-[#"],
+.admin-shell aside nav button svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+.admin-shell aside nav button:hover {
+  background: #e8f0fb !important;
+}
+
+.admin-shell aside nav button [class*="absolute"] {
+  background: #dbeafe !important;
+  border: 1px solid #bfdbfe !important;
+  border-left: 0 !important;
+  border-radius: 8px;
+}
+
+.admin-shell aside > div > div:last-child button:first-child,
+.admin-shell aside > div > div:last-child button:first-child span,
+.admin-shell aside > div > div:last-child button:first-child svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+.admin-shell aside [class*="activeTabIndicator"] {
+  background: rgba(37, 99, 235, 0.24) !important;
+}
+
+.admin-shell [class*="border-[#BA7517]"],
+.admin-shell [class*="border-[#FAC775]"],
+.admin-shell [class*="border-[#4A4A48]"] {
+  border-color: rgba(148, 163, 184, 0.42) !important;
+}
+
+.admin-shell a:hover,
+.admin-shell button:hover {
+  color: var(--admin-accent-strong);
+}
+
+.admin-shell button[class*="bg-[#BA7517]"],
+.admin-shell button[class*="hover:bg-[#FAC775]"] {
+  background: var(--admin-accent) !important;
+  border-color: var(--admin-accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16) !important;
+}
+
+.admin-shell button[class*="bg-[#BA7517]"]:hover,
+.admin-shell button[class*="hover:bg-[#FAC775]"]:hover {
+  background: var(--admin-accent-strong) !important;
+  color: #ffffff !important;
+}
+
+.admin-shell [class*="bg-[#BA7517]/10"],
+.admin-shell [class*="bg-[#FAC775]/10"],
+.admin-shell [class*="bg-[#FAC775]/25"] {
+  background: var(--admin-accent-soft) !important;
+  color: var(--admin-accent-strong) !important;
+  border-color: #bfdbfe !important;
+}
+
+.admin-shell .admin-content {
+  max-width: 1480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-shell .admin-edit-panel,
+.admin-shell .glass-panel {
+  padding: clamp(2rem, 2.4vw, 3rem);
+}
+
+.admin-shell label,
+.admin-shell h4,
+.admin-shell th {
+  line-height: 1.35;
+}
+
+.admin-shell input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.admin-shell textarea,
+.admin-shell select {
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--admin-field-bg);
+  border: 1px solid var(--admin-field-border);
+  border-radius: 8px;
+  line-height: 1.55;
+  color: var(--admin-text) !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.admin-shell textarea {
+  min-height: 132px;
+}
+
+.admin-shell input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+.admin-shell textarea:focus,
+.admin-shell select:focus {
+  border-color: var(--admin-field-border-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.13), 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.admin-shell input::placeholder,
+.admin-shell textarea::placeholder {
+  color: #94a3b8;
+}
+
+.admin-shell table {
+  border-spacing: 0 8px;
+  min-width: 680px;
+}
+
+.admin-shell th {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  color: var(--admin-muted) !important;
+}
+
+.admin-shell td {
+  padding-top: 22px;
+  padding-bottom: 22px;
+  color: var(--admin-soft-text) !important;
+}
+
+.admin-shell tbody tr {
+  border-color: #e2e8f0 !important;
+}
+
+.admin-shell tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+.admin-shell button,
+.admin-shell a,
+.admin-shell label[for] {
+  min-height: 38px;
+}
+
+.admin-shell .admin-edit-panel > div,
+.admin-shell .glass-panel > div {
+  scroll-margin-top: 24px;
+}
+
+.contact-submit-button {
+  background: transparent;
+  box-shadow: none;
+}
+
+.contact-submit-button:hover {
+  background: transparent;
+}
+
+.contact-coordinate-row {
+  font-size: 12px;
+}
+
+.contact-time-status {
+  margin-top: 18px;
+  font-size: 15px;
+}
+
+@media (min-width: 768px) {
+  .contact-coordinate-row {
+    font-size: 13px;
+  }
+
+  .contact-time-status {
+    margin-top: 22px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    padding-top: 0;
+    border-bottom: 1px solid var(--color-border-custom);
+  }
+
+  .site-mobile-menu {
+    min-height: 100dvh;
+    background: var(--background) !important;
+  }
+
+  .contact-section {
+    margin-top: 34px !important;
+    margin-bottom: 58px !important;
+  }
+
+  .contact-title-block {
+    margin-bottom: 32px !important;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .contact-heading {
+    font-size: 38px !important;
+    line-height: 1.05;
+  }
+
+  .contact-form-container {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .contact-form {
+    gap: 18px !important;
+  }
+
+  .contact-form-grid {
+    gap: 18px !important;
+  }
+
+  .contact-field-frame {
+    height: 58px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    border-color: color-mix(in srgb, var(--color-primary) 34%, transparent) !important;
+  }
+
+  .contact-control {
+    font-size: 11px !important;
+    letter-spacing: 0.18em !important;
+    text-align: left !important;
+    line-height: 1.4;
+  }
+
+  .contact-control::placeholder {
+    color: color-mix(in srgb, var(--color-primary) 46%, transparent) !important;
+  }
+
+  .contact-message-frame {
+    min-height: 168px !important;
+    padding: 18px !important;
+    border-color: color-mix(in srgb, var(--color-primary) 34%, transparent) !important;
+  }
+
+  .contact-textarea {
+    min-height: 128px;
+  }
+
+  .contact-action-stack {
+    gap: 24px !important;
+    padding-top: 8px !important;
+    align-items: stretch;
+  }
+
+  .contact-captcha-card {
+    max-width: none !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+
+  .contact-captcha-input {
+    height: 44px !important;
+  }
+
+  .contact-submit-wrap {
+    width: 100%;
+  }
+
+  .contact-submit-button {
+    width: 100%;
+    justify-content: center;
+    padding: 15px 20px !important;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 72%, transparent);
+  }
+
+  .contact-separator {
+    margin-top: 44px !important;
+    margin-bottom: 24px !important;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .contact-coordinate-row {
+    align-items: flex-start !important;
+    gap: 14px !important;
+    padding-left: 22px;
+    padding-right: 22px;
+    font-size: 10px;
+    letter-spacing: 0.14em !important;
+    line-height: 1.6;
+  }
+
+  .contact-coordinate-row > div {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .contact-coordinate-row svg {
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .contact-time-status {
+    margin-top: 24px;
+    padding-left: 22px;
+    padding-right: 22px;
+    font-size: 11px;
+    letter-spacing: 0.14em !important;
+    gap: 8px !important;
+  }
+
+  .mobile-brand-statement {
+    margin-top: 28px !important;
+    margin-bottom: 38px !important;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .mobile-brand-statement p {
+    font-size: 17px;
+    line-height: 1.55;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .mobile-project-grid {
+    gap: 18px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 48px;
+  }
+
+  .mobile-project-grid > * {
+    border-left: 0;
+    border-right: 0;
+  }
+
+  footer {
+    padding-top: 44px !important;
+    padding-bottom: 92px !important;
+  }
+
+  .brand-logo {
+    font-size: 48px !important;
+  }
+
+  footer .brand-logo {
+    font-size: 52px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .admin-shell {
+    gap: 0;
+    padding-right: 0;
+  }
+
+  .admin-shell aside {
+    width: 240px;
+  }
+
+  .admin-shell aside nav button,
+  .admin-shell aside > div > div:last-child button {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-shell {
+    height: auto;
+    min-height: 100vh;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-right: 0 !important;
+  }
+
+  .admin-shell aside {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    background: var(--admin-panel-alt) !important;
+    border-right: 0 !important;
+    border-bottom: 1px solid #dbe3ed !important;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1) !important;
+  }
+
+  .admin-shell aside > div {
+    overflow: visible;
+  }
+
+  .admin-shell aside > div > div:first-child {
+    height: 64px;
+    background: var(--admin-sidebar-strong) !important;
+  }
+
+  .admin-shell aside > div > div:nth-child(2) {
+    flex: none;
+    padding: 16px 12px 10px !important;
+    overflow-x: auto;
+  }
+
+  .admin-shell aside nav {
+    flex-direction: row;
+    gap: 8px;
+    min-width: max-content;
+  }
+
+  .admin-shell aside nav button,
+  .admin-shell aside > div > div:last-child button {
+    width: auto;
+    min-width: max-content;
+    padding: 12px 14px;
+    letter-spacing: 0.1em !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    border-radius: 8px;
+  }
+
+  .admin-shell aside nav button,
+  .admin-shell aside nav button > div,
+  .admin-shell aside nav button span,
+  .admin-shell aside nav button [class*="text-[#"],
+  .admin-shell aside nav button svg,
+  .admin-shell aside > div > div:last-child button:first-child,
+  .admin-shell aside > div > div:last-child button:first-child span,
+  .admin-shell aside > div > div:last-child button:first-child svg {
+    color: #000000 !important;
+    stroke: #000000 !important;
+  }
+
+  .admin-shell aside nav button:hover,
+  .admin-shell aside > div > div:last-child button:first-child:hover {
+    background: #e8f0fb !important;
+  }
+
+  .admin-shell aside > div > div:last-child button:first-child,
+  .admin-shell aside > div > div:last-child button:first-child span,
+  .admin-shell aside > div > div:last-child button:first-child svg {
+    color: #f8fafc !important;
+    stroke: #f8fafc !important;
+  }
+
+  .admin-shell aside > div > div:last-child button:first-child:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .admin-shell aside nav button > div:first-child,
+  .admin-shell aside > div > div:last-child button:first-child {
+    gap: 10px;
+  }
+
+  .admin-shell aside nav button [class*="absolute"],
+  .admin-shell aside > div > div:last-child button [class*="absolute"] {
+    background: #dbeafe !important;
+    border: 1px solid #bfdbfe !important;
+    border-left: 0 !important;
+    border-radius: 8px;
+  }
+
+  .admin-shell aside > div > div:last-child {
+    flex-direction: row;
+    gap: 8px;
+    padding: 10px 12px;
+    overflow-x: auto;
+    background: var(--admin-sidebar-strong) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .admin-shell .admin-workspace > div:first-child {
+    height: auto;
+    min-height: 74px;
+    padding: 14px 18px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .admin-shell .admin-workspace > div:first-child > div:last-child {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .admin-shell main {
+    padding: 18px !important;
+    gap: 24px;
+  }
+
+  .admin-shell .admin-workspace {
+    min-height: 100vh;
+  }
+
+  .admin-shell .glass-panel,
+  .admin-shell .admin-edit-panel {
+    padding: 18px !important;
+    min-height: auto !important;
+  }
+
+  .admin-shell .admin-login-screen {
+    min-height: 100vh;
+    height: auto;
+    justify-content: center;
+    padding: 24px 12px !important;
+  }
+
+  .admin-shell .admin-login-stack {
+    width: min(100%, 380px);
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .admin-shell .admin-login-card {
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px 18px !important;
+  }
+
+  .admin-shell table {
+    min-width: 760px;
+  }
+}
+
 /* Custom switch / range tweaks */
 .custom-range::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -284,6 +938,3 @@ input:-webkit-autofill:active {
   box-shadow: 0 0 0px 1000px #1e1c19 inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
-
-
-

@@ -1,4 +1,5 @@
 {
+  "isWebsiteOffline": false,
   "brandStatement": "The AD Efffects is a bespoke interior design studio creating thoughtfully crafted homes and spaces. Our work is rooted in clarity of planning, depth of detail, and a deep respect for material, craft, and context. Every project is approached as a collaboration — designed with intent, executed with rigour, and shaped around the people who live within it.",
   "story": {
     "title": "Restraint & Harmony",
@@ -89,7 +90,7 @@
       "location": "Hyderabad, India",
       "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
       "year": "2025",
-      "size": "380 m²",
+      "size": "380 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
@@ -103,7 +104,7 @@
       "location": "New Delhi, India",
       "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80",
       "year": "2024",
-      "size": "240 m²",
+      "size": "240 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1200&q=85",
@@ -117,7 +118,7 @@
       "location": "Pune, India",
       "image": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80",
       "year": "2025",
-      "size": "195 m²",
+      "size": "195 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=85",
@@ -131,7 +132,7 @@
       "location": "Goa, India",
       "image": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80",
       "year": "2024",
-      "size": "450 m²",
+      "size": "450 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85",
@@ -145,7 +146,7 @@
       "location": "Chennai, India",
       "image": "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=800&q=80",
       "year": "2025",
-      "size": "330 m²",
+      "size": "330 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=1200&q=85",
@@ -159,11 +160,24 @@
       "location": "Kerala, India",
       "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80",
       "year": "2024",
-      "size": "280 m²",
+      "size": "280 m2",
       "detailImages": [
         "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1200&q=85"
+      ]
+    },
+    {
+      "id": "07",
+      "title": "Nexora",
+      "category": "office",
+      "location": "gandhidham",
+      "image": "/uploads/whatsapp_image_2026-06-29_at_08_25_05_1_1782899826541.jpeg",
+      "year": "2026",
+      "size": "10000",
+      "detailImages": [
+        "/uploads/whatsapp_image_2026-06-29_at_08_25_05_1_1782899844282.jpeg",
+        "/uploads/whatsapp_image_2026-06-29_at_08_25_05_1782899848693.jpeg"
       ]
     }
   ],
@@ -174,7 +188,8 @@
       "excerpt": "How spatial purity and restraint can transform your daily life.",
       "content": "Detailed thoughts on minimalist design philosophy, tactile materiality, and silent luxury. We explore how subtraction creates space for presence, and how choosing the right natural materials brings warmth and texture to the home.",
       "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=800&q=80",
-      "date": "2026-06-25"
+      "date": "2026-06-25",
+      "author": ""
     },
     {
       "id": "2",
@@ -182,7 +197,8 @@
       "excerpt": "Celebrating the raw beauty of wood, travertine stone, and metal.",
       "content": "True luxury lies in the authenticity of materials. In this editorial, we discuss why we prioritize raw textures over synthetic finishes, allowing natural aging to tell a story of longevity and character.",
       "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-      "date": "2026-06-20"
+      "date": "2026-06-20",
+      "author": ""
     }
   ]
 }

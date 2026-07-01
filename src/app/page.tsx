@@ -1,15 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { projectsData, pressData, blogsData, Project } from '@/data';
+import { defaultSiteConfig, Project, BlogPost, SiteConfig } from '@/data';
 import { MapPin, Mail, Clock, Phone, RefreshCw } from 'lucide-react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db, getGoogleDriveUrl } from '@/lib/firebase';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('portfolio');
   const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [activeBlog, setActiveBlog] = useState<BlogPost | null>(null);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>(defaultSiteConfig);
+  const [currentPage, setCurrentPage] = useState(1);
+  const projectsPerPage = 3;
+
+  const [firestoreProjects, setFirestoreProjects] = useState<Project[]>([]);
+
+  const projectsData = firestoreProjects.length > 0 ? firestoreProjects : siteConfig.projects;
+  const pressData = siteConfig.press;
+  const blogsData = siteConfig.blogs || [];
+
+  const totalPages = Math.max(1, Math.ceil(projectsData.length / projectsPerPage));
+  const currentProjects = projectsData.slice(
+    (currentPage - 1) * projectsPerPage,
+    currentPage * projectsPerPage
+  );
 
   // Contact form state
   const [formData, setFormData] = useState({
@@ -44,6 +63,95 @@ export default function Home() {
   useEffect(() => {
     generateCaptcha();
   }, []);
+
+  // Real-time listener for Firestore projects
+  useEffect(() => {
+    const projectsRef = collection(db, 'projects');
+    const unsubscribe = onSnapshot(projectsRef, (querySnapshot) => {
+      const projectsList = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: data.id || doc.id,
+          title: data.title || '',
+          category: data.category || '',
+          location: data.location || '',
+          image: getGoogleDriveUrl(data.image || ''),
+          year: data.year || '',
+          size: data.size || '',
+          detailImages: Array.isArray(data.detailImages)
+            ? data.detailImages.map((img: string) => getGoogleDriveUrl(img))
+            : []
+        } as Project;
+      });
+
+      // Sort by id to maintain sequence (e.g. "01", "02")
+      projectsList.sort((a, b) => a.id.localeCompare(b.id));
+      setFirestoreProjects(projectsList);
+    }, (error) => {
+      console.error("Error listening to Firestore projects: ", error);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSiteConfig = async () => {
+      try {
+        const res = await fetch('/api/config', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (isMounted) {
+          setSiteConfig(data);
+        }
+      } catch (err) {
+        console.warn('Failed to load live site configuration:', err);
+      }
+    };
+
+    loadSiteConfig();
+    const interval = setInterval(loadSiteConfig, 5000);
+    const channel = typeof BroadcastChannel !== 'undefined'
+      ? new BroadcastChannel('site-config-updates')
+      : null;
+
+    channel?.addEventListener('message', loadSiteConfig);
+
+    const handleStorageUpdate = (event: StorageEvent) => {
+      if (event.key === 'site-config-updated-at') {
+        loadSiteConfig();
+      }
+    };
+
+    window.addEventListener('site-config-updated', loadSiteConfig);
+    window.addEventListener('storage', handleStorageUpdate);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+      channel?.removeEventListener('message', loadSiteConfig);
+      channel?.close();
+      window.removeEventListener('site-config-updated', loadSiteConfig);
+      window.removeEventListener('storage', handleStorageUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!activeProject) return;
+    const latestProject = projectsData.find((project) => project.id === activeProject.id);
+    if (latestProject && latestProject !== activeProject) {
+      setActiveProject(latestProject);
+    }
+  }, [activeProject, projectsData]);
+
+  useEffect(() => {
+    if (!activeBlog) return;
+    const latestBlog = (siteConfig.blogs || []).find((blog) => blog.id === activeBlog.id);
+    if (latestBlog && latestBlog !== activeBlog) {
+      setActiveBlog(latestBlog);
+    }
+  }, [activeBlog, siteConfig.blogs]);
 
   // Update Gandhidham local time (IST)
   useEffect(() => {
@@ -81,11 +189,14 @@ export default function Home() {
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     setActiveProject(null); // Clear active project to return to tab root
+    setActiveBlog(null); // Clear active blog to return to tab root
+    setCurrentPage(1);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue = name === 'phone' ? value.replace(/\D/g, '').slice(0, 10) : value;
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -100,7 +211,11 @@ export default function Home() {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'PLEASE ENTER A VALID EMAIL';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'PHONE NUMBER IS REQUIRED';
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'PHONE NUMBER IS REQUIRED';
+    } else if (!/^\d{10}$/.test(formData.phone.trim())) {
+      newErrors.phone = 'ENTER A VALID 10 DIGIT PHONE NUMBER';
+    }
     if (!formData.subject.trim()) newErrors.subject = 'SUBJECT IS REQUIRED';
     if (!formData.message.trim()) newErrors.message = 'MESSAGE IS REQUIRED';
 
@@ -155,6 +270,60 @@ export default function Home() {
       });
   };
 
+  if (siteConfig.isWebsiteOffline) {
+    return (
+      <div className="w-full min-h-screen bg-background text-primary flex flex-col items-center justify-center p-6 transition-colors duration-300">
+        <div className="max-w-[700px] w-full text-center flex flex-col items-center gap-10">
+          {/* Logo Header */}
+          <div className="flex flex-col items-center select-none">
+            <h1 className="brand-logo text-[56px] sm:text-[76px] text-primary leading-none">
+              The AD Efffects
+            </h1>
+            <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
+          </div>
+
+          {/* Offline Message */}
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-cormorant font-light tracking-[0.25em] text-accent uppercase leading-relaxed">
+              Sanctuary Temporarily Offline
+            </h2>
+            <p className="text-sm md:text-base leading-[1.8] text-secondary font-light max-w-[550px] mx-auto">
+              We are currently refining our digital sanctuary. During this period, our design operations and projects continue uninterrupted. Please contact us directly below.
+            </p>
+          </div>
+
+          <div className="w-full max-w-lg h-[1px] bg-primary/10 transition-colors" />
+
+          {/* Contact Coordinates */}
+          <div className="flex flex-col gap-5 text-[11px] sm:text-xs tracking-[0.2em] uppercase text-secondary font-sans">
+            <div className="flex items-center justify-center gap-2.5">
+              <MapPin className="w-4 h-4 text-accent stroke-[1.5]" />
+              <span>Gandhidham, Gujarat, India</span>
+            </div>
+            <div className="flex items-center justify-center gap-2.5">
+              <Mail className="w-4 h-4 text-accent stroke-[1.5]" />
+              <a href="mailto:hello@adefffects.com" className="hover:text-primary transition-colors">
+                hello@adefffects.com
+              </a>
+            </div>
+            <div className="flex items-center justify-center gap-2.5">
+              <Phone className="w-4 h-4 text-accent stroke-[1.5]" />
+              <a href="tel:+919825012345" className="hover:text-primary transition-colors">
+                +91 98250 12345
+              </a>
+            </div>
+          </div>
+
+          {/* Gandhidham Local Time (IST) */}
+          <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-[11px] tracking-[0.22em] text-accent font-semibold uppercase">
+            <Clock className="w-4 h-4 stroke-[1.5]" />
+            <span>GANDHIDHAM IST: {gandhidhamTime}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Header activeTab={activeTab} onTabChange={handleTabChange} />
@@ -202,19 +371,81 @@ export default function Home() {
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1, duration: 1.0, ease: [0.25, 1, 0.5, 1] }}
-                    className="overflow-hidden bg-card-bg border border-border-custom aspect-[3/4]"
+                    className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[3/4]"
                   >
-                    <img
+                    <Image
                       src={img}
                       alt={`${activeProject.title} detail ${idx + 1}`}
-                      className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-[1.2s] ease-out"
+                      fill
+                      sizes="(min-width: 768px) 33vw, 100vw"
+                      className="object-cover hover:scale-[1.03] transition-transform duration-[1.2s] ease-out"
                     />
                   </motion.div>
                 ))}
               </div>
             </motion.div>
+          ) : activeBlog ? (
+            /* 2. BLOG ARTICLE DETAIL VIEW */
+            <motion.div
+              key={`blog-${activeBlog.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: "easeInOut" }}
+              className="w-full max-w-4xl px-6 md:px-12 mx-auto"
+              style={{ marginTop: '48px', marginBottom: '80px' }}
+            >
+              {/* Back Navigation & Article Header */}
+              <div className="flex flex-col mb-12">
+                <button
+                  onClick={() => setActiveBlog(null)}
+                  className="text-[9px] uppercase tracking-[0.35em] text-secondary hover:text-accent w-fit cursor-pointer flex items-center gap-2 group transition-colors mb-8"
+                >
+                  <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span> Back to Editorial Blog
+                </button>
+                <span className="text-[10px] font-mono tracking-widest text-accent uppercase block mb-3">
+                  {activeBlog.date}
+                </span>
+                <h1 className="text-3xl md:text-5xl font-cormorant font-light text-primary leading-tight">
+                  {activeBlog.title}
+                </h1>
+              </div>
+
+              {/* Featured Hero Image */}
+              {activeBlog.image && (
+                <div className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[16/9] w-full mb-12">
+                  <Image
+                    src={activeBlog.image}
+                    alt={activeBlog.title}
+                    fill
+                    sizes="(min-width: 768px) 100vw, 100vw"
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              )}
+
+              {/* Excerpt Pull-Quote Box */}
+              {activeBlog.excerpt && (
+                <div className="border-l-2 border-accent pl-6 py-2 my-8 bg-card-bg/40">
+                  <p className="text-base md:text-lg font-cormorant italic text-primary leading-relaxed">
+                    &quot;{activeBlog.excerpt}&quot;
+                  </p>
+                </div>
+              )}
+
+              {/* Full Article Content */}
+              <div className="prose dark:prose-invert max-w-none text-primary text-sm md:text-base font-light leading-[1.8] space-y-6">
+                {(activeBlog.content || activeBlog.excerpt || '')
+                  .split('\n')
+                  .filter((paragraph) => paragraph.trim() !== '')
+                  .map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
+              </div>
+            </motion.div>
           ) : (
-            /* 2. MAIN NAVIGATION VIEWPORTS */
+            /* 3. MAIN NAVIGATION VIEWPORTS */
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 15 }}
@@ -228,30 +459,82 @@ export default function Home() {
                 <>
                   {/* Premium Brand Statement - Single Centered Calm Paragraph with Exact Spacing */}
                   <div 
-                    className="max-w-[700px] text-center px-6 mx-auto"
+                    className="mobile-brand-statement max-w-[700px] text-center px-6 mx-auto"
                     style={{ marginTop: '48px', marginBottom: '64px' }} // 48px top, 64px bottom
                   >
                     <p className="text-[19px] font-cormorant font-medium text-primary leading-[1.6] text-center">
-                      The AD Efffects is a bespoke interior design studio creating thoughtfully crafted homes and spaces. Our work is rooted in clarity of planning, depth of detail, and a deep respect for material, craft, and context. Every project is approached as a collaboration — designed with intent, executed with rigour, and shaped around the people who live within it.
+                      {siteConfig.brandStatement}
                     </p>
                   </div>
 
-                  {/* 3-Column Unified Grid - Balanced aspect ratio and equal gutters */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl px-6 md:px-12 mb-20 mx-auto">
-                    {projectsData.map((project) => (
-                      <ProjectCard 
-                        key={project.id} 
-                        project={project} 
-                        onClick={() => setActiveProject(project)} 
-                      />
-                    ))}
-                  </div>
+                  {/* 3-Column Unified Grid - Smooth Animated Page Transition */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`portfolio-page-${currentPage}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] }}
+                      className="mobile-project-grid grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl px-6 md:px-12 mb-12 mx-auto"
+                    >
+                      {currentProjects.map((project, idx) => (
+                        <ProjectCard 
+                          key={project.id} 
+                          project={project} 
+                          priority={idx < 3}
+                          index={idx}
+                          onClick={() => setActiveProject(project)} 
+                        />
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
 
-                  {/* Centered Pagination */}
-                  <div className="flex justify-center items-center gap-8 mb-20 text-[10px] uppercase tracking-[0.3em] font-light">
-                    <span className="text-accent font-semibold border-b border-accent pb-0.5">1</span>
-                    <button className="text-secondary hover:text-accent transition-colors cursor-pointer">2</button>
-                    <button className="text-secondary hover:text-accent transition-colors cursor-pointer">&gt;</button>
+                  {/* Centered Workable Pagination with clean spacing */}
+                  <div className="flex justify-center items-center gap-6 md:gap-8 mt-12 md:mt-16 mb-24 md:mb-32 text-[16px] md:text-[18px] uppercase tracking-[0.18em] font-medium">
+                    {currentPage > 1 && (
+                      <button
+                        onClick={() => {
+                          setCurrentPage((prev) => Math.max(prev - 1, 1));
+                          window.scrollTo({ top: 250, behavior: 'smooth' });
+                        }}
+                        className="min-w-10 h-10 flex items-center justify-center text-secondary hover:text-accent transition-colors cursor-pointer"
+                        aria-label="Previous portfolio page"
+                      >
+                        &lt;
+                      </button>
+                    )}
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                      const pageNum = i + 1;
+                      const isActive = pageNum === currentPage;
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum);
+                            window.scrollTo({ top: 250, behavior: 'smooth' });
+                          }}
+                          className={`min-w-10 h-10 flex items-center justify-center transition-all cursor-pointer ${
+                            isActive
+                              ? 'text-accent font-semibold border-b-2 border-accent pb-0.5'
+                              : 'text-secondary hover:text-accent hover:border-b-2 hover:border-accent pb-0.5'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                    {currentPage < totalPages && (
+                      <button
+                        onClick={() => {
+                          setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                          window.scrollTo({ top: 250, behavior: 'smooth' });
+                        }}
+                        className="min-w-10 h-10 flex items-center justify-center text-secondary hover:text-accent transition-colors cursor-pointer"
+                        aria-label="Next portfolio page"
+                      >
+                        &gt;
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -264,17 +547,14 @@ export default function Home() {
                   {/* Heading Section */}
                   <div className="space-y-4 text-center w-full" style={{ marginBottom: '40px' }}> {/* 40px gap below title */}
                     <span className="text-[9.5px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Philosophy</span></span>
-                    <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Restraint & Harmony</h2>
+                    <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">{siteConfig.story.title}</h2>
                   </div>
 
                   {/* Paragraph Section - matching the home page paragraph width & centering style */}
                   <div className="max-w-[700px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
-                    <p>
-                      Founded with a dedication to spatial purity, The AD Efffects focuses on modern minimalism, tactile materiality, and silent luxury. We reject excess to design enduring, peaceful sanctuaries.
-                    </p>
-                    <p>
-                      Our projects range from high-end residential estates to curated workspace branding. In every commission, we seek architectural restraint, optimizing raw wood, travertine stone, and natural illumination.
-                    </p>
+                    {siteConfig.story.paragraphs.map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
                   </div>
 
                   {/* Image Row Section - matching the home page project grid width and padding bounds */}
@@ -282,20 +562,17 @@ export default function Home() {
                     className="grid grid-cols-2 gap-8 w-full max-w-7xl px-6 md:px-12 mx-auto"
                     style={{ marginTop: '64px' }} // Exact 64px gap below text
                   >
-                    <div className="overflow-hidden bg-card-bg border border-border-custom aspect-[3/4] w-full">
-                      <img 
-                        src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80" 
-                        alt="Stone texture" 
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-[1.2s] ease-out"
-                      />
-                    </div>
-                    <div className="overflow-hidden bg-card-bg border border-border-custom aspect-[3/4] w-full">
-                      <img 
-                        src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80" 
-                        alt="Interior architecture" 
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-[1.2s] ease-out"
-                      />
-                    </div>
+                    {siteConfig.story.images.map((image, idx) => (
+                      <div key={`${image}-${idx}`} className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[3/4] w-full">
+                        <Image 
+                          src={image} 
+                          alt={`Our story image ${idx + 1}`} 
+                          fill
+                          sizes="(min-width: 768px) 50vw, 50vw"
+                          className="object-cover hover:scale-105 transition-transform duration-[1.2s] ease-out"
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -323,11 +600,13 @@ export default function Home() {
                       >
                         <div>
                           {/* Vertical Image Container for Magazine Covers / Awards */}
-                          <div className="overflow-hidden aspect-[3/4] w-full bg-background border border-border-custom/40 flex items-center justify-center">
-                            <img 
+                          <div className="relative overflow-hidden aspect-[3/4] w-full bg-background border border-border-custom/40 flex items-center justify-center">
+                            <Image 
                               src={item.image} 
                               alt={item.title} 
-                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
+                              fill
+                              sizes="(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw"
+                              className="object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
                             />
                           </div>
                         </div>
@@ -366,15 +645,18 @@ export default function Home() {
                     {blogsData.map((blog) => (
                       <div 
                         key={blog.id} 
-                        className="bg-card-bg border border-card-border p-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-500 ease-out group"
+                        onClick={() => setActiveBlog(blog)}
+                        className="bg-card-bg border border-card-border p-6 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-500 ease-out group cursor-pointer"
                       >
                         <div>
                           {/* Image Container */}
-                          <div className="overflow-hidden aspect-[16/10] w-full bg-background border border-border-custom/40">
-                            <img 
+                          <div className="relative overflow-hidden aspect-[16/10] w-full bg-background border border-border-custom/40">
+                            <Image 
                               src={blog.image} 
                               alt={blog.title} 
-                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
+                              fill
+                              sizes="(min-width: 768px) 50vw, 100vw"
+                              className="object-cover group-hover:scale-[1.02] transition-transform duration-[1.2s] ease-out"
                             />
                           </div>
                           <span className="text-[9px] font-mono tracking-widest text-accent uppercase block mt-6">
@@ -389,14 +671,21 @@ export default function Home() {
                         </div>
 
                         {/* Read Full Article */}
-                        <div className="border-t border-border-custom/40 pt-4 mt-6 flex justify-between items-center">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveBlog(blog);
+                          }}
+                          className="border-t border-border-custom/40 pt-4 mt-6 flex justify-between items-center w-full bg-transparent border-x-0 border-b-0 cursor-pointer text-left focus:outline-none"
+                        >
                           <span className="text-[10px] tracking-[0.2em] font-sans font-medium uppercase text-primary group-hover:text-accent transition-colors">
                             Read Full Article
                           </span>
                           <span className="text-accent group-hover:translate-x-1 transition-transform duration-300">
                             &rarr;
                           </span>
-                        </div>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -411,19 +700,21 @@ export default function Home() {
                 >
                   <div className="space-y-4 text-center w-full" style={{ marginBottom: '32px' }}> {/* 32px gap below title */}
                     <span className="text-[9.9px] uppercase tracking-[0.35em] text-accent font-semibold block font-sans"><span className="mr-[-0.35em]">Inspiration</span></span>
-                    <h2 className="text-[33px] font-cormorant font-light text-primary italic">Spatial Influences</h2>
+                    <h2 className="text-[33px] font-cormorant font-light text-primary italic">{siteConfig.influence.title}</h2>
                   </div>
                   <p className="text-xs md:text-sm text-secondary font-light leading-[1.8] max-w-[700px] px-6 text-center mx-auto">
-                    We draw inspiration from Japandi design principles, organic Wabi-Sabi textures, and mid-century architectural structuralism. We design with a deep reverence for local craft, raw wood structures, and passive light integration.
+                    {siteConfig.influence.description}
                   </p>
                   <div 
-                    className="overflow-hidden bg-card-bg border border-border-custom aspect-[16/10] w-full max-w-7xl px-6 md:px-12 mx-auto"
+                    className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[16/10] w-full max-w-7xl px-6 md:px-12 mx-auto"
                     style={{ marginTop: '64px' }} // Exact 64px gap below text
                   >
-                    <img 
-                      src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80" 
+                    <Image 
+                      src={siteConfig.influence.image} 
                       alt="Inspiration reference" 
-                      className="w-full h-full object-cover hover:scale-103 transition-transform duration-[1.5s] ease-out"
+                      fill
+                      sizes="100vw"
+                      className="object-cover hover:scale-103 transition-transform duration-[1.5s] ease-out"
                     />
                   </div>
                 </div>
@@ -432,17 +723,17 @@ export default function Home() {
               {/* CONTACT TAB */}
               {activeTab === 'contact' && (
                 <div 
-                  className="w-full flex flex-col items-center"
+                  className="contact-section w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
                 >
                   {/* Page Title Header */}
-                  <div className="space-y-3 text-center w-full" style={{ marginBottom: '56px' }}>
+                  <div className="contact-title-block space-y-3 text-center w-full" style={{ marginBottom: '56px' }}>
                     <span className="text-[10.5px] uppercase tracking-[0.4em] text-accent font-semibold block font-sans"><span className="mr-[-0.4em]">CONNECT</span></span>
-                    <h2 className="text-4xl md:text-5xl font-cormorant font-light text-primary italic">Contact the Studio</h2>
+                    <h2 className="contact-heading text-4xl md:text-5xl font-cormorant font-light text-primary italic">Contact the Studio</h2>
                   </div>
 
                   {/* Symmetrical Centralized Form Container (Max-W-4xl) */}
-                  <div className="w-full max-w-4xl px-6 mx-auto">
+                  <div className="contact-form-container w-full max-w-4xl px-6 mx-auto">
                     <AnimatePresence mode="wait">
                       {!isSubmitted ? (
                         <motion.form
@@ -452,21 +743,21 @@ export default function Home() {
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.5 }}
                           onSubmit={handleSubmit}
-                          className="flex flex-col gap-12"
+                          className="contact-form flex flex-col gap-12"
                         >
                           {/* Row 1: Name and Email */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
+                          <div className="contact-form-grid grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
                             <div className="flex flex-col gap-2">
                               <div className={`relative group flex items-center border ${
                                 errors.name ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                              } contact-field-frame px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
                                 <input
                                   type="text"
                                   name="name"
                                   value={formData.name}
                                   onChange={handleInputChange}
                                   placeholder="YOUR NAME *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="contact-control w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -478,14 +769,14 @@ export default function Home() {
                             <div className="flex flex-col gap-2">
                               <div className={`relative group flex items-center border ${
                                 errors.email ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                              } contact-field-frame px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
                                 <input
                                   type="email"
                                   name="email"
                                   value={formData.email}
                                   onChange={handleInputChange}
                                   placeholder="YOUR EMAIL *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="contact-control w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -496,18 +787,21 @@ export default function Home() {
                           </div>
 
                           {/* Row 2: Phone and Subject */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
+                          <div className="contact-form-grid grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12">
                             <div className="flex flex-col gap-2">
                               <div className={`relative group flex items-center border ${
                                 errors.phone ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                              } contact-field-frame px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
                                 <input
-                                  type="text"
+                                  type="tel"
                                   name="phone"
                                   value={formData.phone}
                                   onChange={handleInputChange}
+                                  inputMode="numeric"
+                                  pattern="[0-9]{10}"
+                                  maxLength={10}
                                   placeholder="PHONE NUMBER *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="contact-control w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -519,14 +813,14 @@ export default function Home() {
                             <div className="flex flex-col gap-2">
                               <div className={`relative group flex items-center border ${
                                 errors.subject ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                              } px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                              } contact-field-frame px-[30px] h-[72px] rounded-none bg-transparent w-full transition-all duration-300`}>
                                 <input
                                   type="text"
                                   name="subject"
                                   value={formData.subject}
                                   onChange={handleInputChange}
                                   placeholder="SUBJECT *"
-                                  className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
+                                  className="contact-control w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] rounded-none uppercase p-0"
                                 />
                                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                               </div>
@@ -540,13 +834,13 @@ export default function Home() {
                           <div className="flex flex-col gap-2">
                             <div className={`relative group flex flex-col border ${
                               errors.message ? 'border-red-500/80 focus-within:border-red-500' : 'border-primary focus-within:border-accent'
-                            } px-[30px] py-[22px] min-h-[260px] rounded-none bg-transparent w-full transition-all duration-300`}>
+                            } contact-message-frame px-[30px] py-[22px] min-h-[260px] rounded-none bg-transparent w-full transition-all duration-300`}>
                               <textarea
                                 name="message"
                                 value={formData.message}
                                 onChange={handleInputChange}
                                 placeholder="WRITE MESSAGE *"
-                                className="w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
+                                className="contact-control contact-textarea w-full bg-transparent border-none outline-none text-xs md:text-sm font-bold text-primary text-center placeholder:text-primary/35 placeholder:font-bold tracking-[0.25em] resize-none uppercase leading-relaxed flex-grow p-0"
                               />
                               <div className="absolute bottom-0 left-0 w-full h-[2px] bg-accent scale-x-0 group-focus-within:scale-x-100 transition-transform duration-500 origin-left" />
                             </div>
@@ -556,9 +850,9 @@ export default function Home() {
                           </div>
 
                           {/* Math Captcha and Submit Section */}
-                          <div className="flex flex-col gap-10 pt-4">
+                          <div className="contact-action-stack flex flex-col gap-10 pt-4">
                             {/* Captcha Card Widget */}
-                            <div className="bg-card-bg/40 border border-border-custom p-5 flex flex-col gap-4 w-full max-w-[300px] transition-colors duration-300 backdrop-blur-sm">
+                            <div className="contact-captcha-card bg-card-bg/40 border border-border-custom p-5 flex flex-col gap-4 w-full max-w-[300px] transition-colors duration-300 backdrop-blur-sm">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-sans font-bold tracking-[0.15em] text-primary uppercase select-none">
                                   What is {captcha.num1} + {captcha.num2} ?
@@ -573,7 +867,7 @@ export default function Home() {
                                 </button>
                               </div>
                               
-                              <div className="relative group w-full border border-primary/45 focus-within:border-primary px-4 py-2.5 flex items-center h-[46px] transition-all duration-300">
+                              <div className="contact-captcha-input relative group w-full border border-primary/45 focus-within:border-primary px-4 py-2.5 flex items-center h-[46px] transition-all duration-300">
                                 <input
                                   type="text"
                                   value={userCaptcha}
@@ -595,11 +889,11 @@ export default function Home() {
                             </div>
 
                             {/* Submit Button */}
-                            <div className="group relative w-fit">
+                            <div className="contact-submit-wrap group relative w-fit">
                               <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="bg-primary border border-primary text-background hover:bg-transparent hover:text-primary px-14 py-4 text-xs md:text-sm font-bold tracking-[0.2em] font-sans rounded-none transition-all duration-300 cursor-pointer disabled:opacity-50 select-none uppercase flex items-center gap-3"
+                                className="contact-submit-button text-[#BA7517] hover:text-[#111111] px-14 py-4 text-xs md:text-sm font-bold tracking-[0.2em] font-sans rounded-none transition-all duration-300 cursor-pointer disabled:opacity-50 select-none uppercase flex items-center gap-3"
                               >
                                 <span>SUBMIT</span>
                                 <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-300 stroke-[2] fill-none" stroke="currentColor" viewBox="0 0 24 24">
@@ -640,12 +934,12 @@ export default function Home() {
                   </div>
 
                   {/* Horizontal Separator Line */}
-                  <div className="w-full max-w-4xl px-6 mt-16 mb-8">
+                  <div className="contact-separator w-full max-w-4xl px-6 mt-16 mb-8">
                     <div className="w-full h-[1px] bg-primary/10 transition-colors duration-300" />
                   </div>
 
                   {/* Symmetrical Coordinates Info (Tidy Row Format) */}
-                  <div className="w-full max-w-4xl px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-sans tracking-[0.18em] text-secondary/70 uppercase">
+                  <div className="contact-coordinate-row w-full max-w-4xl px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-6 font-sans tracking-[0.18em] text-secondary/70 uppercase">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
                       <span>Gandhidham, Gujarat, India</span>
@@ -665,10 +959,10 @@ export default function Home() {
                   </div>
 
                   {/* Live IST Time Display */}
-                  <div className="mt-6 text-[9px] font-sans tracking-[0.2em] text-accent font-medium uppercase flex items-center gap-2">
-                    <Clock className="w-3 h-3 stroke-[1.5]" />
+                  <div className="contact-time-status w-full max-w-4xl mx-auto mt-12 md:mt-16 mb-12 px-6 font-sans tracking-[0.2em] text-accent font-semibold uppercase flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-center leading-relaxed">
+                    <Clock className="w-4 h-4 stroke-[1.7] flex-shrink-0" />
                     <span>GANDHIDHAM IST: {gandhidhamTime}</span>
-                    <span className="ml-1 font-semibold text-secondary">
+                    <span className="font-bold text-secondary">
                       {isStudioOpen ? '[ STUDIO OPEN ]' : '[ STUDIO CLOSED ]'}
                     </span>
                   </div>
@@ -684,20 +978,22 @@ export default function Home() {
   );
 }
 
-function ProjectCard({ project, onClick }: { project: Project; onClick: () => void }) {
+function ProjectCard({ project, priority = false, index = 0, onClick }: { project: Project; priority?: boolean; index?: number; onClick: () => void }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-5%' }}
-      transition={{ duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
+      initial={{ opacity: 0, y: 25 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.25, 1, 0.5, 1] }}
       onClick={onClick}
       className="group relative cursor-pointer overflow-hidden bg-card-bg border border-border-custom w-full aspect-[3/4] transition-colors duration-300"
     >
-      <img
+      <Image
         src={project.image}
         alt={project.title}
-        className="w-full h-full object-cover transition-transform duration-[1.2s] ease-[0.25,1,0.5,1] group-hover:scale-[1.02]"
+        fill
+        priority={priority}
+        sizes="(min-width: 768px) 33vw, 100vw"
+        className="object-cover transition-transform duration-[1.2s] ease-[0.25,1,0.5,1] group-hover:scale-[1.02]"
       />
       
       {/* Whiteout Hover Overlay - Premium Slide-Up Reveal */}

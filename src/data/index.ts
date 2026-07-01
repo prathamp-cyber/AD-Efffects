@@ -47,6 +47,7 @@ export interface SiteConfig {
   press: PressItem[];
   projects: Project[];
   blogs?: BlogPost[];
+  isWebsiteOffline?: boolean;
 }
 
 export const defaultSiteConfig = siteConfigJson as unknown as SiteConfig;

@@ -111,25 +111,24 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
   return (
     <>
       <header 
-        className="w-full flex flex-col items-center bg-background relative transition-colors duration-300"
-        style={{ paddingTop: '80px' }} // Exact 80px top padding
+        className="site-header w-full flex flex-col items-center bg-background relative transition-colors duration-300"
       >
         {/* Mobile Header Bar */}
         <motion.div 
           variants={mobileHeaderVariants}
           initial="hidden"
           animate="visible"
-          className="md:hidden w-full flex justify-between items-center px-6 py-5 header-logo-container"
+          className="md:hidden w-full flex justify-between items-center px-5 py-4 header-logo-container"
         >
           <button 
             onClick={() => handleTabClick('portfolio')}
-            className="text-sm font-cormorant font-light tracking-[0.25em] text-primary focus:outline-none"
+            className="brand-logo text-[17px] sm:text-[20px] text-primary focus:outline-none"
           >
-            <span className="mr-[-0.25em]">The AD Efffects</span>
+            The AD Efffects
           </button>
           <button 
             onClick={() => setMobileMenuOpen(true)}
-            className="text-primary focus:outline-none p-2"
+            className="text-primary focus:outline-none p-2 -mr-2"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5 stroke-[1.25]" />
@@ -149,7 +148,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
               initial="hidden"
               animate="visible"
               onClick={() => handleTabClick('portfolio')}
-              className="font-script text-[64px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
+              className="brand-logo text-[76px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
             >
               The AD Efffects
             </motion.button>
@@ -253,22 +252,22 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[100] bg-background flex flex-col justify-between p-8 transition-colors duration-300"
+            className="site-mobile-menu fixed inset-0 z-[10000] bg-background text-primary flex flex-col p-6 transition-colors duration-300 overflow-y-auto"
           >
             <div className="flex justify-between items-center">
-              <span className="text-sm font-cormorant font-light tracking-[0.25em] text-primary">
+              <span className="brand-logo text-[17px] sm:text-[20px] text-primary">
                 The AD Efffects
               </span>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-primary focus:outline-none p-2"
+                className="text-primary focus:outline-none p-2 -mr-2"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5 stroke-[1.25]" />
               </button>
             </div>
 
-            <nav className="flex flex-col space-y-6 my-auto pl-4">
+            <nav className="flex flex-col gap-4 py-12">
               {tabs.map((tab, idx) => (
                 <motion.div
                   initial={{ y: 30, opacity: 0 }}
@@ -278,17 +277,17 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                 >
                   <button
                     onClick={() => handleTabClick(tab.id)}
-                    className={`text-2xl font-cormorant font-bold tracking-[0.2em] uppercase text-left w-full cursor-pointer transition-colors duration-300 ${
+                    className={`text-[22px] font-cormorant font-bold tracking-[0.14em] uppercase text-left w-full cursor-pointer transition-colors duration-300 ${
                       activeTab === tab.id ? 'text-primary border-b border-primary/20 pb-1' : 'text-primary/70 hover:text-primary'
                     }`}
                   >
-                    {tab.label}
+                    <span className="mr-[-0.14em]">{tab.label}</span>
                   </button>
                 </motion.div>
               ))}
             </nav>
 
-            <div className="flex flex-col space-y-3 pl-4 text-[9px] uppercase tracking-[0.25em] text-secondary font-light">
+            <div className="mt-auto flex flex-col gap-3 text-[9px] uppercase tracking-[0.22em] text-secondary font-light">
               <p>hello@adefffects.com</p>
               <p>© 2026 The AD Efffects. All rights reserved.</p>
             </div>
