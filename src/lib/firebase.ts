@@ -25,6 +25,14 @@ const db = getFirestore(app);
 export function getGoogleDriveUrl(idOrUrl: string): string {
   if (!idOrUrl) return '';
   const trimmed = idOrUrl.trim();
+  
+  // Match and extract Google Drive file ID from full sharing URL formats
+  const driveRegex = /(?:drive\.google\.com\/(?:file\/d\/|open\?id=)|docs\.google\.com\/(?:file\/d\/|open\?id=))([a-zA-Z0-9_-]{25,})/;
+  const match = trimmed.match(driveRegex);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+
   if (
     trimmed.startsWith('http://') || 
     trimmed.startsWith('https://') || 

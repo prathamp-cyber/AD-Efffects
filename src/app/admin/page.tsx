@@ -10,6 +10,8 @@ import {
   AlertCircle, CheckCircle, Edit3, X
 } from 'lucide-react';
 import type { BlogPost, Project, PressItem, SiteConfig } from '@/data';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { app, getGoogleDriveUrl } from '@/lib/firebase';
 
 interface Blog extends BlogPost {
   author?: string;
@@ -272,25 +274,40 @@ export default function AdminPage() {
   // File uploading engine
   async function uploadFile(file: File, fieldPath: string): Promise<string | null> {
     setUploadingField(fieldPath);
-    const formData = new FormData();
-    formData.append('file', file);
 
+    // 1. Try uploading to Firebase Storage first (guarantees success on Vercel read-only system)
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
+      const storage = getStorage(app);
+      const uniqueName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      const fileRef = storageRef(storage, `uploads/${uniqueName}`);
+      
+      await uploadBytes(fileRef, file);
+      const downloadUrl = await getDownloadURL(fileRef);
+      return downloadUrl;
+    } catch (firebaseError) {
+      console.warn('Firebase Storage upload failed or not configured, trying local API endpoint:', firebaseError);
+      
+      // 2. Local fallback using API endpoint (for local development)
+      const formData = new FormData();
+      formData.append('file', file);
 
-      if (res.ok) {
-        return data.url;
-      } else {
-        showAlert('error', data.error || 'Image upload failed');
+      try {
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          return data.url;
+        } else {
+          showAlert('error', data.error || 'Image upload failed');
+          return null;
+        }
+      } catch {
+        showAlert('error', 'Network error during image upload.');
         return null;
       }
-    } catch {
-      showAlert('error', 'Network error during image upload.');
-      return null;
     } finally {
       setUploadingField(null);
     }
@@ -298,45 +315,53 @@ export default function AdminPage() {
 
   // Specific file fields handlers
   async function handleFieldImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'story0' | 'story1' | 'influence' | 'projectCover' | 'projectDetail' | 'blogImage') {
-    const file = e.target.files?.[0];
-    if (!file || !config) return;
+    const files = e.target.files;
+    if (!files || files.length === 0 || !config) return;
 
-    if (type === 'story0' || type === 'story1') {
-      const url = await uploadFile(file, type);
-      if (url) {
-        const idx = type === 'story0' ? 0 : 1;
-        const newImages = [...config.story.images];
-        newImages[idx] = url;
-        setConfig({
-          ...config,
-          story: { ...config.story, images: newImages }
-        });
+    if (type === 'projectDetail') {
+      // Loop through all selected files and upload them
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const url = await uploadFile(file, type);
+        if (url) {
+          setProjectForm(prev => ({
+            ...prev,
+            detailImages: [...(prev.detailImages || []), url]
+          }));
+        }
       }
-    } else if (type === 'influence') {
-      const url = await uploadFile(file, type);
-      if (url) {
-        setConfig({
-          ...config,
-          influence: { ...config.influence, image: url }
-        });
-      }
-    } else if (type === 'projectCover') {
-      const url = await uploadFile(file, type);
-      if (url) {
-        setProjectForm(prev => ({ ...prev, image: url }));
-      }
-    } else if (type === 'projectDetail') {
-      const url = await uploadFile(file, type);
-      if (url) {
-        setProjectForm(prev => ({
-          ...prev,
-          detailImages: [...(prev.detailImages || []), url]
-        }));
-      }
-    } else if (type === 'blogImage') {
-      const url = await uploadFile(file, type);
-      if (url) {
-        setBlogForm(prev => ({ ...prev, image: url }));
+    } else {
+      // Single file fields
+      const file = files[0];
+      if (type === 'story0' || type === 'story1') {
+        const url = await uploadFile(file, type);
+        if (url) {
+          const idx = type === 'story0' ? 0 : 1;
+          const newImages = [...config.story.images];
+          newImages[idx] = url;
+          setConfig({
+            ...config,
+            story: { ...config.story, images: newImages }
+          });
+        }
+      } else if (type === 'influence') {
+        const url = await uploadFile(file, type);
+        if (url) {
+          setConfig({
+            ...config,
+            influence: { ...config.influence, image: url }
+          });
+        }
+      } else if (type === 'projectCover') {
+        const url = await uploadFile(file, type);
+        if (url) {
+          setProjectForm(prev => ({ ...prev, image: url }));
+        }
+      } else if (type === 'blogImage') {
+        const url = await uploadFile(file, type);
+        if (url) {
+          setBlogForm(prev => ({ ...prev, image: url }));
+        }
       }
     }
   }
@@ -1104,7 +1129,7 @@ export default function AdminPage() {
 
                               {projectForm.image && (
                                 <div className="w-36 aspect-[3/4] border border-[#4A4A48]/55 rounded-[6px] overflow-hidden bg-black/10 mt-4">
-                                  <img src={projectForm.image} className="w-full h-full object-cover" alt="Cover preview" />
+                                  <img src={getGoogleDriveUrl(projectForm.image)} className="w-full h-full object-cover" alt="Cover preview" />
                                 </div>
                               )}
                             </div>
@@ -1123,6 +1148,7 @@ export default function AdminPage() {
                                     accept="image/jpeg,image/png,image/webp,image/gif"
                                     onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
                                     className="hidden"
+                                    multiple
                                     disabled={uploadingField !== null}
                                   />
                                   <label 
@@ -1130,7 +1156,7 @@ export default function AdminPage() {
                                     className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
                                   >
                                     <Plus className="w-3.5 h-3.5" /> 
-                                    {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload File'}
+                                    {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload Files'}
                                   </label>
                                 </div>
                               </div>
@@ -1139,7 +1165,7 @@ export default function AdminPage() {
                                 <input
                                   type="text"
                                   id="manual-detail-url"
-                                  placeholder="Or paste external detail image URL link and click add..."
+                                  placeholder="Paste links/Drive URLs (separate multiple with commas or newlines)..."
                                   className="flex-1 bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-2 text-[15px] outline-none font-light transition-all text-[#F1EFE8]"
                                 />
                                 <button
@@ -1147,9 +1173,14 @@ export default function AdminPage() {
                                   onClick={() => {
                                     const input = document.getElementById('manual-detail-url') as HTMLInputElement;
                                     if (input && input.value.trim()) {
+                                      // Split by commas or newlines and trim each item
+                                      const items = input.value.split(/,|\n/).map(item => item.trim()).filter(Boolean);
+                                      // Resolve Google Drive sharing links to direct images
+                                      const resolvedUrls = items.map(item => getGoogleDriveUrl(item));
+                                      
                                       setProjectForm(prev => ({
                                         ...prev,
-                                        detailImages: [...(prev.detailImages || []), input.value.trim()]
+                                        detailImages: [...(prev.detailImages || []), ...resolvedUrls]
                                       }));
                                       input.value = '';
                                     }
@@ -1163,7 +1194,7 @@ export default function AdminPage() {
                               <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                                 {(projectForm.detailImages || []).map((img, idx) => (
                                   <div key={idx} className="relative group aspect-[3/4] border border-[#4A4A48]/40 rounded-[6px] overflow-hidden bg-black/20">
-                                    <img src={img} className="w-full h-full object-cover" alt="Detail preview" />
+                                    <img src={getGoogleDriveUrl(img)} className="w-full h-full object-cover" alt="Detail preview" />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-200">
                                       <button
                                         type="button"
@@ -1258,7 +1289,7 @@ export default function AdminPage() {
                                       <td className="py-6">
                                         <div className="w-10 h-14 bg-black/25 border border-[#BA7517]/15 rounded-[4px] overflow-hidden relative shadow-[0_4px_10px_rgba(0,0,0,0.3)]">
                                           <img 
-                                            src={project.image} 
+                                            src={getGoogleDriveUrl(project.image)} 
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                                             alt="cover" 
                                           />
@@ -1409,7 +1440,7 @@ export default function AdminPage() {
                                 </label>
                               </div>
                               {config.story.images[0] && (
-                                <img src={config.story.images[0]} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="left story" />
+                                <img src={getGoogleDriveUrl(config.story.images[0])} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="left story" />
                               )}
                             </div>
                           </div>
@@ -1443,7 +1474,7 @@ export default function AdminPage() {
                                 </label>
                               </div>
                               {config.story.images[1] && (
-                                <img src={config.story.images[1]} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="right story" />
+                                <img src={getGoogleDriveUrl(config.story.images[1])} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="right story" />
                               )}
                             </div>
                           </div>
@@ -1678,7 +1709,7 @@ export default function AdminPage() {
 
                               {blogForm.image && (
                                 <div className="w-full max-w-[280px] aspect-[16/10] border border-[#BA7517]/20 rounded-[6px] overflow-hidden bg-black/20">
-                                  <img src={blogForm.image} className="w-full h-full object-cover" alt="Article preview" />
+                                  <img src={getGoogleDriveUrl(blogForm.image)} className="w-full h-full object-cover" alt="Article preview" />
                                 </div>
                               )}
                             </div>
@@ -1737,7 +1768,7 @@ export default function AdminPage() {
                                     <td className="py-6 pr-4">
                                       {blog.image ? (
                                         <div className="w-16 aspect-[4/3] rounded-[4px] overflow-hidden border border-[#BA7517]/20 bg-black/20">
-                                          <img src={blog.image} className="w-full h-full object-cover" alt={blog.title} />
+                                          <img src={getGoogleDriveUrl(blog.image)} className="w-full h-full object-cover" alt={blog.title} />
                                         </div>
                                       ) : (
                                         <div className="w-16 aspect-[4/3] rounded-[4px] border border-dashed border-[#BA7517]/15 bg-[#1e1c19]/30" />
