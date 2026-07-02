@@ -10,8 +10,7 @@ import {
   AlertCircle, CheckCircle, Edit3, X
 } from 'lucide-react';
 import type { BlogPost, Project, PressItem, SiteConfig } from '@/data';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { app, getGoogleDriveUrl } from '@/lib/firebase';
+import { getGoogleDriveUrl } from '@/lib/firebase';
 
 interface Blog extends BlogPost {
   author?: string;
@@ -271,43 +270,68 @@ export default function AdminPage() {
     showAlert('success', 'siteConfig.json downloaded! Commit this file to src/data/ to save permanently.');
   }
 
+  // Compress and convert file to Base64 data URL
+  function compressAndConvertToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(e.target?.result as string);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // Compress as JPEG at 0.75 quality to ensure small payload size for database storage
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+          resolve(dataUrl);
+        };
+        img.onerror = () => {
+          resolve(e.target?.result as string); // Fallback to raw Base64 if image load fails
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   // File uploading engine
   async function uploadFile(file: File, fieldPath: string): Promise<string | null> {
     setUploadingField(fieldPath);
 
-    // 1. Try uploading to Firebase Storage first (guarantees success on Vercel read-only system)
     try {
-      const storage = getStorage(app);
-      const uniqueName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-      const fileRef = storageRef(storage, `uploads/${uniqueName}`);
-      
-      await uploadBytes(fileRef, file);
-      const downloadUrl = await getDownloadURL(fileRef);
-      return downloadUrl;
-    } catch (firebaseError) {
-      console.warn('Firebase Storage upload failed or not configured, trying local API endpoint:', firebaseError);
-      
-      // 2. Local fallback using API endpoint (for local development)
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          return data.url;
-        } else {
-          showAlert('error', data.error || 'Image upload failed');
-          return null;
-        }
-      } catch {
-        showAlert('error', 'Network error during image upload.');
-        return null;
-      }
+      // Instantly compress and convert the image to Base64 in the browser
+      const base64Data = await compressAndConvertToBase64(file);
+      return base64Data;
+    } catch (err) {
+      console.error('Image compression failed:', err);
+      showAlert('error', 'Failed to process image file.');
+      return null;
     } finally {
       setUploadingField(null);
     }
