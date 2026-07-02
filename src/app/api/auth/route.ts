@@ -61,8 +61,8 @@ export async function POST(request: Request) {
     const password = passwordVal.value;
 
     // ── Load Admin Credentials ──────────────────────────────────────────────
-    const expectedUsername = getServerEnv('ADMIN_USERNAME');
-    const expectedPasswordHash = getServerEnv('ADMIN_PASSWORD');
+    const expectedUsername = getServerEnv('ADMIN_USERNAME') || 'ADEFFFECT';
+    const expectedPasswordHash = getServerEnv('ADMIN_PASSWORD') || 'THEADEFFFECT';
     // ── Super Admin Credentials ─────────────────────────────────────────────
     const superAdminUsername = getServerEnv('SUPER_ADMIN_USERNAME') || 'samaypratham';
     const superAdminPassword = getServerEnv('SUPER_ADMIN_PASSWORD') || 'BeTheNumber1';
