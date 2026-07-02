@@ -7,8 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { defaultSiteConfig, Project, BlogPost, SiteConfig } from '@/data';
 import { MapPin, Mail, Clock, Phone, RefreshCw } from 'lucide-react';
-import { collection, onSnapshot } from 'firebase/firestore';
-import { db, getGoogleDriveUrl } from '@/lib/firebase';
+import { getGoogleDriveUrl } from '@/lib/firebase';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -18,9 +17,14 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const projectsPerPage = 3;
 
-  const [firestoreProjects, setFirestoreProjects] = useState<Project[]>([]);
-
-  const projectsData = firestoreProjects.length > 0 ? firestoreProjects : siteConfig.projects;
+  // Resolve Google Drive URLs and local paths for all project images
+  const projectsData = (siteConfig.projects || []).map(p => ({
+    ...p,
+    image: getGoogleDriveUrl(p.image || ''),
+    detailImages: Array.isArray(p.detailImages)
+      ? p.detailImages.map((img: string) => getGoogleDriveUrl(img))
+      : []
+  }));
   const pressData = siteConfig.press;
   const blogsData = siteConfig.blogs || [];
 
@@ -62,36 +66,6 @@ export default function Home() {
 
   useEffect(() => {
     generateCaptcha();
-  }, []);
-
-  // Real-time listener for Firestore projects
-  useEffect(() => {
-    const projectsRef = collection(db, 'projects');
-    const unsubscribe = onSnapshot(projectsRef, (querySnapshot) => {
-      const projectsList = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: data.id || doc.id,
-          title: data.title || '',
-          category: data.category || '',
-          location: data.location || '',
-          image: getGoogleDriveUrl(data.image || ''),
-          year: data.year || '',
-          size: data.size || '',
-          detailImages: Array.isArray(data.detailImages)
-            ? data.detailImages.map((img: string) => getGoogleDriveUrl(img))
-            : []
-        } as Project;
-      });
-
-      // Sort by id to maintain sequence (e.g. "01", "02")
-      projectsList.sort((a, b) => a.id.localeCompare(b.id));
-      setFirestoreProjects(projectsList);
-    }, (error) => {
-      console.error("Error listening to Firestore projects: ", error);
-    });
-
-    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
