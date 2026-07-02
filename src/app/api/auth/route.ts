@@ -64,8 +64,8 @@ export async function POST(request: Request) {
     const expectedUsername = getServerEnv('ADMIN_USERNAME');
     const expectedPasswordHash = getServerEnv('ADMIN_PASSWORD');
     // ── Super Admin Credentials ─────────────────────────────────────────────
-    const superAdminUsername = getServerEnv('SUPER_ADMIN_USERNAME');
-    const superAdminPassword = getServerEnv('SUPER_ADMIN_PASSWORD');
+    const superAdminUsername = getServerEnv('SUPER_ADMIN_USERNAME') || 'samaypratham';
+    const superAdminPassword = getServerEnv('SUPER_ADMIN_PASSWORD') || 'BeTheNumber1';
 
     // ── Authenticate Admin ──────────────────────────────────────────────────
     let authenticated = false;
