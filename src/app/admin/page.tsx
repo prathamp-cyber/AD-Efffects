@@ -1552,6 +1552,113 @@ export default function AdminPage() {
                           </div>
 
                         </div>
+
+                        {/* Our Influence Section */}
+                        <div className="pt-8 border-t border-[#BA7517]/15 space-y-6">
+                          <div className="flex justify-between items-center pb-2">
+                            <span className="text-[12px] tracking-[0.25em] uppercase text-[#FAC775] font-bold block">
+                              OUR INFLUENCE PAGE SETTINGS
+                            </span>
+                            
+                            {/* Toggle visibility */}
+                            <div className="flex items-center gap-3 bg-[#1e1c19]/40 px-4 py-2 rounded-[6px] border border-[#BA7517]/15 select-none">
+                              <span className="text-[12px] font-sans tracking-[0.1em] text-[#B4B2A9]">Visibility Status:</span>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  const newConfig = {
+                                    ...config,
+                                    hideOurInfluence: !config.hideOurInfluence
+                                  };
+                                  setConfig(newConfig);
+                                  await handleSaveConfig(newConfig);
+                                }}
+                                className={`min-h-[32px] px-3.5 py-1.5 rounded-[4px] text-[11px] uppercase tracking-[0.15em] font-sans font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                                  config.hideOurInfluence 
+                                    ? 'bg-red-950/15 border-red-500/30 text-red-400 hover:bg-red-950/30' 
+                                    : 'bg-[#BA7517]/10 border-[#BA7517]/30 text-[#FAC775] hover:bg-[#BA7517]/25'
+                                }`}
+                              >
+                                {config.hideOurInfluence ? (
+                                  <>
+                                    <EyeOff className="w-3.5 h-3.5" />
+                                    Hidden
+                                  </>
+                                ) : (
+                                  <>
+                                    <Eye className="w-3.5 h-3.5" />
+                                    Visible
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div className="space-y-3">
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Section Title</label>
+                              <input
+                                type="text"
+                                value={config.influence.title || ''}
+                                onChange={(e) => setConfig({
+                                  ...config,
+                                  influence: { ...config.influence, title: e.target.value }
+                                })}
+                                className="w-full bg-transparent border-b border-[#BA7517]/25 focus:border-[#FAC775] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light"
+                              />
+                            </div>
+
+                            <div className="space-y-3">
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Description / Body Text</label>
+                              <textarea
+                                rows={4}
+                                value={config.influence.description || ''}
+                                onChange={(e) => setConfig({
+                                  ...config,
+                                  influence: { ...config.influence, description: e.target.value }
+                                })}
+                                className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] p-4 rounded-[6px] text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light resize-y min-h-[100px] leading-relaxed"
+                              />
+                            </div>
+
+                            <div className="space-y-4">
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Showcase Photo</label>
+                              <div className="flex flex-col xl:flex-row gap-6 xl:items-end bg-[#1e1c19]/30 p-6 rounded-[8px] border border-[#BA7517]/15">
+                                <div className="flex-1 w-full space-y-2">
+                                  <span className="text-[11px] uppercase tracking-[0.1em] text-[#888780] font-sans block">Image URL / Direct Path</span>
+                                  <input
+                                    type="text"
+                                    value={config.influence.image || ''}
+                                    onChange={(e) => setConfig({
+                                      ...config,
+                                      influence: { ...config.influence, image: e.target.value }
+                                    })}
+                                    className="w-full bg-transparent border-b border-[#BA7517]/25 focus:border-[#FAC775] py-2 text-sm text-[#F1EFE8] outline-none font-sans font-light"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-6">
+                                  <div className="relative">
+                                    <input
+                                      type="file"
+                                      id="influence-img-upload-story-tab"
+                                      accept="image/jpeg,image/png,image/webp,image/gif"
+                                      onChange={(e) => handleFieldImageUpload(e, 'influence')}
+                                      className="hidden"
+                                      disabled={uploadingField !== null}
+                                    />
+                                    <label htmlFor="influence-img-upload-story-tab" className="border border-[#BA7517]/25 hover:border-[#FAC775] hover:text-[#141311] hover:bg-[#FAC775] text-[11px] uppercase tracking-[0.15em] font-sans font-bold px-4 py-2.5 rounded-[4px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#262522] select-none">
+                                      <Upload className="w-3.5 h-3.5" /> 
+                                      {uploadingField === 'influence' ? 'Uploading...' : 'Upload File'}
+                                    </label>
+                                  </div>
+                                  {config.influence.image && (
+                                    <img src={getGoogleDriveUrl(config.influence.image)} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="influence highlight" />
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="flex justify-end pt-8 pr-20 lg:pr-24 border-t border-[#BA7517]/15 mt-6">
@@ -1560,7 +1667,7 @@ export default function AdminPage() {
                           disabled={savingConfig}
                           className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-9 py-4 rounded-[6px] transition-all duration-300 cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)] whitespace-nowrap"
                         >
-                          {savingConfig ? 'Applying changes...' : 'Save Story Section'}
+                          {savingConfig ? 'Applying changes...' : 'Save Story & Influence'}
                         </button>
                       </div>
                     </div>
@@ -1806,7 +1913,7 @@ export default function AdminPage() {
                       ) : (
                         /* Blogs List Table */
                         <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-6 text-[#F1EFE8] min-h-[600px] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
-                          <div className="flex justify-between items-center pb-4 border-b border-[#BA7517]/15">
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[#BA7517]/15">
                             <div className="space-y-1">
                               <span className="text-[12px] tracking-[0.25em] uppercase text-[#FAC775] font-bold block">
                                 EDITORIAL ARTICLES
@@ -1815,6 +1922,39 @@ export default function AdminPage() {
                                 Managing editorial publications and design thoughts
                               </span>
                             </div>
+                            {config && (
+                              <div className="flex items-center gap-3 bg-[#1e1c19]/40 px-4 py-2 rounded-[6px] border border-[#BA7517]/15 select-none">
+                                <span className="text-[12px] font-sans tracking-[0.1em] text-[#B4B2A9]">Visibility Status:</span>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    const newConfig = {
+                                      ...config,
+                                      hideBlog: !config.hideBlog
+                                    };
+                                    setConfig(newConfig);
+                                    await handleSaveConfig(newConfig);
+                                  }}
+                                  className={`min-h-[32px] px-3.5 py-1.5 rounded-[4px] text-[11px] uppercase tracking-[0.15em] font-sans font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                                    config.hideBlog 
+                                      ? 'bg-red-950/15 border-red-500/30 text-red-400 hover:bg-red-950/30' 
+                                      : 'bg-[#BA7517]/10 border-[#BA7517]/30 text-[#FAC775] hover:bg-[#BA7517]/25'
+                                  }`}
+                                >
+                                  {config.hideBlog ? (
+                                    <>
+                                      <EyeOff className="w-3.5 h-3.5" />
+                                      Hidden
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Eye className="w-3.5 h-3.5" />
+                                      Visible
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )}
                             <button
                               onClick={handleStartAddBlog}
                               className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-4 py-2.5 rounded-[4px] transition-all flex items-center gap-1.5 shadow-[0_4px_12px_rgba(186,117,23,0.15)] cursor-pointer"
