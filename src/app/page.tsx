@@ -15,7 +15,7 @@ export default function Home() {
   const [activeBlog, setActiveBlog] = useState<BlogPost | null>(null);
   const [siteConfig, setSiteConfig] = useState<SiteConfig>(defaultSiteConfig);
   const [currentPage, setCurrentPage] = useState(1);
-  const projectsPerPage = 3;
+  const projectsPerPage = 6;
 
   // Resolve Google Drive URLs and local paths for all project images
   const projectsData = (siteConfig.projects || []).map(p => ({
