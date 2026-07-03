@@ -253,8 +253,8 @@ export default function Home() {
             <h1 className="brand-logo text-[56px] sm:text-[76px] text-primary leading-none">
               The AD Efffects
             </h1>
+            <span className="text-[10px] uppercase tracking-[0.28em] text-secondary/70 mt-2.5 font-sans font-light">Form Follows Function</span>
             <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
-            <span className="text-[10px] uppercase tracking-[0.28em] text-secondary/70 mt-3 font-sans font-light">Form Follows Function</span>
           </div>
 
           {/* Offline Message */}

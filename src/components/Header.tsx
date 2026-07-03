@@ -161,6 +161,14 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             >
               The AD Efffects
             </motion.button>
+            <motion.span 
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 0.55, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="text-[10px] uppercase tracking-[0.3em] text-secondary mt-2.5 font-sans font-light"
+            >
+              Form Follows Function
+            </motion.span>
             {/* Centered horizontal underline (approx 60% of script width) */}
             <motion.div 
               variants={lineVariants}
@@ -168,14 +176,6 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
               animate="visible"
               className="w-[180px] h-[1px] bg-primary mt-3 origin-center" 
             />
-            <motion.span 
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 0.55, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.8 }}
-              className="text-[10px] uppercase tracking-[0.3em] text-secondary mt-3 font-sans font-light"
-            >
-              Form Follows Function
-            </motion.span>
           </div>
 
           {/* Social Icons Row - ~40px diameter, 16px spaced, 32px gap below socials */}

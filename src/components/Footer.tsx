@@ -24,9 +24,9 @@ export default function Footer({ onTabChange }: FooterProps) {
         >
           The AD Efffects
         </button>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-secondary/70 mt-2.5 font-sans font-light">Form Follows Function</span>
         {/* Centered horizontal underline */}
         <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
-        <span className="text-[10px] uppercase tracking-[0.3em] text-secondary/70 mt-3 font-sans font-light">Form Follows Function</span>
       </div>
 
       {/* Brand Paragraph: Relevant, elegant, centered spatial statement */}
