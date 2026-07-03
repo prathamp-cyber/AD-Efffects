@@ -250,10 +250,10 @@ export default function Home() {
         <div className="max-w-[700px] w-full text-center flex flex-col items-center gap-10">
           {/* Logo Header */}
           <div className="flex flex-col items-center select-none">
-            <h1 className="brand-logo text-[40px] sm:text-[56px] text-primary leading-none tracking-[0.18em] font-semibold">
+            <h1 className="brand-logo text-[40px] sm:text-[56px] text-primary leading-none tracking-[0.18em] font-medium">
               THE AD EFFFECT
             </h1>
-            <span className="text-[10px] uppercase tracking-[0.28em] text-secondary mt-2.5 font-sans font-semibold">Form Follows Function</span>
+            <span className="text-[10px] uppercase tracking-[0.28em] text-primary mt-2.5 font-sans font-medium">Form Follows Function</span>
             <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
           </div>
 
