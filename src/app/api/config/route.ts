@@ -108,8 +108,8 @@ export async function POST(request: Request) {
   const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.configUpdate);
   if (rateLimitResponse) return rateLimitResponse;
 
-  // ── Body Size Check (512KB max for full site config) ──────────────────────
-  const requestError = validateJsonRequest(request, 512 * 1024);
+  // ── Body Size Check (4MB max for full site config with base64 images) ─────
+  const requestError = validateJsonRequest(request, 4 * 1024 * 1024);
   if (requestError) {
     const status = requestError.includes('exceeds') ? 413 : 400;
     return NextResponse.json({ error: requestError }, { status });

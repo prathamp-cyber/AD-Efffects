@@ -353,7 +353,8 @@ export default function AdminPage() {
 
       if (res.status === 403) {
         setUseExternalUrl(true);
-        return null;
+        showAlert('warning', 'Server is read-only. Optimizing and saving image directly to the database.');
+        return base64Data;
       }
 
       if (!res.ok) {
