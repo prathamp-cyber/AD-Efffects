@@ -1,5 +1,7 @@
 {
   "isWebsiteOffline": false,
+  "hideOurInfluence": true,
+  "hideBlog": true,
   "brandStatement": "The AD Efffect is a bespoke architecture and interior design studio where purpose meets artistry. Rooted in the philosophy of Form Follows Function, our work is shaped by timeless design, authentic materiality, and thoughtful craftsmanship. Each space is carefully composed to evoke a sense of belonging—quietly refined, deeply personal, and designed to endure beyond trends.",
   "story": {
     "title": "Restraint & Harmony",
@@ -95,7 +97,8 @@
         "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "02",
@@ -109,7 +112,8 @@
         "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "03",
@@ -123,7 +127,8 @@
         "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "04",
@@ -137,7 +142,8 @@
         "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600585154166-d8897c8f930d?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "05",
@@ -151,7 +157,8 @@
         "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "06",
@@ -165,7 +172,8 @@
         "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85",
         "https://images.unsplash.com/photo-1615529182904-14819c35db37?auto=format&fit=crop&w=1200&q=85"
-      ]
+      ],
+      "description": ""
     },
     {
       "id": "07",
@@ -178,7 +186,8 @@
       "detailImages": [
         "/uploads/whatsapp_image_2026-06-29_at_08_25_05_1_1782899844282.jpeg",
         "/uploads/whatsapp_image_2026-06-29_at_08_25_05_1782899848693.jpeg"
-      ]
+      ],
+      "description": ""
     }
   ],
   "blogs": [
