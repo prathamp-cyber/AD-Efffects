@@ -690,7 +690,7 @@ export default function Home() {
                     style={{ marginTop: '64px' }} // Exact 64px gap below text
                   >
                     <Image 
-                      src={siteConfig.influence.image} 
+                      src={getGoogleDriveUrl(siteConfig.influence.image)} 
                       alt="Inspiration reference" 
                       fill
                       sizes="100vw"
