@@ -325,7 +325,7 @@ function validateProject(raw: unknown, index: number): ValidationResult<Record<s
   const path = `projects[${index}]`;
   if (!isObject(raw)) return { value: {}, error: `${path} must be an object` };
 
-  const unknown = assertNoUnknownKeys(raw, ['id', 'title', 'category', 'location', 'image', 'year', 'size', 'detailImages'], path);
+  const unknown = assertNoUnknownKeys(raw, ['id', 'title', 'category', 'location', 'image', 'year', 'size', 'detailImages', 'description'], path);
   if (unknown) return { value: {}, error: unknown };
 
   const id = validateId(raw.id, `${path}.id`);
@@ -344,6 +344,8 @@ function validateProject(raw: unknown, index: number): ValidationResult<Record<s
   if (size.error) return { value: {}, error: size.error };
   const detailImages = validateUrlArray(raw.detailImages, `${path}.detailImages`, { maxItems: 20, required: true });
   if (detailImages.error) return { value: {}, error: detailImages.error };
+  const description = validateString(raw.description, `${path}.description`, { maxLen: 2000, required: false });
+  if (description.error) return { value: {}, error: description.error };
 
   return {
     value: {
@@ -355,6 +357,7 @@ function validateProject(raw: unknown, index: number): ValidationResult<Record<s
       year: year.value,
       size: size.value,
       detailImages: detailImages.value,
+      description: description.value,
     },
   };
 }

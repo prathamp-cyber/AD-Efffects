@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Briefcase, BookOpen, Award, 
@@ -26,7 +27,9 @@ interface Inquiry {
 }
 
 export default function AdminPage() {
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
+  const [useExternalUrl, setUseExternalUrl] = useState(false);
   
   // Real-time greeting and clock
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -237,6 +240,7 @@ export default function AdminPage() {
           showAlert('warning', data.warning || 'Saved in-memory only due to hosting constraints.');
         }
         setConfig(fullConfig);
+        router.refresh();
         window.dispatchEvent(new Event('site-config-updated'));
         window.localStorage.setItem('site-config-updated-at', Date.now().toString());
         if (typeof BroadcastChannel !== 'undefined') {
@@ -327,9 +331,41 @@ export default function AdminPage() {
     try {
       // Instantly compress and convert the image to Base64 in the browser
       const base64Data = await compressAndConvertToBase64(file);
-      return base64Data;
+      
+      // Convert base64 to Blob
+      const byteString = atob(base64Data.split(',')[1]);
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: 'image/jpeg' });
+      
+      const formData = new FormData();
+      // Clean name and replace extension with .jpg
+      const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace(/\.[^/.]+$/, "") + ".jpg";
+      formData.append('file', blob, cleanName);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.status === 403) {
+        setUseExternalUrl(true);
+        return null;
+      }
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        showAlert('error', errorData.error || 'Failed to upload file.');
+        return null;
+      }
+
+      const data = await res.json();
+      return data.url;
     } catch (err) {
-      console.error('Image compression failed:', err);
+      console.error('Image compression or upload failed:', err);
       showAlert('error', 'Failed to process image file.');
       return null;
     } finally {
@@ -400,18 +436,21 @@ export default function AdminPage() {
       id: nextIdVal,
       title: '',
       category: '',
+      description: '',
       location: '',
       image: '',
       year: new Date().getFullYear().toString(),
       size: '',
       detailImages: []
     });
+    setUseExternalUrl(false);
     setEditingProject({ id: nextIdVal } as Project);
   }
 
   function handleStartEditProject(project: Project) {
     setIsNewProject(false);
-    setProjectForm({ ...project });
+    setProjectForm({ ...project, description: project.description || '' });
+    setUseExternalUrl(false);
     setEditingProject(project);
   }
 
@@ -1083,6 +1122,18 @@ export default function AdminPage() {
                               </div>
                             </div>
 
+                            {/* Description */}
+                            <div className="space-y-4">
+                              <label className="font-serif italic text-[15px] md:text-[16px] text-[#F1EFE8] block">Project Description</label>
+                              <textarea
+                                rows={3}
+                                value={projectForm.description || ''}
+                                onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                                placeholder="Enter project description..."
+                                className="w-full bg-[#1e1c19]/30 border border-[#4A4A48] focus:border-[#BA7517] p-4 rounded-[6px] text-[15px] md:text-[16px] text-[#F1EFE8] outline-none transition-all duration-300 font-light resize-y min-h-[80px]"
+                              />
+                            </div>
+
                             {/* Location, Year, Size */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                               <div className="space-y-4">
@@ -1132,23 +1183,25 @@ export default function AdminPage() {
                                     className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] md:text-[16px] text-[#F1EFE8] outline-none transition-all duration-300 font-light"
                                   />
                                 </div>
-                                <div className="relative w-full xl:w-auto">
-                                  <input
-                                    type="file"
-                                    id="upload-cover"
-                                    accept="image/jpeg,image/png,image/webp,image/gif"
-                                    onChange={(e) => handleFieldImageUpload(e, 'projectCover')}
-                                    className="hidden"
-                                    disabled={uploadingField !== null}
-                                  />
-                                  <label 
-                                    htmlFor="upload-cover"
-                                    className="w-full xl:w-auto min-h-[52px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
-                                  >
-                                    <Upload className="w-3.5 h-3.5" /> 
-                                    {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
-                                  </label>
-                                </div>
+                                {!useExternalUrl && (
+                                  <div className="relative w-full xl:w-auto">
+                                    <input
+                                      type="file"
+                                      id="upload-cover"
+                                      accept="image/jpeg,image/png,image/webp,image/gif"
+                                      onChange={(e) => handleFieldImageUpload(e, 'projectCover')}
+                                      className="hidden"
+                                      disabled={uploadingField !== null}
+                                    />
+                                    <label 
+                                      htmlFor="upload-cover"
+                                      className="w-full xl:w-auto min-h-[52px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
+                                    >
+                                      <Upload className="w-3.5 h-3.5" /> 
+                                      {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
+                                    </label>
+                                  </div>
+                                )}
                               </div>
 
                               {projectForm.image && (
@@ -1165,24 +1218,26 @@ export default function AdminPage() {
                                   <h4 className="text-[13px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
                                   <p className="text-[13px] text-[#B4B2A9]/75 font-light mt-0.5">Upload gallery photos or add links below.</p>
                                 </div>
-                                <div className="relative">
-                                  <input
-                                    type="file"
-                                    id="upload-detail"
-                                    accept="image/jpeg,image/png,image/webp,image/gif"
-                                    onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
-                                    className="hidden"
-                                    multiple
-                                    disabled={uploadingField !== null}
-                                  />
-                                  <label 
-                                    htmlFor="upload-detail"
-                                    className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
-                                  >
-                                    <Plus className="w-3.5 h-3.5" /> 
-                                    {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload Files'}
-                                  </label>
-                                </div>
+                                {!useExternalUrl && (
+                                  <div className="relative">
+                                    <input
+                                      type="file"
+                                      id="upload-detail"
+                                      accept="image/jpeg,image/png,image/webp,image/gif"
+                                      onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
+                                      className="hidden"
+                                      multiple
+                                      disabled={uploadingField !== null}
+                                    />
+                                    <label 
+                                      htmlFor="upload-detail"
+                                      className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
+                                    >
+                                      <Plus className="w-3.5 h-3.5" /> 
+                                      {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload Files'}
+                                    </label>
+                                  </div>
+                                )}
                               </div>
 
                               <div className="flex flex-col lg:flex-row gap-5 lg:items-end bg-[#1A1A1A]/40 p-5 rounded-[8px] border border-[#4A4A48]/30">

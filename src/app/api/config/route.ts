@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireRole } from '../auth/session';
 import { addAuditLog } from '../logs/db';
 import type { SiteConfig } from '@/data';
@@ -155,6 +156,12 @@ export async function POST(request: Request) {
     // Save config via dbAdapter (Upstash Redis or local files)
     try {
       await saveConfig(newConfig as unknown as Record<string, unknown>);
+      try {
+        revalidatePath('/');
+        revalidatePath('/admin');
+      } catch (err) {
+        console.warn('Revalidation failed:', err);
+      }
       return NextResponse.json({ success: true, persisted: true });
     } catch (fsError) {
       console.warn('Failed to save configuration via adapter:', fsError);

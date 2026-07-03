@@ -9,6 +9,7 @@ export interface Project {
   year: string;
   size?: string;
   detailImages: string[];
+  description?: string;
 }
 
 export interface PressItem {
