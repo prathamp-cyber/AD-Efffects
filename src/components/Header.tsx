@@ -120,12 +120,15 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           animate="visible"
           className="md:hidden w-full flex justify-between items-center px-5 py-4 header-logo-container"
         >
-          <button 
-            onClick={() => handleTabClick('portfolio')}
-            className="brand-logo text-[17px] sm:text-[20px] text-primary focus:outline-none"
-          >
-            The AD Efffects
-          </button>
+          <div className="flex flex-col items-start select-none">
+            <button 
+              onClick={() => handleTabClick('portfolio')}
+              className="brand-logo text-[17px] sm:text-[20px] text-primary focus:outline-none leading-none"
+            >
+              The AD Efffects
+            </button>
+            <span className="text-[7px] uppercase tracking-[0.2em] text-secondary/60 mt-1 font-sans font-light">Form Follows Function</span>
+          </div>
           <button 
             onClick={() => setMobileMenuOpen(true)}
             className="text-primary focus:outline-none p-2 -mr-2"
@@ -159,6 +162,14 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
               animate="visible"
               className="w-[180px] h-[1px] bg-primary mt-3 origin-center" 
             />
+            <motion.span 
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 0.55, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+              className="text-[10px] uppercase tracking-[0.3em] text-secondary mt-3 font-sans font-light"
+            >
+              Form Follows Function
+            </motion.span>
           </div>
 
           {/* Social Icons Row - ~40px diameter, 16px spaced, 32px gap below socials */}
@@ -185,27 +196,14 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             </motion.a>
             <motion.a 
               variants={socialIconVariants}
-              href="https://facebook.com" 
+              href="https://pinterest.com/the_ad_effect" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
-              aria-label="Facebook"
+              aria-label="Pinterest"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-              </svg>
-            </motion.a>
-            <motion.a 
-              variants={socialIconVariants}
-              href="https://youtube.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
-              aria-label="YouTube"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z" />
-                <polygon points="10 15 15 12 10 9" fill="currentColor" />
+                <path d="M8 22c.4-2.8 1.1-5.4 1.1-5.4s-.3-.6-.3-1.5c0-1.4.8-2.5 1.9-2.5.9 0 1.3.7 1.3 1.5 0 .9-.6 2.2-.9 3.5-.2 1.1.6 2 1.7 2 2.1 0 3.7-2.2 3.7-5.3 0-2.8-2-4.7-4.9-4.7-3.3 0-5.3 2.5-5.3 5.1 0 1 .4 2 .9 2.6.1.1.1.2.1.3-.1.4-.3 1.2-.3 1.3-.1.2-.2.3-.5.1-1.7-.8-2.7-3.2-2.7-5.1 0-4.1 3-7.9 8.6-7.9 4.5 0 8 3.2 8 7.5 0 4.5-2.8 8.1-6.7 8.1-1.3 0-2.6-.7-3-1.5 0 0-.7 2.5-.8 3.1-.3 1.1-1 2.5-1.5 3.3" />
               </svg>
             </motion.a>
           </motion.div>
@@ -254,10 +252,13 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="site-mobile-menu fixed inset-0 z-[10000] bg-background text-primary flex flex-col p-6 transition-colors duration-300 overflow-y-auto"
           >
-            <div className="flex justify-between items-center">
-              <span className="brand-logo text-[17px] sm:text-[20px] text-primary">
-                The AD Efffects
-              </span>
+            <div className="flex justify-between items-start">
+              <div className="flex flex-col items-start select-none">
+                <span className="brand-logo text-[17px] sm:text-[20px] text-primary leading-none">
+                  The AD Efffects
+                </span>
+                <span className="text-[7px] uppercase tracking-[0.2em] text-secondary/60 mt-1 font-sans font-light">Form Follows Function</span>
+              </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-primary focus:outline-none p-2 -mr-2"

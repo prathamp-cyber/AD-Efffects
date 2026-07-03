@@ -85,7 +85,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               transition={{ delay: 1.2, duration: 1 }}
               className="text-xs uppercase tracking-[0.4em] text-secondary mt-4"
             >
-              Architecture & Interiors
+              Form Follows Function
             </motion.p>
           </div>
           
