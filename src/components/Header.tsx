@@ -7,11 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface HeaderProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  hideOurInfluence?: boolean;
-  hideBlog?: boolean;
 }
 
-export default function Header({ activeTab, onTabChange, hideOurInfluence, hideBlog }: HeaderProps) {
+export default function Header({ activeTab, onTabChange }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const tabs = [
@@ -21,11 +19,7 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
     { id: 'our-influence', label: 'OUR INFLUENCE' },
     { id: 'blog', label: 'BLOG' },
     { id: 'contact', label: 'CONTACT' },
-  ].filter(tab => {
-    if (tab.id === 'our-influence' && hideOurInfluence) return false;
-    if (tab.id === 'blog' && hideBlog) return false;
-    return true;
-  });
+  ];
 
   const handleTabClick = (tabId: string) => {
     onTabChange(tabId);

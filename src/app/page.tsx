@@ -301,12 +301,7 @@ export default function Home() {
 
   return (
     <>
-      <Header 
-        activeTab={activeTab} 
-        onTabChange={handleTabChange} 
-        hideOurInfluence={siteConfig.hideOurInfluence}
-        hideBlog={siteConfig.hideBlog}
-      />
+      <Header activeTab={activeTab} onTabChange={handleTabChange} />
 
       <main className="w-full min-h-[70vh] bg-background flex flex-col items-center transition-colors duration-300">
         <AnimatePresence mode="wait">
@@ -611,7 +606,7 @@ export default function Home() {
               )}
 
               {/* BLOG TAB */}
-              {activeTab === 'blog' && !siteConfig.hideBlog && (
+              {activeTab === 'blog' && (
                 <div 
                   className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap
@@ -673,7 +668,7 @@ export default function Home() {
               )}
 
               {/* OUR INFLUENCE TAB */}
-              {activeTab === 'our-influence' && !siteConfig.hideOurInfluence && (
+              {activeTab === 'our-influence' && (
                 <div 
                   className="w-full flex flex-col items-center"
                   style={{ marginTop: '48px', marginBottom: '80px' }} // Exact 48px top gap

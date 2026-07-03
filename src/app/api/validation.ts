@@ -436,7 +436,7 @@ export function validateSiteConfig(config: unknown): ConfigValidationResult {
     return { valid: false, error: 'Configuration must be a JSON object' };
   }
 
-  const unknown = assertNoUnknownKeys(config, ['brandStatement', 'story', 'influence', 'press', 'projects', 'blogs', 'isWebsiteOffline', 'hideOurInfluence', 'hideBlog'], 'config');
+  const unknown = assertNoUnknownKeys(config, ['brandStatement', 'story', 'influence', 'press', 'projects', 'blogs', 'isWebsiteOffline'], 'config');
   if (unknown) return { valid: false, error: unknown };
 
   const brandStatement = validateString(config.brandStatement, 'brandStatement', { minLen: 1, maxLen: 700 });
@@ -497,19 +497,11 @@ export function validateSiteConfig(config: unknown): ConfigValidationResult {
   if (config.isWebsiteOffline !== undefined && !isBoolean(config.isWebsiteOffline)) {
     return { valid: false, error: 'isWebsiteOffline must be a boolean' };
   }
-  if (config.hideOurInfluence !== undefined && !isBoolean(config.hideOurInfluence)) {
-    return { valid: false, error: 'hideOurInfluence must be a boolean' };
-  }
-  if (config.hideBlog !== undefined && !isBoolean(config.hideBlog)) {
-    return { valid: false, error: 'hideBlog must be a boolean' };
-  }
 
   return {
     valid: true,
     value: {
       isWebsiteOffline: config.isWebsiteOffline === true,
-      hideOurInfluence: config.hideOurInfluence === true,
-      hideBlog: config.hideBlog === true,
       brandStatement: brandStatement.value,
       story: {
         title: storyTitle.value,

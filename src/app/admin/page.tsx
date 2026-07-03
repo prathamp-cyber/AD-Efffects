@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Briefcase, BookOpen, Award, 
   PenSquare, Mail, Plus, Trash2, LogOut, 
   Upload, Download, Eye, EyeOff, ArrowLeft, ArrowRight, 
-  AlertCircle, CheckCircle, Edit3, X, Sparkles
+  AlertCircle, CheckCircle, Edit3, X
 } from 'lucide-react';
 import type { BlogPost, Project, PressItem, SiteConfig } from '@/data';
 import { getGoogleDriveUrl } from '@/lib/firebase';
@@ -63,7 +63,7 @@ export default function AdminPage() {
   const [config, setConfig] = useState<SiteConfig | null>(null);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'story' | 'influence' | 'featured' | 'blogs' | 'inquiries'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'story' | 'featured' | 'blogs' | 'inquiries'>('dashboard');
   const [savingConfig, setSavingConfig] = useState(false);
   
   // Project CRUD editing state
@@ -743,16 +743,12 @@ export default function AdminPage() {
                     { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard },
                     { id: 'portfolio', label: 'PORTFOLIO', icon: Briefcase },
                     { id: 'story', label: 'OUR STORY', icon: BookOpen },
-                    { id: 'influence', label: 'OUR INFLUENCE', icon: Sparkles, toggleKey: 'hideOurInfluence' as const },
                     { id: 'featured', label: 'FEATURED', icon: Award },
-                    { id: 'blogs', label: 'BLOG POSTS', icon: PenSquare, toggleKey: 'hideBlog' as const },
+                    { id: 'blogs', label: 'BLOG POSTS', icon: PenSquare },
                     { id: 'inquiries', label: 'INQUIRIES', icon: Mail, badge: inquiries.length }
                   ].map((item) => {
                     const Icon = item.icon;
                     const isActive = activeTab === item.id;
-                    const hasToggle = 'toggleKey' in item && item.toggleKey && config;
-                    const isHidden = hasToggle ? config[item.toggleKey] : false;
-                    const ToggleIcon = isHidden ? EyeOff : Eye;
                     return (
                       <button
                         key={item.id}
@@ -761,7 +757,7 @@ export default function AdminPage() {
                           setEditingBlog(null); 
                           setActiveTab(item.id as typeof activeTab); 
                         }}
-                        className="relative w-full flex items-center justify-between px-6 py-4 text-[14px] font-sans uppercase tracking-[0.2em] font-semibold transition-all duration-300 cursor-pointer group animate-none select-none"
+                        className="relative w-full flex items-center justify-between px-6 py-4 text-[14px] font-sans uppercase tracking-[0.2em] font-semibold transition-all duration-300 cursor-pointer group"
                       >
                         {/* Active background slide indicator */}
                         {isActive && (
@@ -782,26 +778,6 @@ export default function AdminPage() {
                             {item.badge}
                           </span>
                         ) : null}
-
-                        {hasToggle && (
-                          <button
-                            type="button"
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (!config || !item.toggleKey) return;
-                              const newConfig = {
-                                ...config,
-                                [item.toggleKey]: !config[item.toggleKey]
-                              };
-                              setConfig(newConfig);
-                              await handleSaveConfig(newConfig);
-                            }}
-                            className={`z-10 p-1.5 rounded hover:bg-[#32302C] transition-all cursor-pointer border-none ${isHidden ? 'text-[#888780] hover:text-[#FAC775]' : 'text-[#FAC775] hover:text-[#FAC775]/70'}`}
-                            title={isHidden ? 'Hidden on website. Click to make visible.' : 'Visible on website. Click to hide.'}
-                          >
-                            <ToggleIcon className="w-4 h-4 stroke-[1.75]" />
-                          </button>
-                        )}
                       </button>
                     );
                   })}
@@ -1590,133 +1566,6 @@ export default function AdminPage() {
                     </div>
                   )}
 
-                  {/* VIEW 3.5: OUR INFLUENCE TAB */}
-                  {activeTab === 'influence' && config && (
-                    <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-8 w-full text-[#F1EFE8] min-h-[600px] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[#BA7517]/15">
-                        <div>
-                          <span className="text-[12px] tracking-[0.25em] uppercase text-[#FAC775] font-bold block">
-                            OUR INFLUENCE SECTION CONFIGURATION
-                          </span>
-                          <span className="text-xs text-[#888780] font-sans font-light mt-1 block">
-                            Manage the inspiration, title, description, and editorial image of the Influence page.
-                          </span>
-                        </div>
-                        
-                        {/* Interactive Page Visibility Toggle in Header */}
-                        <div className="flex items-center gap-3 bg-[#1e1c19]/40 px-4 py-2.5 rounded-[6px] border border-[#BA7517]/15 select-none">
-                          <span className="text-[12px] font-sans tracking-[0.1em] text-[#B4B2A9]">Visibility Status:</span>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              const newConfig = {
-                                ...config,
-                                hideOurInfluence: !config.hideOurInfluence
-                              };
-                              setConfig(newConfig);
-                              await handleSaveConfig(newConfig);
-                            }}
-                            className={`min-h-[32px] px-3.5 py-1.5 rounded-[4px] text-[11px] uppercase tracking-[0.15em] font-sans font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                              config.hideOurInfluence 
-                                ? 'bg-red-950/15 border-red-500/30 text-red-400 hover:bg-red-950/30' 
-                                : 'bg-[#BA7517]/10 border-[#BA7517]/30 text-[#FAC775] hover:bg-[#BA7517]/25'
-                            }`}
-                          >
-                            {config.hideOurInfluence ? (
-                              <>
-                                <EyeOff className="w-3.5 h-3.5" />
-                                Hidden
-                              </>
-                            ) : (
-                              <>
-                                <Eye className="w-3.5 h-3.5" />
-                                Visible
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="space-y-8">
-                        {/* Section Title */}
-                        <div className="space-y-3">
-                          <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Section Title</label>
-                          <input
-                            type="text"
-                            value={config.influence.title || ''}
-                            onChange={(e) => setConfig({
-                              ...config,
-                              influence: { ...config.influence, title: e.target.value }
-                            })}
-                            className="w-full bg-transparent border-b border-[#BA7517]/25 focus:border-[#FAC775] py-3 text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light"
-                          />
-                        </div>
-
-                        {/* Section Description */}
-                        <div className="space-y-3">
-                          <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Description / Body Text</label>
-                          <textarea
-                            rows={6}
-                            value={config.influence.description || ''}
-                            onChange={(e) => setConfig({
-                              ...config,
-                              influence: { ...config.influence, description: e.target.value }
-                            })}
-                            className="w-full bg-[#1e1c19]/50 border border-[#BA7517]/15 focus:border-[#FAC775] p-4 rounded-[6px] text-[15px] text-[#F1EFE8] outline-none transition-all duration-300 font-sans font-light resize-y min-h-[120px] leading-relaxed"
-                          />
-                        </div>
-
-                        {/* Image Upload / URL Input */}
-                        <div className="space-y-4 pt-6 border-t border-[#BA7517]/10">
-                          <label className="font-serif italic text-[15px] md:text-[16px] text-[#FAC775] block">Influence Editorial Showcase Photo</label>
-                          <div className="flex flex-col xl:flex-row gap-6 xl:items-end bg-[#1e1c19]/30 p-6 rounded-[8px] border border-[#BA7517]/15">
-                            <div className="flex-1 w-full space-y-2">
-                              <span className="text-[11px] uppercase tracking-[0.1em] text-[#888780] font-sans block">Image URL / Direct Path</span>
-                              <input
-                                type="text"
-                                value={config.influence.image || ''}
-                                onChange={(e) => setConfig({
-                                  ...config,
-                                  influence: { ...config.influence, image: e.target.value }
-                                })}
-                                className="w-full bg-transparent border-b border-[#BA7517]/25 focus:border-[#FAC775] py-2 text-sm text-[#F1EFE8] outline-none font-sans font-light"
-                              />
-                            </div>
-                            <div className="flex items-center gap-6">
-                              <div className="relative">
-                                <input
-                                  type="file"
-                                  id="influence-img-upload"
-                                  accept="image/jpeg,image/png,image/webp,image/gif"
-                                  onChange={(e) => handleFieldImageUpload(e, 'influence')}
-                                  className="hidden"
-                                  disabled={uploadingField !== null}
-                                />
-                                <label htmlFor="influence-img-upload" className="border border-[#BA7517]/25 hover:border-[#FAC775] hover:text-[#141311] hover:bg-[#FAC775] text-[11px] uppercase tracking-[0.15em] font-sans font-bold px-4 py-2.5 rounded-[4px] transition-all cursor-pointer inline-flex items-center gap-1.5 bg-[#262522] select-none">
-                                  <Upload className="w-3.5 h-3.5" /> 
-                                  {uploadingField === 'influence' ? 'Uploading...' : 'Upload File'}
-                                </label>
-                              </div>
-                              {config.influence.image && (
-                                <img src={getGoogleDriveUrl(config.influence.image)} className="w-12 h-16 object-cover border border-[#BA7517]/25 rounded-[4px] shadow-[0_4px_12px_rgba(0,0,0,0.3)]" alt="influence highlight" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end pt-8 pr-20 lg:pr-24 border-t border-[#BA7517]/15 mt-6">
-                        <button
-                          onClick={() => handleSaveConfig()}
-                          disabled={savingConfig}
-                          className="min-h-[52px] bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] border border-[#BA7517] hover:border-[#FAC775] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-9 py-4 rounded-[6px] transition-all duration-300 cursor-pointer disabled:opacity-50 shadow-[0_4px_12px_rgba(186,117,23,0.15)] whitespace-nowrap"
-                        >
-                          {savingConfig ? 'Applying changes...' : 'Save Influence Section'}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
                   {/* VIEW 4: FEATURED TAB */}
                   {activeTab === 'featured' && (
                     <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-8 w-full min-h-[600px] flex flex-col justify-between text-[#F1EFE8] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
@@ -1957,7 +1806,7 @@ export default function AdminPage() {
                       ) : (
                         /* Blogs List Table */
                         <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 space-y-6 text-[#F1EFE8] min-h-[600px] shadow-[0_15px_30px_rgba(0,0,0,0.3)] animate-fadeIn">
-                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[#BA7517]/15">
+                          <div className="flex justify-between items-center pb-4 border-b border-[#BA7517]/15">
                             <div className="space-y-1">
                               <span className="text-[12px] tracking-[0.25em] uppercase text-[#FAC775] font-bold block">
                                 EDITORIAL ARTICLES
@@ -1966,39 +1815,6 @@ export default function AdminPage() {
                                 Managing editorial publications and design thoughts
                               </span>
                             </div>
-                            {config && (
-                              <div className="flex items-center gap-3 bg-[#1e1c19]/40 px-4 py-2 rounded-[6px] border border-[#BA7517]/15 select-none">
-                                <span className="text-[12px] font-sans tracking-[0.1em] text-[#B4B2A9]">Visibility Status:</span>
-                                <button
-                                  type="button"
-                                  onClick={async () => {
-                                    const newConfig = {
-                                      ...config,
-                                      hideBlog: !config.hideBlog
-                                    };
-                                    setConfig(newConfig);
-                                    await handleSaveConfig(newConfig);
-                                  }}
-                                  className={`min-h-[32px] px-3.5 py-1.5 rounded-[4px] text-[11px] uppercase tracking-[0.15em] font-sans font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                                    config.hideBlog 
-                                      ? 'bg-red-950/15 border-red-500/30 text-red-400 hover:bg-red-950/30' 
-                                      : 'bg-[#BA7517]/10 border-[#BA7517]/30 text-[#FAC775] hover:bg-[#BA7517]/25'
-                                  }`}
-                                >
-                                  {config.hideBlog ? (
-                                    <>
-                                      <EyeOff className="w-3.5 h-3.5" />
-                                      Hidden
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Eye className="w-3.5 h-3.5" />
-                                      Visible
-                                    </>
-                                  )}
-                                </button>
-                              </div>
-                            )}
                             <button
                               onClick={handleStartAddBlog}
                               className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#141311] text-[11px] uppercase tracking-[0.2em] font-sans font-bold px-4 py-2.5 rounded-[4px] transition-all flex items-center gap-1.5 shadow-[0_4px_12px_rgba(186,117,23,0.15)] cursor-pointer"

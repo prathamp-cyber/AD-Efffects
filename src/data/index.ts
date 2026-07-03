@@ -49,8 +49,6 @@ export interface SiteConfig {
   projects: Project[];
   blogs?: BlogPost[];
   isWebsiteOffline?: boolean;
-  hideOurInfluence?: boolean;
-  hideBlog?: boolean;
 }
 
 export const defaultSiteConfig = siteConfigJson as unknown as SiteConfig;
