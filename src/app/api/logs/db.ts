@@ -46,12 +46,20 @@ export async function addAuditLog(action: string, user: string): Promise<void> {
 
   // 2. Fallback to local JSON logging (preserves data locally)
   try {
+    const dataDir = path.dirname(localLogsPath);
+    try {
+      await fs.mkdir(dataDir, { recursive: true });
+    } catch {}
+
     let logs: AuditLog[] = [];
     try {
       const data = await fs.readFile(localLogsPath, 'utf8');
-      logs = JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        logs = parsed;
+      }
     } catch {
-      // Ignored if file doesn't exist yet
+      // Ignored if file doesn't exist yet or is invalid JSON
     }
     logs.unshift(logEntry);
     
@@ -95,7 +103,8 @@ export async function getAuditLogs(): Promise<AuditLog[]> {
   // 2. Fallback: read from local JSON auditLogs file
   try {
     const data = await fs.readFile(localLogsPath, 'utf8');
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
