@@ -29,7 +29,6 @@ interface Inquiry {
 export default function AdminPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(false);
-  const [useExternalUrl, setUseExternalUrl] = useState(false);
   
   // Real-time greeting and clock
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -352,7 +351,6 @@ export default function AdminPage() {
       });
 
       if (res.status === 403) {
-        setUseExternalUrl(true);
         showAlert('warning', 'Server is read-only. Optimizing and saving image directly to the database.');
         return base64Data;
       }
@@ -444,14 +442,12 @@ export default function AdminPage() {
       size: '',
       detailImages: []
     });
-    setUseExternalUrl(false);
     setEditingProject({ id: nextIdVal } as Project);
   }
 
   function handleStartEditProject(project: Project) {
     setIsNewProject(false);
     setProjectForm({ ...project, description: project.description || '' });
-    setUseExternalUrl(false);
     setEditingProject(project);
   }
 
@@ -1184,25 +1180,23 @@ export default function AdminPage() {
                                     className="w-full bg-transparent border-b border-[#4A4A48] focus:border-[#BA7517] py-3 text-[15px] md:text-[16px] text-[#F1EFE8] outline-none transition-all duration-300 font-light"
                                   />
                                 </div>
-                                {!useExternalUrl && (
-                                  <div className="relative w-full xl:w-auto">
-                                    <input
-                                      type="file"
-                                      id="upload-cover"
-                                      accept="image/jpeg,image/png,image/webp,image/gif"
-                                      onChange={(e) => handleFieldImageUpload(e, 'projectCover')}
-                                      className="hidden"
-                                      disabled={uploadingField !== null}
-                                    />
-                                    <label 
-                                      htmlFor="upload-cover"
-                                      className="w-full xl:w-auto min-h-[52px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
-                                    >
-                                      <Upload className="w-3.5 h-3.5" /> 
-                                      {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
-                                    </label>
-                                  </div>
-                                )}
+                                <div className="relative w-full xl:w-auto">
+                                  <input
+                                    type="file"
+                                    id="upload-cover"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    onChange={(e) => handleFieldImageUpload(e, 'projectCover')}
+                                    className="hidden"
+                                    disabled={uploadingField !== null}
+                                  />
+                                  <label 
+                                    htmlFor="upload-cover"
+                                    className="w-full xl:w-auto min-h-[52px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-4 rounded-[6px] transition-all cursor-pointer flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
+                                  >
+                                    <Upload className="w-3.5 h-3.5" /> 
+                                    {uploadingField === 'projectCover' ? 'Uploading...' : 'Upload Cover File'}
+                                  </label>
+                                </div>
                               </div>
 
                               {projectForm.image && (
@@ -1219,26 +1213,24 @@ export default function AdminPage() {
                                   <h4 className="text-[13px] uppercase tracking-[0.2em] font-semibold text-[#FAC775] block">Detail Photos (Lightbox Gallery)</h4>
                                   <p className="text-[13px] text-[#B4B2A9]/75 font-light mt-0.5">Upload gallery photos or add links below.</p>
                                 </div>
-                                {!useExternalUrl && (
-                                  <div className="relative">
-                                    <input
-                                      type="file"
-                                      id="upload-detail"
-                                      accept="image/jpeg,image/png,image/webp,image/gif"
-                                      onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
-                                      className="hidden"
-                                      multiple
-                                      disabled={uploadingField !== null}
-                                    />
-                                    <label 
-                                      htmlFor="upload-detail"
-                                      className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
-                                    >
-                                      <Plus className="w-3.5 h-3.5" /> 
-                                      {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload Files'}
-                                    </label>
-                                  </div>
-                                )}
+                                <div className="relative">
+                                  <input
+                                    type="file"
+                                    id="upload-detail"
+                                    accept="image/jpeg,image/png,image/webp,image/gif"
+                                    onChange={(e) => handleFieldImageUpload(e, 'projectDetail')}
+                                    className="hidden"
+                                    multiple
+                                    disabled={uploadingField !== null}
+                                  />
+                                  <label 
+                                    htmlFor="upload-detail"
+                                    className="min-h-[48px] border border-[#4A4A48] hover:border-[#BA7517] hover:text-[#FAC775] text-[12px] uppercase tracking-[0.2em] font-semibold px-6 py-3.5 rounded-[6px] transition-all cursor-pointer inline-flex items-center justify-center gap-2 bg-[#2E2D2B] select-none whitespace-nowrap"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" /> 
+                                    {uploadingField === 'projectDetail' ? 'Uploading...' : 'Upload Files'}
+                                  </label>
+                                </div>
                               </div>
 
                               <div className="flex flex-col lg:flex-row gap-5 lg:items-end bg-[#1A1A1A]/40 p-5 rounded-[8px] border border-[#4A4A48]/30">
