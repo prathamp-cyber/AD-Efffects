@@ -295,8 +295,8 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             </nav>
 
             <div className="mt-auto flex flex-col gap-3 text-[9px] uppercase tracking-[0.22em] text-secondary font-light">
-              <p>hello@adefffects.com</p>
-              <p>© 2026 The AD Efffects. All rights reserved.</p>
+              <p>theadeffectt@gmail.com</p>
+              <p>© 2026 THE AD EFFFECT. All rights reserved.</p>
             </div>
           </motion.div>
         )}

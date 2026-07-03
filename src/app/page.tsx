@@ -277,14 +277,14 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-center gap-2.5">
               <Mail className="w-4 h-4 text-accent stroke-[1.5]" />
-              <a href="mailto:hello@adefffects.com" className="hover:text-primary transition-colors">
-                hello@adefffects.com
+              <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors">
+                theadeffectt@gmail.com
               </a>
             </div>
             <div className="flex items-center justify-center gap-2.5">
               <Phone className="w-4 h-4 text-accent stroke-[1.5]" />
-              <a href="tel:+919825012345" className="hover:text-primary transition-colors">
-                +91 98250 12345
+              <a href="tel:+917779044604" className="hover:text-primary transition-colors">
+                +91 77790 44604
               </a>
             </div>
           </div>
@@ -926,14 +926,14 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="mailto:hello@adefffects.com" className="hover:text-primary transition-colors">
-                        hello@adefffects.com
+                      <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors">
+                        theadeffectt@gmail.com
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="tel:+919825012345" className="hover:text-primary transition-colors">
-                        +91 98250 12345
+                      <a href="tel:+917779044604" className="hover:text-primary transition-colors">
+                        +91 77790 44604
                       </a>
                     </div>
                   </div>
