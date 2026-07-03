@@ -129,11 +129,11 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
           <div className="flex flex-col items-start select-none">
             <button 
               onClick={() => handleTabClick('portfolio')}
-              className="brand-logo text-[17px] sm:text-[20px] text-primary focus:outline-none leading-none"
+              className="brand-logo text-[15px] sm:text-[18px] text-primary focus:outline-none leading-none tracking-[0.15em] font-semibold"
             >
-              The AD Efffects
+              THE AD EFFFECT
             </button>
-            <span className="text-[7px] uppercase tracking-[0.2em] text-secondary/60 mt-1 font-sans font-light">Form Follows Function</span>
+            <span className="text-[7px] uppercase tracking-[0.2em] text-secondary mt-1.5 font-sans font-semibold">Form Follows Function</span>
           </div>
           <button 
             onClick={() => setMobileMenuOpen(true)}
@@ -157,15 +157,15 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
               initial="hidden"
               animate="visible"
               onClick={() => handleTabClick('portfolio')}
-              className="brand-logo text-[76px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
+              className="brand-logo text-[44px] md:text-[56px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity tracking-[0.18em] font-semibold"
             >
-              The AD Efffects
+              THE AD EFFFECT
             </motion.button>
             <motion.span 
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 0.55, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="text-[10px] uppercase tracking-[0.3em] text-secondary mt-2.5 font-sans font-light"
+              className="text-[10px] uppercase tracking-[0.3em] text-secondary mt-2.5 font-sans font-semibold"
             >
               Form Follows Function
             </motion.span>
@@ -260,10 +260,10 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
           >
             <div className="flex justify-between items-start">
               <div className="flex flex-col items-start select-none">
-                <span className="brand-logo text-[17px] sm:text-[20px] text-primary leading-none">
-                  The AD Efffects
+                <span className="brand-logo text-[15px] sm:text-[18px] text-primary leading-none tracking-[0.15em] font-semibold">
+                  THE AD EFFFECT
                 </span>
-                <span className="text-[7px] uppercase tracking-[0.2em] text-secondary/60 mt-1 font-sans font-light">Form Follows Function</span>
+                <span className="text-[7px] uppercase tracking-[0.2em] text-secondary mt-1.5 font-sans font-semibold">Form Follows Function</span>
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}

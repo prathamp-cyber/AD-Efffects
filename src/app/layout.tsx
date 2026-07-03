@@ -5,10 +5,10 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { cormorant, inter, pinyon } from "./fonts";
 
 export const metadata: Metadata = {
-  title: "The AD Efffects | Premium Architecture & Interior Design Studio",
+  title: "THE AD EFFFECT | Premium Architecture & Interior Design Studio",
   description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",
   openGraph: {
-    title: "The AD Efffects | Premium Architecture & Interior Design Studio",
+    title: "THE AD EFFFECT | Premium Architecture & Interior Design Studio",
     description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",
     type: "website",
   },

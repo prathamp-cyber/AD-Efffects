@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const nameChars = Array.from("The AD Efffects");
+  const nameChars = Array.from("THE AD EFFFECT");
 
   const containerVariants = {
     hidden: {},
@@ -66,7 +66,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="text-4xl md:text-6xl font-cormorant font-light tracking-[0.25em] text-primary flex justify-center"
+              className="text-4xl md:text-6xl font-cormorant font-semibold tracking-[0.25em] text-primary flex justify-center"
             >
               {nameChars.map((char, index) => (
                 <motion.span
@@ -83,7 +83,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 0.5, y: 0 }}
               transition={{ delay: 1.2, duration: 1 }}
-              className="text-xs uppercase tracking-[0.4em] text-secondary mt-4"
+              className="text-xs uppercase tracking-[0.4em] text-secondary mt-4 font-semibold"
             >
               Form Follows Function
             </motion.p>

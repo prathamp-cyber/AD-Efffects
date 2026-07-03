@@ -20,11 +20,11 @@ export default function Footer({ onTabChange }: FooterProps) {
       >
         <button 
           onClick={() => onTabChange?.('portfolio')}
-          className="brand-logo text-[76px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity"
+          className="brand-logo text-[44px] md:text-[56px] text-primary leading-none focus:outline-none cursor-pointer hover:opacity-75 transition-opacity tracking-[0.18em] font-semibold"
         >
-          The AD Efffects
+          THE AD EFFFECT
         </button>
-        <span className="text-[10px] uppercase tracking-[0.3em] text-secondary/70 mt-2.5 font-sans font-light">Form Follows Function</span>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-secondary/70 mt-2.5 font-sans font-semibold">Form Follows Function</span>
         {/* Centered horizontal underline */}
         <div className="w-[180px] h-[1px] bg-primary mt-3 transition-colors duration-300" />
       </div>
@@ -41,7 +41,7 @@ export default function Footer({ onTabChange }: FooterProps) {
       <div className="text-[9px] tracking-[0.35em] text-secondary/50 font-light text-center uppercase px-6">
         <span className="mr-[-0.35em]">
           <span>COPYRIGHT {currentYear} </span>
-           <span className="normal-case font-normal text-primary">The AD Efffects</span>
+           <span className="normal-case font-semibold text-primary">THE AD EFFFECT</span>
           <span>. ALL RIGHTS RESERVED.</span>
         </span>
       </div>

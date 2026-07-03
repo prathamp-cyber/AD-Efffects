@@ -134,9 +134,10 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 .brand-logo {
-  font-family: var(--font-pinyon), cursive !important;
-  letter-spacing: 0;
-  font-weight: 400;
+  font-family: var(--font-cormorant), serif !important;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
   font-style: normal;
 }
 
