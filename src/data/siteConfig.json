@@ -335,6 +335,58 @@
         "/uploads/goel_14.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "09",
+      "title": "The Regency",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/the_regency_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/the_regency_02.jpg",
+        "/uploads/the_regency_03.jpg",
+        "/uploads/the_regency_04.jpg",
+        "/uploads/the_regency_05.jpg",
+        "/uploads/the_regency_06.jpg",
+        "/uploads/the_regency_07.jpg",
+        "/uploads/the_regency_08.jpg",
+        "/uploads/the_regency_09.jpg",
+        "/uploads/the_regency_10.jpg",
+        "/uploads/the_regency_11.jpg",
+        "/uploads/the_regency_12.jpg",
+        "/uploads/the_regency_13.jpg",
+        "/uploads/the_regency_14.jpg",
+        "/uploads/the_regency_15.jpg",
+        "/uploads/the_regency_16.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "10",
+      "title": "Ehsaas",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/ehsaas_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/ehsaas_02.jpg",
+        "/uploads/ehsaas_03.jpg",
+        "/uploads/ehsaas_04.jpg",
+        "/uploads/ehsaas_05.jpg",
+        "/uploads/ehsaas_06.jpg",
+        "/uploads/ehsaas_07.jpg",
+        "/uploads/ehsaas_08.jpg",
+        "/uploads/ehsaas_09.jpg",
+        "/uploads/ehsaas_10.jpg",
+        "/uploads/ehsaas_11.jpg",
+        "/uploads/ehsaas_12.jpg",
+        "/uploads/ehsaas_13.jpg",
+        "/uploads/ehsaas_14.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
