@@ -265,6 +265,30 @@
         "/uploads/the_landmark_one_11.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "06",
+      "title": "Pragati",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/pragati_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/pragati_02.jpg",
+        "/uploads/pragati_03.jpg",
+        "/uploads/pragati_04.jpg",
+        "/uploads/pragati_05.jpg",
+        "/uploads/pragati_06.jpg",
+        "/uploads/pragati_07.jpg",
+        "/uploads/pragati_08.jpg",
+        "/uploads/pragati_09.jpg",
+        "/uploads/pragati_10.jpg",
+        "/uploads/pragati_11.jpg",
+        "/uploads/pragati_12.jpg",
+        "/uploads/pragati_13.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
