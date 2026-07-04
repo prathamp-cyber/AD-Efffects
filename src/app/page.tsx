@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -18,13 +18,15 @@ export default function Home() {
   const projectsPerPage = 6;
 
   // Resolve Google Drive URLs and local paths for all project images
-  const projectsData = (siteConfig.projects || []).map(p => ({
-    ...p,
-    image: getGoogleDriveUrl(p.image || ''),
-    detailImages: Array.isArray(p.detailImages)
-      ? p.detailImages.map((img: string) => getGoogleDriveUrl(img))
-      : []
-  }));
+  const projectsData = useMemo(() => {
+    return (siteConfig.projects || []).map(p => ({
+      ...p,
+      image: getGoogleDriveUrl(p.image || ''),
+      detailImages: Array.isArray(p.detailImages)
+        ? p.detailImages.map((img: string) => getGoogleDriveUrl(img))
+        : []
+    }));
+  }, [siteConfig.projects]);
   const pressData = siteConfig.press;
   const blogsData = siteConfig.blogs || [];
 
@@ -114,7 +116,7 @@ export default function Home() {
   useEffect(() => {
     if (!activeProject) return;
     const latestProject = projectsData.find((project) => project.id === activeProject.id);
-    if (latestProject && latestProject !== activeProject) {
+    if (latestProject && JSON.stringify(latestProject) !== JSON.stringify(activeProject)) {
       setActiveProject(latestProject);
     }
   }, [activeProject, projectsData]);
@@ -345,23 +347,37 @@ export default function Home() {
 
               {/* 3-Column Detail Images with uniform aspect ratio and gutters */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {activeProject.detailImages.map((img, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: idx * 0.1, duration: 1.0, ease: [0.25, 1, 0.5, 1] }}
-                    className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[3/4]"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${activeProject.title} detail ${idx + 1}`}
-                      fill
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      className="object-cover hover:scale-[1.03] transition-transform duration-[1.2s] ease-out"
-                    />
-                  </motion.div>
-                ))}
+                {activeProject.detailImages.map((img, idx) => {
+                  const isVideo = img.toLowerCase().endsWith('.mp4') || img.toLowerCase().endsWith('.webm');
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: idx * 0.1, duration: 1.0, ease: [0.25, 1, 0.5, 1] }}
+                      className="relative overflow-hidden bg-card-bg border border-border-custom aspect-[3/4]"
+                    >
+                      {isVideo ? (
+                        <video
+                          src={img}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover hover:scale-[1.03] transition-transform duration-[1.2s] ease-out"
+                        />
+                      ) : (
+                        <Image
+                          src={img}
+                          alt={`${activeProject.title} detail ${idx + 1}`}
+                          fill
+                          sizes="(min-width: 768px) 33vw, 100vw"
+                          className="object-cover hover:scale-[1.03] transition-transform duration-[1.2s] ease-out"
+                        />
+                      )}
+                    </motion.div>
+                  );
+                })}
               </div>
             </motion.div>
           ) : activeBlog ? (
