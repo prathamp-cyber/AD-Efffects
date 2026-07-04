@@ -32,6 +32,59 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Image & Content Protection Script */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Skip all protection in the admin panel so it doesn't interfere
+                function isAdmin() {
+                  return window.location.pathname.startsWith('/admin');
+                }
+
+                // Block right-click context menu on images and the page
+                document.addEventListener('contextmenu', function(e) {
+                  if (isAdmin()) return;
+                  if (e.target && (e.target.tagName === 'IMG' || e.target.closest('img'))) {
+                    e.preventDefault();
+                    return false;
+                  }
+                  // Also block on general page elements to hide "Save page as"
+                  e.preventDefault();
+                  return false;
+                });
+
+                // Block drag-start on images
+                document.addEventListener('dragstart', function(e) {
+                  if (isAdmin()) return;
+                  if (e.target && e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                    return false;
+                  }
+                });
+
+                // Block Ctrl+S (Save page) and Ctrl+U (View source)
+                document.addEventListener('keydown', function(e) {
+                  if (isAdmin()) return;
+                  if (e.ctrlKey || e.metaKey) {
+                    if (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U') {
+                      e.preventDefault();
+                      return false;
+                    }
+                  }
+                });
+
+                // Block long-press save on mobile (touch devices)
+                document.addEventListener('touchstart', function(e) {
+                  if (isAdmin()) return;
+                  if (e.target && e.target.tagName === 'IMG') {
+                    e.preventDefault();
+                  }
+                }, { passive: false });
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="antialiased selection:bg-accent selection:text-white">
         <ClientWrapper>

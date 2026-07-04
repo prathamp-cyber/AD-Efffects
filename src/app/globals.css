@@ -53,6 +53,43 @@
   padding: 0;
 }
 
+/* ── Image Protection ─────────────────────────────────────────────────────────
+   Prevent visitors from easily downloading, dragging, or saving images.
+   These are deterrents; they do not replace server-level protection.
+──────────────────────────────────────────────────────────────────────────── */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;  /* blocks right-click and drag at element level */
+}
+
+/* Re-enable pointer events for interactive images that need click-throughs
+   (e.g. linked images). We add a wrapper overlay instead. */
+a img,
+button img,
+[role="button"] img {
+  pointer-events: none; /* parent handles the click */
+}
+
+/* Transparent overlay on image-containing containers blocks right-click drag */
+.protect-image-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.protect-image-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: transparent;
+  cursor: default;
+}
+
 html, body {
   background-color: var(--background);
   color: var(--foreground);

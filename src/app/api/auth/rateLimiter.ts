@@ -56,7 +56,7 @@ export const RATE_LIMITS = {
   login: { maxAttempts: 5, windowMs: 15 * 60 * 1000, endpoint: 'login' } as RateLimitConfig,
   inquiry: { maxAttempts: 3, windowMs: 10 * 60 * 1000, endpoint: 'inquiry' } as RateLimitConfig,
   configUpdate: { maxAttempts: 30, windowMs: 5 * 60 * 1000, endpoint: 'config' } as RateLimitConfig,
-  upload: { maxAttempts: 20, windowMs: 5 * 60 * 1000, endpoint: 'upload' } as RateLimitConfig,
+  upload: { maxAttempts: 100, windowMs: 5 * 60 * 1000, endpoint: 'upload' } as RateLimitConfig,
 };
 
 /**
