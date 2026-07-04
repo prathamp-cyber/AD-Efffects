@@ -6,48 +6,6 @@ import { validateFileUpload, sanitizeHtml, validateMultipartRequest } from '../v
 import { checkRateLimit, RATE_LIMITS } from '../auth/rateLimiter';
 import { logSecurityEvent, extractIP } from '../securityLogger';
 
-const FIREBASE_PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-const FIREBASE_STORAGE_BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
-
-/**
- * Upload a file buffer to Firebase Storage via REST API.
- * Returns the public download URL on success, or null on failure.
- */
-async function uploadToFirebaseStorage(buffer: Buffer, fileName: string, mimeType: string): Promise<string | null> {
-  if (!FIREBASE_PROJECT_ID || !FIREBASE_API_KEY || !FIREBASE_STORAGE_BUCKET) return null;
-
-  const encodedName = encodeURIComponent(`uploads/${fileName}`);
-  const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${FIREBASE_STORAGE_BUCKET}/o?uploadType=media&name=${encodedName}&key=${FIREBASE_API_KEY}`;
-
-  try {
-    const res = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': mimeType,
-        'Content-Length': String(buffer.length),
-      },
-      body: new Uint8Array(buffer),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.warn('[UPLOAD] Firebase Storage upload failed:', res.status, text);
-      return null;
-    }
-
-    const data = await res.json() as { name?: string; downloadTokens?: string };
-    if (data.name && data.downloadTokens) {
-      const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${FIREBASE_STORAGE_BUCKET}/o/${encodedName}?alt=media&token=${data.downloadTokens}`;
-      return publicUrl;
-    }
-    return null;
-  } catch (err) {
-    console.warn('[UPLOAD] Firebase Storage upload error:', err);
-    return null;
-  }
-}
-
 export async function POST(request: Request) {
   const ip = extractIP(request);
   const userAgent = request.headers.get('user-agent') || undefined;
@@ -114,37 +72,66 @@ export async function POST(request: Request) {
     const { safeBaseName, extension } = validation.value;
     const timestamp = Date.now();
     const fileName = `${safeBaseName}_${timestamp}.${extension}`;
-    const mimeType = file.type || 'image/jpeg';
 
-    // 1. Try local filesystem (works locally and on non-read-only servers)
+    // ── Strategy 1: Local filesystem (works locally and non-Vercel) ──────────
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     try {
       await fs.mkdir(uploadsDir, { recursive: true });
       const filePath = path.join(uploadsDir, fileName);
       const resolvedPath = path.resolve(filePath);
       const resolvedUploadsDir = path.resolve(uploadsDir);
-
-      // Path traversal check
-      if (!resolvedPath.startsWith(resolvedUploadsDir + path.sep) && resolvedPath !== path.join(resolvedUploadsDir, fileName)) {
+      if (!resolvedPath.startsWith(resolvedUploadsDir)) {
         return NextResponse.json({ error: 'Invalid file path detected' }, { status: 400 });
       }
-
       await fs.writeFile(filePath, buffer);
-      const fileUrl = `/uploads/${fileName}`;
-      return NextResponse.json({ success: true, url: fileUrl, storage: 'local' });
+      return NextResponse.json({ success: true, url: `/uploads/${fileName}`, storage: 'local' });
     } catch {
-      // Filesystem is read-only (Vercel), fall through to Firebase Storage
+      // Filesystem is read-only (Vercel) — fall through
     }
 
-    // 2. Try Firebase Storage (primary cloud fallback)
-    const firebaseUrl = await uploadToFirebaseStorage(buffer, fileName, mimeType);
-    if (firebaseUrl) {
-      return NextResponse.json({ success: true, url: firebaseUrl, storage: 'firebase' });
+    // ── Strategy 2: Vercel Blob (free, works on Vercel Hobby plan) ───────────
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    if (blobToken) {
+      try {
+        const { put } = await import('@vercel/blob');
+        const blob = await put(`uploads/${fileName}`, buffer, {
+          access: 'public',
+          token: blobToken,
+          contentType: file.type || 'image/jpeg',
+        });
+        return NextResponse.json({ success: true, url: blob.url, storage: 'vercel-blob' });
+      } catch (blobErr) {
+        console.warn('[UPLOAD] Vercel Blob upload failed:', blobErr);
+      }
     }
 
-    // 3. No storage available — return error
+    // ── Strategy 3: Firebase Storage via REST API ────────────────────────────
+    const FIREBASE_STORAGE_BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+    const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    if (FIREBASE_STORAGE_BUCKET && FIREBASE_API_KEY) {
+      try {
+        const encodedName = encodeURIComponent(`uploads/${fileName}`);
+        const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${FIREBASE_STORAGE_BUCKET}/o?uploadType=media&name=${encodedName}&key=${FIREBASE_API_KEY}`;
+        const res = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': file.type || 'image/jpeg' },
+          body: new Uint8Array(buffer),
+        });
+        if (res.ok) {
+          const data = await res.json() as { name?: string; downloadTokens?: string };
+          if (data.downloadTokens) {
+            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${FIREBASE_STORAGE_BUCKET}/o/${encodedName}?alt=media&token=${data.downloadTokens}`;
+            return NextResponse.json({ success: true, url: publicUrl, storage: 'firebase' });
+          }
+        }
+      } catch (fbErr) {
+        console.warn('[UPLOAD] Firebase Storage upload failed:', fbErr);
+      }
+    }
+
+    // ── All strategies failed ────────────────────────────────────────────────
     return NextResponse.json(
-      { error: 'Could not save the uploaded file. Please check Firebase Storage configuration or try an external image URL (e.g. from postimg.cc).' },
+      { error: 'Image upload is not configured. Please add BLOB_READ_WRITE_TOKEN to Vercel environment variables.' },
       { status: 503 }
     );
 
