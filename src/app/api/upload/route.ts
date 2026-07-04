@@ -90,7 +90,8 @@ export async function POST(request: Request) {
     }
 
     // ── Strategy 2: Vercel Blob (free, works on Vercel Hobby plan) ───────────
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN || process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN;
+    let vercelBlobError = '';
     if (blobToken) {
       try {
         const { put } = await import('@vercel/blob');
@@ -101,13 +102,17 @@ export async function POST(request: Request) {
         });
         return NextResponse.json({ success: true, url: blob.url, storage: 'vercel-blob' });
       } catch (blobErr) {
-        console.warn('[UPLOAD] Vercel Blob upload failed:', blobErr);
+        vercelBlobError = blobErr instanceof Error ? blobErr.message : String(blobErr);
+        console.warn('[UPLOAD] Vercel Blob upload failed:', vercelBlobError);
       }
+    } else {
+      vercelBlobError = 'BLOB_READ_WRITE_TOKEN environment variable is not defined.';
     }
 
     // ── Strategy 3: Firebase Storage via REST API ────────────────────────────
     const FIREBASE_STORAGE_BUCKET = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
     const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+    let firebaseError = '';
     if (FIREBASE_STORAGE_BUCKET && FIREBASE_API_KEY) {
       try {
         const encodedName = encodeURIComponent(`uploads/${fileName}`);
@@ -122,18 +127,29 @@ export async function POST(request: Request) {
           if (data.downloadTokens) {
             const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${FIREBASE_STORAGE_BUCKET}/o/${encodedName}?alt=media&token=${data.downloadTokens}`;
             return NextResponse.json({ success: true, url: publicUrl, storage: 'firebase' });
+          } else {
+            firebaseError = 'Firebase uploaded but returned no download token.';
           }
+        } else {
+          const errText = await res.text();
+          firebaseError = `Firebase response: ${res.status} ${errText}`;
         }
       } catch (fbErr) {
-        console.warn('[UPLOAD] Firebase Storage upload failed:', fbErr);
+        firebaseError = fbErr instanceof Error ? fbErr.message : String(fbErr);
+        console.warn('[UPLOAD] Firebase Storage upload failed:', firebaseError);
       }
+    } else {
+      firebaseError = 'Firebase credentials not configured.';
     }
 
     // ── All strategies failed ────────────────────────────────────────────────
     return NextResponse.json(
-      { error: 'Image upload is not configured. Please add BLOB_READ_WRITE_TOKEN to Vercel environment variables.' },
+      { 
+        error: `Upload failed. Vercel Blob error: [${vercelBlobError}]. Firebase error: [${firebaseError}]`
+      },
       { status: 503 }
     );
+
 
   } catch (error) {
     const message = error instanceof Error ? sanitizeHtml(error.message) : 'Unknown error';
