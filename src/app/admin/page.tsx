@@ -107,6 +107,9 @@ export default function AdminPage() {
   // Global Notification alert state
   const [alert, setAlert] = useState<{ type: 'success' | 'error' | 'warning'; message: string } | null>(null);
 
+  // Success modal popup state (shows after project is truly persisted)
+  const [successModal, setSuccessModal] = useState<{ title: string; subtitle: string } | null>(null);
+
   // Helper to trigger alerts
   const showAlert = useCallback((type: 'success' | 'error' | 'warning', message: string, duration = 8000) => {
     setAlert({ type, message });
@@ -212,9 +215,9 @@ export default function AdminPage() {
     }
   }
 
-  // Save current config object to server file system
-  async function handleSaveConfig(updatedConfig = config, blogsList = blogs) {
-    if (!updatedConfig) return;
+  // Save current config object to server — returns true if truly persisted
+  async function handleSaveConfig(updatedConfig = config, blogsList = blogs): Promise<boolean> {
+    if (!updatedConfig) return false;
     setSavingConfig(true);
     setAlert(null);
 
@@ -233,11 +236,6 @@ export default function AdminPage() {
       const data = await res.json();
 
       if (res.ok) {
-        if (data.persisted) {
-          showAlert('success', 'Changes applied and saved to server successfully!');
-        } else {
-          showAlert('warning', data.warning || 'Saved in-memory only due to hosting constraints.');
-        }
         setConfig(fullConfig);
         router.refresh();
         window.dispatchEvent(new Event('site-config-updated'));
@@ -247,11 +245,19 @@ export default function AdminPage() {
           channel.postMessage({ updatedAt: Date.now() });
           channel.close();
         }
+        if (data.persisted) {
+          return true;
+        } else {
+          showAlert('warning', data.warning || 'Saved in-memory only due to hosting constraints.');
+          return false;
+        }
       } else {
         showAlert('error', data.error || 'Failed to save configuration.');
+        return false;
       }
     } catch {
       showAlert('error', 'Network error. Could not connect to API.');
+      return false;
     } finally {
       setSavingConfig(false);
     }
@@ -451,15 +457,16 @@ export default function AdminPage() {
     setEditingProject(project);
   }
 
-  function handleSaveProjectForm() {
+  async function handleSaveProjectForm() {
     if (!config) return;
     if (!projectForm.title || !projectForm.category || !projectForm.image) {
       showAlert('error', 'Title, Category, and Cover Image are required.');
       return;
     }
 
+    const addingNew = isNewProject;
     const updatedProjects = [...config.projects];
-    if (isNewProject) {
+    if (addingNew) {
       updatedProjects.push(projectForm as Project);
     } else {
       const idx = updatedProjects.findIndex(p => p.id === projectForm.id);
@@ -471,7 +478,16 @@ export default function AdminPage() {
     const updatedConfig = { ...config, projects: updatedProjects };
     setConfig(updatedConfig);
     setEditingProject(null);
-    handleSaveConfig(updatedConfig);
+
+    const persisted = await handleSaveConfig(updatedConfig);
+    if (persisted) {
+      setSuccessModal({
+        title: addingNew ? '🎉 Project Added Successfully!' : '✅ Project Updated Successfully!',
+        subtitle: addingNew
+          ? `"${projectForm.title}" is now live on the website portfolio.`
+          : `"${projectForm.title}" has been updated and is live.`
+      });
+    }
   }
 
   function handleDeleteProject(projectId: string) {
@@ -832,11 +848,61 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Main content viewport, scrollable independently */}
+            {/* ── Success Modal Popup ─────────────────────────────────────────── */}
+              <AnimatePresence>
+                {successModal && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    onClick={() => setSuccessModal(null)}
+                  >
+                    <motion.div
+                      initial={{ scale: 0.85, opacity: 0, y: 20 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.85, opacity: 0, y: 20 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                      className="bg-[#141311] border border-green-700/50 rounded-[16px] p-10 max-w-md w-full mx-4 shadow-[0_30px_80px_rgba(0,0,0,0.7)] text-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {/* Animated checkmark ring */}
+                      <div className="w-20 h-20 rounded-full bg-green-950/40 border-2 border-green-600/60 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
+                        <CheckCircle className="w-10 h-10 text-green-400" />
+                      </div>
+                      <h3 className="text-[22px] font-cormorant font-semibold text-[#F1EFE8] mb-2 leading-tight">
+                        {successModal.title}
+                      </h3>
+                      <p className="text-[14px] text-[#888780] font-sans font-light leading-relaxed mb-8">
+                        {successModal.subtitle}
+                      </p>
+                      <div className="flex gap-3 justify-center">
+                        <a
+                          href="/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-[#BA7517] hover:bg-[#FAC775] text-white hover:text-[#1a1a1a] text-[12px] uppercase tracking-[0.2em] font-sans font-bold px-5 py-3 rounded-[6px] transition-all duration-300 flex items-center gap-2"
+                        >
+                          View on Website ↗
+                        </a>
+                        <button
+                          onClick={() => setSuccessModal(null)}
+                          className="border border-[#4A4A48] hover:bg-white/5 text-[#888780] hover:text-[#F1EFE8] text-[12px] uppercase tracking-[0.2em] font-sans font-bold px-5 py-3 rounded-[6px] transition-all duration-300"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Main content viewport, scrollable independently */}
             <main className="flex-1 overflow-y-auto p-8 md:p-12 xl:p-14 space-y-12">
               
               {/* Alert Notification Banners */}
               <AnimatePresence>
+
                 {alert && (
                   <motion.div
                      initial={{ opacity: 0, y: -8 }}
