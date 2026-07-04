@@ -355,7 +355,7 @@ function validateProject(raw: unknown, index: number): ValidationResult<Record<s
   if (year.error || !/^\d{4}$/.test(year.value)) return { value: {}, error: `${path}.year must be a four digit year` };
   const size = validateString(raw.size, `${path}.size`, { maxLen: 60, required: false });
   if (size.error) return { value: {}, error: size.error };
-  const detailImages = validateUrlArray(raw.detailImages, `${path}.detailImages`, { maxItems: 20, required: true });
+  const detailImages = validateUrlArray(raw.detailImages, `${path}.detailImages`, { maxItems: 100, required: true });
   if (detailImages.error) return { value: {}, error: detailImages.error };
   const description = validateString(raw.description, `${path}.description`, { maxLen: 2000, required: false });
   if (description.error) return { value: {}, error: description.error };
