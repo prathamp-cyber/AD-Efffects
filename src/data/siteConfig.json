@@ -463,6 +463,81 @@
         "/uploads/sankalp_07.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "14",
+      "title": "Nirmaan",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/nirmaan_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/nirmaan_02.jpg",
+        "/uploads/nirmaan_03.jpg",
+        "/uploads/nirmaan_04.jpg",
+        "/uploads/nirmaan_05.jpg",
+        "/uploads/nirmaan_06.jpg",
+        "/uploads/nirmaan_07.jpg",
+        "/uploads/nirmaan_08.jpg",
+        "/uploads/nirmaan_09.jpg",
+        "/uploads/nirmaan_10.jpg",
+        "/uploads/nirmaan_11.jpg",
+        "/uploads/nirmaan_12.jpg",
+        "/uploads/nirmaan_13.jpg",
+        "/uploads/nirmaan_14.jpg",
+        "/uploads/nirmaan_15.jpg",
+        "/uploads/nirmaan_16.jpg",
+        "/uploads/nirmaan_17.jpg",
+        "/uploads/nirmaan_18.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "15",
+      "title": "Utkarsh",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/utkarsh_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/utkarsh_02.jpg",
+        "/uploads/utkarsh_03.jpg",
+        "/uploads/utkarsh_04.jpg",
+        "/uploads/utkarsh_05.jpg",
+        "/uploads/utkarsh_06.jpg",
+        "/uploads/utkarsh_07.jpg",
+        "/uploads/utkarsh_08.jpg",
+        "/uploads/utkarsh_09.jpg",
+        "/uploads/utkarsh_10.jpg",
+        "/uploads/utkarsh_11.jpg",
+        "/uploads/utkarsh_12.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "16",
+      "title": "Fortune",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/fortune_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/fortune_02.jpg",
+        "/uploads/fortune_03.jpg",
+        "/uploads/fortune_04.jpg",
+        "/uploads/fortune_05.jpg",
+        "/uploads/fortune_06.jpg",
+        "/uploads/fortune_07.jpg",
+        "/uploads/fortune_08.jpg",
+        "/uploads/fortune_09.jpg",
+        "/uploads/fortune_10.jpg",
+        "/uploads/fortune_11.jpg",
+        "/uploads/fortune_12.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
