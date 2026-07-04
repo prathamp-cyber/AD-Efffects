@@ -289,6 +289,52 @@
         "/uploads/pragati_13.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "07",
+      "title": "Aayam",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/aayam_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/aayam_02.jpg",
+        "/uploads/aayam_03.jpg",
+        "/uploads/aayam_04.jpg",
+        "/uploads/aayam_05.jpg",
+        "/uploads/aayam_06.jpg",
+        "/uploads/aayam_07.jpg",
+        "/uploads/aayam_08.jpg",
+        "/uploads/aayam_09.jpg",
+        "/uploads/aayam_10.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "08",
+      "title": "Goel",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/goel_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/goel_02.jpg",
+        "/uploads/goel_03.jpg",
+        "/uploads/goel_04.jpg",
+        "/uploads/goel_05.jpg",
+        "/uploads/goel_06.jpg",
+        "/uploads/goel_07.jpg",
+        "/uploads/goel_08.jpg",
+        "/uploads/goel_09.jpg",
+        "/uploads/goel_10.jpg",
+        "/uploads/goel_11.jpg",
+        "/uploads/goel_12.jpg",
+        "/uploads/goel_13.jpg",
+        "/uploads/goel_14.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
