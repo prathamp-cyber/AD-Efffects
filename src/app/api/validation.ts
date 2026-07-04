@@ -191,8 +191,8 @@ export function validateUrl(val: unknown, fieldName = 'URL', opts: { required?: 
 
   const value = result.value;
   if (value.startsWith('/')) {
-    if (!/^\/uploads\/[a-z0-9_-]+\.(?:jpg|jpeg|png|webp|gif)$/i.test(value)) {
-      return { value: '', error: `${fieldName} must be an uploaded image path` };
+    if (!/^\/uploads\/[a-z0-9_-]+\.(?:jpg|jpeg|png|webp|gif|mp4|webm|mov|ogg|svg)$/i.test(value)) {
+      return { value: '', error: `${fieldName} must be a valid uploaded file path` };
     }
     return { value };
   }
