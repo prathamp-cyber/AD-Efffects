@@ -387,6 +387,34 @@
         "/uploads/ehsaas_14.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "11",
+      "title": "Samriddhi",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/samriddhi_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/samriddhi_02.jpg",
+        "/uploads/samriddhi_03.jpg",
+        "/uploads/samriddhi_04.jpg",
+        "/uploads/samriddhi_05.jpg",
+        "/uploads/samriddhi_06.jpg",
+        "/uploads/samriddhi_07.jpg",
+        "/uploads/samriddhi_08.jpg",
+        "/uploads/samriddhi_09.jpg",
+        "/uploads/samriddhi_10.jpg",
+        "/uploads/samriddhi_11.jpg",
+        "/uploads/samriddhi_12.jpg",
+        "/uploads/samriddhi_13.jpg",
+        "/uploads/samriddhi_14.jpg",
+        "/uploads/samriddhi_15.jpg",
+        "/uploads/samriddhi_16.jpg",
+        "/uploads/samriddhi_17.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
