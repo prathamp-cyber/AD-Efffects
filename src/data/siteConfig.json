@@ -538,6 +538,85 @@
         "/uploads/fortune_12.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "17",
+      "title": "Anubhav",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/anubhav_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/anubhav_02.jpg",
+        "/uploads/anubhav_03.jpg",
+        "/uploads/anubhav_04.jpg",
+        "/uploads/anubhav_05.jpg",
+        "/uploads/anubhav_06.jpg",
+        "/uploads/anubhav_07.jpg",
+        "/uploads/anubhav_08.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "18",
+      "title": "Dhara",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/dhara_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/dhara_02.jpg",
+        "/uploads/dhara_03.jpg",
+        "/uploads/dhara_04.jpg",
+        "/uploads/dhara_05.jpg",
+        "/uploads/dhara_06.jpg",
+        "/uploads/dhara_07.jpg",
+        "/uploads/dhara_08.jpg",
+        "/uploads/dhara_09.jpg",
+        "/uploads/dhara_10.jpg",
+        "/uploads/dhara_11.jpg",
+        "/uploads/dhara_12.jpg",
+        "/uploads/dhara_13.jpg",
+        "/uploads/dhara_14.jpg",
+        "/uploads/dhara_15.jpg",
+        "/uploads/dhara_16.jpg",
+        "/uploads/dhara_17.jpg",
+        "/uploads/dhara_18.jpg",
+        "/uploads/dhara_19.jpg",
+        "/uploads/dhara_20.jpg",
+        "/uploads/dhara_21.jpg",
+        "/uploads/dhara_22.jpg",
+        "/uploads/dhara_23.jpg",
+        "/uploads/dhara_24.jpg",
+        "/uploads/dhara_25.jpg",
+        "/uploads/dhara_26.jpg",
+        "/uploads/dhara_27.jpg",
+        "/uploads/dhara_28.jpg",
+        "/uploads/dhara_29.jpg",
+        "/uploads/dhara_30.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "19",
+      "title": "Saanjh",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/saanjh_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/saanjh_02.jpg",
+        "/uploads/saanjh_03.jpg",
+        "/uploads/saanjh_04.jpg",
+        "/uploads/saanjh_05.jpg",
+        "/uploads/saanjh_06.jpg",
+        "/uploads/saanjh_07.jpg",
+        "/uploads/saanjh_08.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
