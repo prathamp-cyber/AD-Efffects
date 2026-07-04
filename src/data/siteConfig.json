@@ -243,6 +243,28 @@
         "/uploads/nivas_36.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "05",
+      "title": "The Landmark One",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/the_landmark_one_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/the_landmark_one_02.jpg",
+        "/uploads/the_landmark_one_03.jpg",
+        "/uploads/the_landmark_one_04.jpg",
+        "/uploads/the_landmark_one_05.jpg",
+        "/uploads/the_landmark_one_06.jpg",
+        "/uploads/the_landmark_one_07.jpg",
+        "/uploads/the_landmark_one_08.jpg",
+        "/uploads/the_landmark_one_09.jpg",
+        "/uploads/the_landmark_one_10.jpg",
+        "/uploads/the_landmark_one_11.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
