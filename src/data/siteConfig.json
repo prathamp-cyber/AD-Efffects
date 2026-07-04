@@ -162,6 +162,40 @@
         "/uploads/aura_28.mp4"
       ],
       "description": ""
+    },
+    {
+      "id": "03",
+      "title": "Saanidhya",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/saanidhya_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/saanidhya_02.jpg",
+        "/uploads/saanidhya_03.jpg",
+        "/uploads/saanidhya_04.jpg",
+        "/uploads/saanidhya_05.jpg",
+        "/uploads/saanidhya_06.jpg",
+        "/uploads/saanidhya_07.jpg",
+        "/uploads/saanidhya_08.jpg",
+        "/uploads/saanidhya_09.jpg",
+        "/uploads/saanidhya_10.jpg",
+        "/uploads/saanidhya_11.jpg",
+        "/uploads/saanidhya_12.jpg",
+        "/uploads/saanidhya_13.jpg",
+        "/uploads/saanidhya_14.jpg",
+        "/uploads/saanidhya_15.jpg",
+        "/uploads/saanidhya_16.jpg",
+        "/uploads/saanidhya_17.jpg",
+        "/uploads/saanidhya_18.jpg",
+        "/uploads/saanidhya_19.jpg",
+        "/uploads/saanidhya_20.jpg",
+        "/uploads/saanidhya_21.jpg",
+        "/uploads/saanidhya_22.jpg",
+        "/uploads/saanidhya_23.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
