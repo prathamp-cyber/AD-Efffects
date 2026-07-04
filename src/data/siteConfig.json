@@ -415,6 +415,54 @@
         "/uploads/samriddhi_17.jpg"
       ],
       "description": ""
+    },
+    {
+      "id": "12",
+      "title": "Nivesh",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/nivesh_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/nivesh_02.jpg",
+        "/uploads/nivesh_03.jpg",
+        "/uploads/nivesh_04.jpg",
+        "/uploads/nivesh_05.jpg",
+        "/uploads/nivesh_06.jpg",
+        "/uploads/nivesh_07.jpg",
+        "/uploads/nivesh_08.jpg",
+        "/uploads/nivesh_09.jpg",
+        "/uploads/nivesh_10.jpg",
+        "/uploads/nivesh_11.jpg",
+        "/uploads/nivesh_12.jpg",
+        "/uploads/nivesh_13.jpg",
+        "/uploads/nivesh_14.jpg",
+        "/uploads/nivesh_15.jpg",
+        "/uploads/nivesh_16.jpg",
+        "/uploads/nivesh_17.jpg",
+        "/uploads/nivesh_18.jpg",
+        "/uploads/nivesh_19.jpg"
+      ],
+      "description": ""
+    },
+    {
+      "id": "13",
+      "title": "Sankalp",
+      "category": "Commercial",
+      "location": "Gandhidham, Gujarat, India",
+      "image": "/uploads/sankalp_01.jpg",
+      "year": "2026",
+      "size": "400 m2",
+      "detailImages": [
+        "/uploads/sankalp_02.jpg",
+        "/uploads/sankalp_03.jpg",
+        "/uploads/sankalp_04.jpg",
+        "/uploads/sankalp_05.jpg",
+        "/uploads/sankalp_06.jpg",
+        "/uploads/sankalp_07.jpg"
+      ],
+      "description": ""
     }
   ],
   "blogs": [
