@@ -124,20 +124,20 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
           variants={mobileHeaderVariants}
           initial="hidden"
           animate="visible"
-          className="md:hidden w-full flex justify-between items-center px-5 py-4 header-logo-container"
+          className="md:hidden w-full flex justify-center items-center py-4 px-5 header-logo-container relative"
         >
-          <div className="flex flex-col items-start select-none">
+          <div className="flex flex-col items-center select-none text-center">
             <button 
               onClick={() => handleTabClick('portfolio')}
               className="brand-logo text-[15px] sm:text-[18px] text-primary focus:outline-none leading-none tracking-[0.15em] font-medium"
             >
               THE AD EFFFECT
             </button>
-            <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-1.5 font-sans font-medium">Form Follows Function</span>
+            <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-2.5 font-sans font-medium">Form Follows Function</span>
           </div>
           <button 
             onClick={() => setMobileMenuOpen(true)}
-            className="text-primary focus:outline-none p-2 -mr-2"
+            className="text-primary focus:outline-none p-2 absolute right-5 top-1/2 -translate-y-1/2"
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5 stroke-[1.25]" />
@@ -258,16 +258,16 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="site-mobile-menu fixed inset-0 z-[10000] bg-background text-primary flex flex-col p-6 transition-colors duration-300 overflow-y-auto"
           >
-            <div className="flex justify-between items-start">
-              <div className="flex flex-col items-start select-none">
+            <div className="flex justify-center items-center relative w-full py-2">
+              <div className="flex flex-col items-center select-none text-center">
                 <span className="brand-logo text-[15px] sm:text-[18px] text-primary leading-none tracking-[0.15em] font-medium">
                   THE AD EFFFECT
                 </span>
-                <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-1.5 font-sans font-medium">Form Follows Function</span>
+                <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-2.5 font-sans font-medium">Form Follows Function</span>
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-primary focus:outline-none p-2 -mr-2"
+                className="text-primary focus:outline-none p-2 absolute right-0 top-1/2 -translate-y-1/2"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5 stroke-[1.25]" />

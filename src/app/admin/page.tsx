@@ -1004,76 +1004,7 @@ export default function AdminPage() {
                         })}
                       </div>
 
-                      {/* Interactive Activity Chart */}
-                      <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-[#BA7517]/15">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[12px] uppercase tracking-[0.25em] text-[#FAC775] font-bold">STUDIO ENGAGEMENT</span>
-                            <span className="text-[11px] text-[#888780] font-light">Client interactions and inquiries over the last 6 months</span>
-                          </div>
-                          <div className="flex items-center gap-2 bg-[#1e1c19] border border-[#BA7517]/15 p-1 rounded select-none">
-                            <span className="text-[10px] uppercase tracking-[0.15em] font-sans px-3 py-1.5 text-[#FAC775] bg-[#262522] rounded font-bold">Inquiries</span>
-                            <span className="text-[10px] uppercase tracking-[0.15em] font-sans px-3 py-1.5 text-[#888780] font-bold">Views</span>
-                          </div>
-                        </div>
 
-                        {/* SVG Line Chart */}
-                        <div className="h-[220px] w-full relative pt-2">
-                          <svg className="w-full h-full" viewBox="0 0 600 200" preserveAspectRatio="none">
-                            <defs>
-                              {/* Fill Gradient */}
-                              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#FAC775" stopOpacity="0.25" />
-                                <stop offset="100%" stopColor="#FAC775" stopOpacity="0" />
-                              </linearGradient>
-                              {/* Stroke Gradient */}
-                              <linearGradient id="strokeGradient" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#BA7517" />
-                                <stop offset="50%" stopColor="#FAC775" />
-                                <stop offset="100%" stopColor="#BA7517" />
-                              </linearGradient>
-                            </defs>
-                            
-                            {/* Gridlines */}
-                            <line x1="0" y1="40" x2="600" y2="40" stroke="#262522" strokeWidth="1" strokeDasharray="3,3" />
-                            <line x1="0" y1="100" x2="600" y2="100" stroke="#262522" strokeWidth="1" strokeDasharray="3,3" />
-                            <line x1="0" y1="160" x2="600" y2="160" stroke="#262522" strokeWidth="1" strokeDasharray="3,3" />
-                            
-                            {/* Curved Chart Path */}
-                            <path
-                              d="M 20 170 Q 78 150 136 130 T 252 150 T 368 80 T 484 100 T 580 45"
-                              fill="none"
-                              stroke="url(#strokeGradient)"
-                              strokeWidth="3"
-                              className="chart-path-glow"
-                            />
-                            
-                            {/* Gradient Fill under Path */}
-                            <path
-                              d="M 20 170 Q 78 150 136 130 T 252 150 T 368 80 T 484 100 T 580 45 L 580 200 L 20 200 Z"
-                              fill="url(#chartGradient)"
-                            />
-                            
-                            {/* Data points */}
-                            <circle cx="20" cy="170" r="5" fill="#141311" stroke="#BA7517" strokeWidth="2.5" />
-                            <circle cx="136" cy="130" r="5" fill="#141311" stroke="#FAC775" strokeWidth="2.5" />
-                            <circle cx="252" cy="150" r="5" fill="#141311" stroke="#FAC775" strokeWidth="2.5" />
-                            <circle cx="368" cy="80" r="5" fill="#141311" stroke="#FAC775" strokeWidth="2.5" />
-                            <circle cx="484" cy="100" r="5" fill="#141311" stroke="#FAC775" strokeWidth="2.5" />
-                            <circle cx="580" cy="45" r="5" fill="#141311" stroke="#BA7517" strokeWidth="2.5" />
-                          </svg>
-                        </div>
-                        
-                        {/* Months labels */}
-                        <div className="flex justify-between text-[10px] text-[#888780] font-sans font-bold px-4 mt-4 select-none">
-                          <span>JAN</span>
-                          <span>FEB</span>
-                          <span>MAR</span>
-                          <span>APR</span>
-                          <span>MAY</span>
-                          <span>JUN</span>
-                        </div>
-                      </div>
 
                       {/* Recent Inquiries List Widget Card */}
                       <div className="glass-panel p-8 rounded-[12px] border border-[#BA7517]/15 text-[#F1EFE8] shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
