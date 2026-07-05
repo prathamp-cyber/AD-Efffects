@@ -83,7 +83,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 0.9, y: 0 }}
               transition={{ delay: 1.2, duration: 1 }}
-              className="text-xs uppercase tracking-[0.4em] text-primary mt-4 font-medium"
+              className="text-[2.2vw] sm:text-xs uppercase tracking-[0.4em] text-primary mt-3 font-medium whitespace-nowrap"
             >
               Form Follows Function
             </motion.p>
