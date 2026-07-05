@@ -6,7 +6,7 @@ import Lenis from 'lenis';
 
 export default function SmoothScroll({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
+  const isAdmin = pathname?.startsWith('/ad') || pathname?.startsWith('/admin');
 
   useEffect(() => {
     if (isAdmin) return;

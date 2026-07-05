@@ -158,7 +158,7 @@ export async function POST(request: Request) {
       await saveConfig(newConfig as unknown as Record<string, unknown>);
       try {
         revalidatePath('/');
-        revalidatePath('/admin');
+        revalidatePath('/ad');
       } catch (err) {
         console.warn('Revalidation failed:', err);
       }

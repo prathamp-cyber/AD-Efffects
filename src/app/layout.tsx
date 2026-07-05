@@ -39,7 +39,7 @@ export default function RootLayout({
               (function() {
                 // Skip all protection in the admin panel so it doesn't interfere
                 function isAdmin() {
-                  return window.location.pathname.startsWith('/admin');
+                  return window.location.pathname.startsWith('/ad');
                 }
 
                 // Block right-click context menu on images and the page

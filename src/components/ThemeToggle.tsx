@@ -3,10 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
@@ -53,10 +55,14 @@ export default function ThemeToggle() {
 
   if (!mounted) return null;
 
+  // Hide on admin (/ad) or super admin (/nexora) panels
+  const isPanel = pathname?.startsWith('/ad') || pathname?.startsWith('/nexora') || pathname?.startsWith('/admin');
+  if (isPanel) return null;
+
   return (
     <button 
       onClick={toggleTheme}
-      className={`fixed bottom-6 right-6 z-[9999] w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:scale-105 transition-all duration-300 cursor-pointer select-none outline-none ${
+      className={`fixed bottom-4 right-4 z-[9999] w-6 h-6 rounded-full flex items-center justify-center backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] hover:scale-105 transition-all duration-300 cursor-pointer select-none outline-none ${
         theme === 'light' 
           ? 'bg-card-bg border border-primary/60 text-primary' 
           : 'bg-background/80 border border-border-custom text-primary'
@@ -72,7 +78,7 @@ export default function ThemeToggle() {
             exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <Moon className="w-5 h-5 stroke-[2.5]" />
+            <Moon className="w-3 h-3 stroke-[2.5]" />
           </motion.div>
         ) : (
           <motion.div
@@ -82,7 +88,7 @@ export default function ThemeToggle() {
             exit={{ opacity: 0, rotate: -90, scale: 0.8 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <Sun className="w-5 h-5 stroke-[1.25]" />
+            <Sun className="w-3 h-3 stroke-[1.25]" />
           </motion.div>
         )}
       </AnimatePresence>
