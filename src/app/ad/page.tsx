@@ -744,10 +744,10 @@ export default function AdminPage() {
             <div className="flex flex-col h-full overflow-y-auto no-scrollbar">
               {/* Logo / Site Title Header Box */}
               <div className="h-[88px] w-full border-b border-[#BA7517]/15 flex flex-col justify-center items-center bg-[#181715] select-none px-6">
-                <span className="font-serif text-[24px] font-light text-[#F1EFE8] tracking-wider leading-none mb-1.5 hover:text-[#FAC775] transition-colors duration-300 cursor-pointer">
+                <span className="font-serif text-[24px] font-light text-[#F1EFE8] tracking-wider leading-none mb-0 sm:mb-1.5 hover:text-[#FAC775] transition-colors duration-300 cursor-pointer">
                   AD-Efffects
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.35em] text-[#888780] font-sans font-bold">
+                <span className="hidden sm:block text-[9px] uppercase tracking-[0.35em] text-[#888780] font-sans font-bold">
                   <span className="mr-[-0.35em]">ADMINISTRATION</span>
                 </span>
               </div>

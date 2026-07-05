@@ -66,16 +66,20 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="text-[5.5vw] md:text-6xl font-cormorant font-medium tracking-[0.25em] text-primary flex justify-center whitespace-nowrap"
+              className="text-[8.25vw] md:text-6xl font-cormorant font-medium tracking-[0.25em] text-primary flex flex-wrap justify-center gap-x-[0.2em] gap-y-2 text-center max-w-[340px] md:max-w-none mx-auto"
             >
-              {nameChars.map((char, index) => (
-                <motion.span
-                  key={index}
-                  variants={charVariants}
-                  className="inline-block"
-                >
-                  {char === ' ' ? '\u00A0' : char}
-                </motion.span>
+              {"THE AD EFFFECT".split(" ").map((word, wordIdx) => (
+                <span key={wordIdx} className="whitespace-nowrap flex">
+                  {Array.from(word).map((char, charIdx) => (
+                    <motion.span
+                      key={charIdx}
+                      variants={charVariants}
+                      className="inline-block"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                </span>
               ))}
             </motion.h1>
             

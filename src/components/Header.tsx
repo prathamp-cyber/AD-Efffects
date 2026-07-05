@@ -133,7 +133,6 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             >
               THE AD EFFFECT
             </button>
-            <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-2.5 font-sans font-medium">Form Follows Function</span>
           </div>
           <button 
             onClick={() => setMobileMenuOpen(true)}
@@ -263,7 +262,6 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
                 <span className="brand-logo text-[15px] sm:text-[18px] text-primary leading-none tracking-[0.15em] font-medium">
                   THE AD EFFFECT
                 </span>
-                <span className="text-[7px] uppercase tracking-[0.2em] text-primary mt-2.5 font-sans font-medium">Form Follows Function</span>
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
