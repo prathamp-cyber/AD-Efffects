@@ -66,7 +66,7 @@ export default function LoadingScreen({ onComplete }: { onComplete: () => void }
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="text-4xl md:text-6xl font-cormorant font-medium tracking-[0.25em] text-primary flex justify-center"
+              className="text-[5.5vw] md:text-6xl font-cormorant font-medium tracking-[0.25em] text-primary flex justify-center whitespace-nowrap"
             >
               {nameChars.map((char, index) => (
                 <motion.span

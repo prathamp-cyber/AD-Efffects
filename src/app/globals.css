@@ -772,6 +772,25 @@ html.lenis, html.lenis body {
     font-size: 48px !important;
   }
 
+  .site-header .brand-logo,
+  .site-mobile-menu .brand-logo {
+    font-size: 18px !important;
+  }
+
+  @media (max-width: 360px) {
+    .site-header .brand-logo,
+    .site-mobile-menu .brand-logo {
+      font-size: 15px !important;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .site-header .brand-logo,
+    .site-mobile-menu .brand-logo {
+      font-size: 24px !important;
+    }
+  }
+
   footer .brand-logo {
     font-size: 52px !important;
   }
