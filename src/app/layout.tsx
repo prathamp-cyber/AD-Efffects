@@ -7,6 +7,11 @@ import { cormorant, inter, pinyon } from "./fonts";
 export const metadata: Metadata = {
   title: "THE AD EFFFECT | Premium Architecture & Interior Design Studio",
   description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",
+  icons: {
+    icon: "/Logo/favicon-512x512.png",
+    shortcut: "/Logo/favicon-512x512.png",
+    apple: "/Logo/favicon-512x512.png",
+  },
   openGraph: {
     title: "THE AD EFFFECT | Premium Architecture & Interior Design Studio",
     description: "A luxury architectural and interior design studio crafting minimalist, high-end residential and commercial spaces globally.",

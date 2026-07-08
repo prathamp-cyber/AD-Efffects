@@ -201,7 +201,7 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             </motion.a>
             <motion.a 
               variants={socialIconVariants}
-              href="https://pinterest.com/the_ad_effect" 
+              href="https://pin.it/1BIm6dVFM" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
@@ -209,6 +209,18 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M8 22c.4-2.8 1.1-5.4 1.1-5.4s-.3-.6-.3-1.5c0-1.4.8-2.5 1.9-2.5.9 0 1.3.7 1.3 1.5 0 .9-.6 2.2-.9 3.5-.2 1.1.6 2 1.7 2 2.1 0 3.7-2.2 3.7-5.3 0-2.8-2-4.7-4.9-4.7-3.3 0-5.3 2.5-5.3 5.1 0 1 .4 2 .9 2.6.1.1.1.2.1.3-.1.4-.3 1.2-.3 1.3-.1.2-.2.3-.5.1-1.7-.8-2.7-3.2-2.7-5.1 0-4.1 3-7.9 8.6-7.9 4.5 0 8 3.2 8 7.5 0 4.5-2.8 8.1-6.7 8.1-1.3 0-2.6-.7-3-1.5 0 0-.7 2.5-.8 3.1-.3 1.1-1 2.5-1.5 3.3" />
+              </svg>
+            </motion.a>
+            <motion.a 
+              variants={socialIconVariants}
+              href="https://share.google/Aji02DuNWimV2IrSg" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
+              aria-label="Facebook"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
               </svg>
             </motion.a>
           </motion.div>
