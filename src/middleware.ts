@@ -208,7 +208,9 @@ export function middleware(request: NextRequest) {
   }
 
   // ── 3. Global rate limit (anti-scraping — all requests from one IP) ─────
-  const globalCheck = isRateLimited(`global:${ip}`, GLOBAL_LIMIT.maxRequests, GLOBAL_LIMIT.windowMs);
+  const adminSession = request.cookies.get('admin_session')?.value;
+  const effectiveGlobalMax = adminSession ? 10000 : GLOBAL_LIMIT.maxRequests;
+  const globalCheck = isRateLimited(`global:${ip}`, effectiveGlobalMax, GLOBAL_LIMIT.windowMs);
   if (globalCheck.limited) {
     logSecurityEvent({
       type: 'RATE_LIMIT_HIT',
@@ -216,7 +218,7 @@ export function middleware(request: NextRequest) {
       userAgent: userAgent || undefined,
       endpoint: pathname,
       method,
-      detail: `Global IP rate limit hit (${GLOBAL_LIMIT.maxRequests}/${GLOBAL_LIMIT.windowMs}ms)`
+      detail: `Global IP rate limit hit (${effectiveGlobalMax}/${GLOBAL_LIMIT.windowMs}ms)`
     });
     const res = NextResponse.json(
       { error: 'Too many requests. Please slow down.' },
@@ -230,7 +232,10 @@ export function middleware(request: NextRequest) {
     const profile = ENDPOINT_LIMITS[pathname] || DEFAULT_API_LIMIT;
 
     // For GET requests, use a higher multiplier (reads are cheaper)
-    const effectiveMax = method === 'GET' ? profile.maxRequests * 2 : profile.maxRequests;
+    // For logged-in admins, greatly increase limits to allow batch photo uploads
+    const effectiveMax = adminSession 
+      ? 5000 
+      : (method === 'GET' ? profile.maxRequests * 2 : profile.maxRequests);
 
     const check = isRateLimited(`ep:${pathname}:${ip}`, effectiveMax, profile.windowMs);
     if (check.limited) {

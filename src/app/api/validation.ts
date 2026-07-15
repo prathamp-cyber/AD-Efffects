@@ -172,11 +172,11 @@ export function validateUrl(val: unknown, fieldName = 'URL', opts: { required?: 
   if (typeof val === 'string' && val.startsWith('data:image/')) {
     const result = validateString(val, fieldName, {
       required: opts.required ?? false,
-      maxLen: 1024 * 1024,
+      maxLen: 4 * 1024 * 1024,
       rejectInjection: false,
     });
     if (result.error || result.value === '') return result;
-    if (!/^data:image\/(?:jpeg|png|webp|gif);base64,[a-zA-Z0-9+/=]+$/.test(result.value)) {
+    if (!/^data:image\/(?:jpeg|png|webp|gif);base64,/i.test(result.value)) {
       return { value: '', error: `${fieldName} is not a valid base64 image data URI` };
     }
     return { value: result.value };
