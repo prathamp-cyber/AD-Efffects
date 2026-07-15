@@ -104,7 +104,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  // ── Rate Limit (30 config saves / 5 minutes) ────────────────────────────────
+  // ── Rate Limit (400 config saves / 5 minutes) ────────────────────────────────
   const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.configUpdate);
   if (rateLimitResponse) return rateLimitResponse;
 

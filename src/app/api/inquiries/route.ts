@@ -30,7 +30,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  // ── Rate Limit (3 submissions / 10 minutes — public endpoint) ─────────────
+  // ── Rate Limit (400 submissions / 10 minutes — public endpoint) ─────────────
   const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.inquiry);
   if (rateLimitResponse) return rateLimitResponse;
 
