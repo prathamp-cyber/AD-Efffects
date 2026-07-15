@@ -53,7 +53,7 @@ interface RateLimitConfig {
 }
 
 export const RATE_LIMITS = {
-  login: { maxAttempts: 400, windowMs: 15 * 60 * 1000, endpoint: 'login' } as RateLimitConfig,
+  login: { maxAttempts: 5, windowMs: 15 * 60 * 1000, endpoint: 'login' } as RateLimitConfig,
   inquiry: { maxAttempts: 400, windowMs: 10 * 60 * 1000, endpoint: 'inquiry' } as RateLimitConfig,
   configUpdate: { maxAttempts: 400, windowMs: 5 * 60 * 1000, endpoint: 'config' } as RateLimitConfig,
   upload: { maxAttempts: 400, windowMs: 5 * 60 * 1000, endpoint: 'upload' } as RateLimitConfig,
