@@ -165,6 +165,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, persisted: true });
     } catch (fsError) {
       console.warn('Failed to save configuration via adapter:', fsError);
+      if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+        return NextResponse.json({ 
+          success: false, 
+          error: 'No database is configured or database connection failed. Your changes cannot be saved on Vercel.' 
+        }, { status: 500 });
+      }
       return NextResponse.json({ 
         success: true, 
         persisted: false,

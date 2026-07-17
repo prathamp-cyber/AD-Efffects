@@ -96,6 +96,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true });
     } catch (fsError) {
       console.warn('Failed to save inquiry via adapter:', fsError);
+      if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+        return NextResponse.json({ success: false, error: 'Database is not connected. Submission failed.' }, { status: 500 });
+      }
       return NextResponse.json({ success: true, warning: 'Saved in-memory only' });
     }
   } catch (error) {

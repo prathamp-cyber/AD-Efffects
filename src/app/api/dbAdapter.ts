@@ -216,24 +216,39 @@ export async function getConfig(fallbackData: Record<string, unknown>): Promise<
  * Priority: Redis → Firestore → local file
  */
 export async function saveConfig(data: Record<string, unknown>): Promise<void> {
+  let saved = false;
+
   // 1. Try Redis
   if (REDIS_URL && REDIS_TOKEN) {
     try {
       await runRedisCommand(['SET', 'site_config', JSON.stringify(data)]);
-      return;
+      saved = true;
     } catch (err) {
       console.warn('[DB] Redis save config failed, trying Firestore:', err);
     }
   }
 
   // 2. Try Firestore
-  if (hasFirestore()) {
-    const ok = await firestoreSet('site_data', 'config', data);
-    if (ok) return;
-    console.warn('[DB] Firestore save config failed, trying local file.');
+  if (!saved && hasFirestore()) {
+    try {
+      const ok = await firestoreSet('site_data', 'config', data);
+      if (ok) {
+        saved = true;
+      } else {
+        console.warn('[DB] Firestore save config failed.');
+      }
+    } catch (err) {
+      console.warn('[DB] Firestore save config failed with error:', err);
+    }
   }
 
+  if (saved) return;
+
   // 3. Fallback: local file (local dev / non-Vercel environments)
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+    throw new Error('Database connection failed or is not configured. Ephemeral local files cannot be written on Vercel.');
+  }
+
   const dataDir = path.dirname(configPath);
   try {
     await fs.mkdir(dataDir, { recursive: true });
@@ -284,20 +299,36 @@ export async function getInquiries(): Promise<Record<string, unknown>[]> {
  * SAVE Inquiries
  */
 export async function saveInquiries(data: Record<string, unknown>[]): Promise<void> {
+  let saved = false;
+
   // 1. Try Redis
   if (REDIS_URL && REDIS_TOKEN) {
     try {
       await runRedisCommand(['SET', 'site_inquiries', JSON.stringify(data)]);
-      return;
+      saved = true;
     } catch (err) {
       console.warn('[DB] Redis save inquiries failed, trying Firestore:', err);
     }
   }
 
   // 2. Try Firestore
-  if (hasFirestore()) {
-    const ok = await firestoreSet('site_data', 'inquiries', { list: data });
-    if (ok) return;
+  if (!saved && hasFirestore()) {
+    try {
+      const ok = await firestoreSet('site_data', 'inquiries', { list: data });
+      if (ok) {
+        saved = true;
+      } else {
+        console.warn('[DB] Firestore save inquiries failed.');
+      }
+    } catch (err) {
+      console.warn('[DB] Firestore save inquiries failed with error:', err);
+    }
+  }
+
+  if (saved) return;
+
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL === '1') {
+    throw new Error('Database connection failed or is not configured. Ephemeral local files cannot be written on Vercel.');
   }
 
   // 3. Local file
