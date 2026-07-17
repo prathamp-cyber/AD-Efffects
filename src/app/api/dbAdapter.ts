@@ -279,7 +279,11 @@ export async function getInquiries(): Promise<Record<string, unknown>[]> {
     try {
       const doc = await firestoreGet('site_data', 'inquiries');
       if (doc && typeof doc.json === 'string') {
-        return JSON.parse(doc.json) as Record<string, unknown>[];
+        const parsed = JSON.parse(doc.json);
+        if (parsed && typeof parsed === 'object' && 'list' in parsed && Array.isArray(parsed.list)) {
+          return parsed.list as Record<string, unknown>[];
+        }
+        return (Array.isArray(parsed) ? parsed : []) as Record<string, unknown>[];
       }
     } catch (err) {
       console.warn('[DB] Firestore read inquiries failed:', err);

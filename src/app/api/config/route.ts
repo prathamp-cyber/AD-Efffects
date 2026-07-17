@@ -145,17 +145,18 @@ export async function POST(request: Request) {
       oldConfig = defaultConfig as unknown as SiteConfig;
     }
 
-    runtimeConfig = newConfig;
-    
-    // Diff configuration and log
-    const diffs = generateDiffLogs(oldConfig, newConfig);
-    for (const action of diffs) {
-      await addAuditLog(action, username);
-    }
-    
-    // Save config via dbAdapter (Upstash Redis or local files)
+    // Save config via dbAdapter (Upstash Redis or Firestore)
     try {
       await saveConfig(newConfig as unknown as Record<string, unknown>);
+      
+      // Only update cache and record audit logs after successful persistence
+      runtimeConfig = newConfig;
+      
+      const diffs = generateDiffLogs(oldConfig, newConfig);
+      for (const action of diffs) {
+        await addAuditLog(action, username);
+      }
+
       try {
         revalidatePath('/');
         revalidatePath('/ad');
