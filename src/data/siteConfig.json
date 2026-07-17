@@ -21,6 +21,13 @@
   },
   "press": [
     {
+      "id": "press_award_2021",
+      "title": "TOP 25 MOST EMERGING & TRENDSETTER ARCHITECTURE AND INTERIOR DESIGN AWARD 2021",
+      "subtitle": "Recognition",
+      "image": "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?auto=format&fit=crop&w=600&q=80",
+      "link": "https://instagram.com/"
+    },
+    {
       "id": "1",
       "title": "GoodHomes India, August September 2025 Edition",
       "subtitle": "Pranaya",
