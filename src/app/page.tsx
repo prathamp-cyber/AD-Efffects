@@ -598,7 +598,7 @@ export default function Home() {
                           {/* Vertical Image Container for Magazine Covers / Awards */}
                           <div className="relative overflow-hidden aspect-[3/4] w-full bg-background border border-border-custom/40 flex items-center justify-center">
                             <Image 
-                              src={item.image} 
+                              src={getGoogleDriveUrl(item.image)} 
                               alt={item.title} 
                               fill
                               sizes="(min-width: 768px) 25vw, (min-width: 640px) 50vw, 100vw"
