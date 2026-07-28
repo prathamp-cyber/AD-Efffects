@@ -275,11 +275,11 @@ export default function Home() {
           <div className="flex flex-col gap-5 text-[11px] sm:text-xs tracking-[0.2em] uppercase text-secondary font-sans">
             <div className="flex items-center justify-center gap-2.5">
               <MapPin className="w-4 h-4 text-accent stroke-[1.5]" />
-              <span>Gandhidham, Gujarat, India</span>
+              <span>Gujarat, India</span>
             </div>
             <div className="flex items-center justify-center gap-2.5">
               <Mail className="w-4 h-4 text-accent stroke-[1.5]" />
-              <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors">
+              <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors lowercase">
                 theadeffectt@gmail.com
               </a>
             </div>
@@ -294,7 +294,7 @@ export default function Home() {
           {/* Gandhidham Local Time (IST) */}
           <div className="flex items-center justify-center gap-2.5 text-[10px] sm:text-[11px] tracking-[0.22em] text-accent font-semibold uppercase">
             <Clock className="w-4 h-4 stroke-[1.5]" />
-            <span>GANDHIDHAM IST: {gandhidhamTime}</span>
+            <span>GUJARAT IST: {gandhidhamTime}</span>
           </div>
         </div>
       </div>
@@ -547,7 +547,7 @@ export default function Home() {
                   </div>
 
                   {/* Paragraph Section - matching the home page paragraph width & centering style */}
-                  <div className="max-w-[700px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
+                  <div className="max-w-[1200px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
                     {siteConfig.story.paragraphs.map((paragraph, idx) => (
                       <p key={idx}>{paragraph}</p>
                     ))}
@@ -938,11 +938,11 @@ export default function Home() {
                   <div className="contact-coordinate-row w-full max-w-4xl px-6 mx-auto flex flex-col md:flex-row justify-between items-center gap-6 font-sans tracking-[0.18em] text-secondary/70 uppercase">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <span>Gandhidham, Gujarat, India</span>
+                      <span>Gujarat, India</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors">
+                      <a href="mailto:theadeffectt@gmail.com" className="hover:text-primary transition-colors lowercase">
                         theadeffectt@gmail.com
                       </a>
                     </div>
@@ -957,7 +957,7 @@ export default function Home() {
                   {/* Live IST Time Display */}
                   <div className="contact-time-status w-full max-w-4xl mx-auto mt-12 md:mt-16 mb-12 px-6 font-sans tracking-[0.2em] text-accent font-semibold uppercase flex flex-wrap justify-center items-center gap-x-3 gap-y-2 text-center leading-relaxed">
                     <Clock className="w-4 h-4 stroke-[1.7] flex-shrink-0" />
-                    <span>GANDHIDHAM IST: {gandhidhamTime}</span>
+                    <span>GUJARAT IST: {gandhidhamTime}</span>
                     <span className="font-bold text-secondary">
                       {isStudioOpen ? '[ STUDIO OPEN ]' : '[ STUDIO CLOSED ]'}
                     </span>

@@ -4,6 +4,7 @@ import { addAuditLog } from '../logs/db';
 import { isObject, sanitizeText, validateEmail, validateId, validateJsonRequest, validateString } from '../validation';
 import { checkRateLimit, RATE_LIMITS } from '../auth/rateLimiter';
 import { getInquiries, saveInquiries } from '../dbAdapter';
+import nodemailer from 'nodemailer';
 
 interface Inquiry {
   id: string;
@@ -26,6 +27,63 @@ export async function GET() {
     return NextResponse.json(inquiries);
   } catch {
     return NextResponse.json([]);
+  }
+}
+
+async function sendInquiryEmail(inq: Inquiry) {
+  const host = process.env.SMTP_HOST;
+  const portStr = process.env.SMTP_PORT;
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const secure = process.env.SMTP_SECURE === 'true';
+  const receiver = process.env.CONTACT_RECEIVER_EMAIL || 'theadeffectt@gmail.com';
+
+  if (!host || !portStr || !user || !pass) {
+    console.warn('[MAIL] SMTP configuration is incomplete. Skipping email notification.');
+    return;
+  }
+
+  const port = parseInt(portStr, 10);
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+    });
+
+    const mailOptions = {
+      from: `"${inq.name}" <${user}>`,
+      to: receiver,
+      replyTo: inq.email,
+      subject: `New Contact Form Inquiry: ${inq.projectType}`,
+      text: `You have received a new inquiry from your website contact form.
+
+Name: ${inq.name}
+Email: ${inq.email}
+Project Type: ${inq.projectType}
+Message:
+${inq.message}
+
+Date: ${inq.date}`,
+      html: `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+        <h2 style="color: #c5a880; border-bottom: 1px solid #eee; padding-bottom: 10px; font-weight: normal; text-transform: uppercase; letter-spacing: 0.1em;">New Website Inquiry</h2>
+        <p style="margin: 15px 0;"><strong>Name:</strong> ${inq.name}</p>
+        <p style="margin: 15px 0;"><strong>Email:</strong> <a href="mailto:${inq.email}">${inq.email}</a></p>
+        <p style="margin: 15px 0;"><strong>Project Type:</strong> ${inq.projectType}</p>
+        <div style="margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-left: 3px solid #c5a880; white-space: pre-wrap; font-style: italic;">
+          ${inq.message}
+        </div>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 11px; color: #888;">Submitted on ${new Date(inq.date).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })} IST</p>
+      </div>`
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('[MAIL] Inquiry email sent successfully to:', receiver);
+  } catch (err) {
+    console.error('[MAIL] Failed to send inquiry email:', err);
   }
 }
 
@@ -93,6 +151,10 @@ export async function POST(request: Request) {
     
     try {
       await saveInquiries(inquiries as unknown as Record<string, unknown>[]);
+      
+      // Send email notification (failsafe, won't cause inquiry submission to fail if it errors)
+      await sendInquiryEmail(newInquiry);
+      
       return NextResponse.json({ success: true });
     } catch (fsError) {
       console.warn('Failed to save inquiry via adapter:', fsError);

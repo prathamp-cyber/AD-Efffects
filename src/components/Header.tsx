@@ -187,7 +187,7 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
           >
             <motion.a 
               variants={socialIconVariants}
-              href="https://www.instagram.com/the_ad_effect?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
+              href="https://www.instagram.com/the_ad_efffect?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full bg-social-bg hover:bg-social-hover flex items-center justify-center text-primary hover:scale-105 transition-all duration-300"
@@ -305,7 +305,7 @@ export default function Header({ activeTab, onTabChange, hideOurInfluence, hideB
             </nav>
 
             <div className="mt-auto flex flex-col gap-3 text-[9px] uppercase tracking-[0.22em] text-secondary font-light">
-              <p>theadeffectt@gmail.com</p>
+              <p className="lowercase">theadeffectt@gmail.com</p>
               <p>© 2026 THE AD EFFFECT. All rights reserved.</p>
             </div>
           </motion.div>
