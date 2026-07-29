@@ -31,10 +31,11 @@ export default function Footer({ onTabChange }: FooterProps) {
 
       {/* Brand Paragraph: Relevant, elegant, centered spatial statement */}
       <p 
-        className="font-cormorant font-medium text-[16px] md:text-[17px] text-primary leading-[1.8] text-center max-w-[500px] px-6"
+        className="font-cormorant font-medium text-[16px] md:text-[17px] text-primary leading-[1.8] text-center max-w-[650px] px-6"
         style={{ marginBottom: '48px' }} // Spacing to copyright line
       >
-        A design studio dedicated to spatial purity and material honesty. We create thoughtfully crafted, enduring sanctuaries shaped around the people who live within them.
+        We are a multidisciplinary design studio where curiosity, creativity, and craftsmanship shape every project.<br />
+        Creating architecture and interiors that inspire today and endure for generations.
       </p>
 
       {/* Copyright text, keeping 'AD Efffects' in its correct casing */}

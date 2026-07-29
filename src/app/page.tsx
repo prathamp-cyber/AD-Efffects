@@ -547,7 +547,7 @@ export default function Home() {
                   </div>
 
                   {/* Paragraph Section - matching the home page paragraph width & centering style */}
-                  <div className="max-w-[1200px] px-6 text-center text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
+                  <div className="max-w-[1200px] px-6 text-justify text-primary text-sm md:text-base leading-[1.8] space-y-6 font-light mx-auto">
                     {siteConfig.story.paragraphs.map((paragraph, idx) => (
                       <p key={idx}>{paragraph}</p>
                     ))}
