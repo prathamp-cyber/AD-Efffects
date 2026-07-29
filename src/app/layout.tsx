@@ -42,19 +42,33 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                // Skip all protection in the admin panel so it doesn't interfere
+                // Skip all protection in the admin panels so they don't interfere
                 function isAdmin() {
-                  return window.location.pathname.startsWith('/ad');
+                  return window.location.pathname.startsWith('/ad') || window.location.pathname.startsWith('/nexora');
                 }
 
-                // Block right-click context menu on images and the page
+                // Apply select-none to root HTML element to prevent text highlight
+                if (!isAdmin()) {
+                  const style = document.createElement('style');
+                  style.innerHTML = 'html, body { -webkit-user-select: none !important; -moz-user-select: none !important; -ms-user-select: none !important; user-select: none !important; }';
+                  document.head.appendChild(style);
+                }
+
+                // Block right-click context menu
                 document.addEventListener('contextmenu', function(e) {
                   if (isAdmin()) return;
-                  if (e.target && (e.target.tagName === 'IMG' || e.target.closest('img'))) {
-                    e.preventDefault();
-                    return false;
-                  }
-                  // Also block on general page elements to hide "Save page as"
+                  e.preventDefault();
+                  return false;
+                });
+
+                // Block copy, cut, and paste events
+                document.addEventListener('copy', function(e) {
+                  if (isAdmin()) return;
+                  e.preventDefault();
+                  return false;
+                });
+                document.addEventListener('cut', function(e) {
+                  if (isAdmin()) return;
                   e.preventDefault();
                   return false;
                 });
@@ -68,11 +82,35 @@ export default function RootLayout({
                   }
                 });
 
-                // Block Ctrl+S (Save page) and Ctrl+U (View source)
+                // Block keyboard copy, cut, select-all, devtools and save hotkeys
                 document.addEventListener('keydown', function(e) {
                   if (isAdmin()) return;
+                  
+                  // Block Ctrl/Cmd key combos
                   if (e.ctrlKey || e.metaKey) {
-                    if (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U') {
+                    const key = e.key.toLowerCase();
+                    if (
+                      key === 's' || // Save
+                      key === 'u' || // View Source
+                      key === 'c' || // Copy
+                      key === 'x' || // Cut
+                      key === 'a'    // Select All
+                    ) {
+                      e.preventDefault();
+                      return false;
+                    }
+                  }
+
+                  // Block F12
+                  if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                  }
+
+                  // Block DevTools shortcuts (Ctrl+Shift+I / J / C)
+                  if (e.ctrlKey && e.shiftKey) {
+                    const key = e.key.toLowerCase();
+                    if (key === 'i' || key === 'j' || key === 'c') {
                       e.preventDefault();
                       return false;
                     }

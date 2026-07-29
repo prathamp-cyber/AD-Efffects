@@ -285,8 +285,8 @@ export default function Home() {
             </div>
             <div className="flex items-center justify-center gap-2.5">
               <Phone className="w-4 h-4 text-accent stroke-[1.5]" />
-              <a href="tel:+917779044604" className="hover:text-primary transition-colors">
-                +91 77790 44604
+              <a href="tel:+919998079809" className="hover:text-primary transition-colors">
+                +91 99980 79809
               </a>
             </div>
           </div>
@@ -948,8 +948,8 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Phone className="w-3.5 h-3.5 text-accent stroke-[1.5]" />
-                      <a href="tel:+917779044604" className="hover:text-primary transition-colors">
-                        +91 77790 44604
+                      <a href="tel:+919998079809" className="hover:text-primary transition-colors">
+                        +91 99980 79809
                       </a>
                     </div>
                   </div>
