@@ -34,8 +34,7 @@ export default function Footer({ onTabChange }: FooterProps) {
         className="font-cormorant font-medium text-[16px] md:text-[17px] text-primary leading-[1.8] text-center max-w-[650px] px-6"
         style={{ marginBottom: '48px' }} // Spacing to copyright line
       >
-        We are a multidisciplinary design studio where curiosity, creativity, and craftsmanship shape every project.<br />
-        Creating architecture and interiors that inspire today and endure for generations.
+        We are a multidisciplinary design studio where curiosity, creativity, and craftsmanship shape every project. Creating architecture and interiors that inspire today and endure for generations.
       </p>
 
       {/* Copyright text, keeping 'AD Efffects' in its correct casing */}
