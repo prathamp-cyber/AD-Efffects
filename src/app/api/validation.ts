@@ -185,7 +185,7 @@ export function validateUrl(val: unknown, fieldName = 'URL', opts: { required?: 
   const result = validateString(val, fieldName, {
     required: opts.required ?? false,
     maxLen: 2048,
-    rejectInjection: true,
+    rejectInjection: false,
   });
   if (result.error || result.value === '') return result;
 
